@@ -1,0 +1,45 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace poxnora_search_engine.Pox
+{
+    public class Ability: DataElement
+    {
+        public int APCost;
+        public int ActivationType;
+        public int Level;
+        public int Cooldown;
+        public string IconName = "";
+
+        public List<int> DescriptionAbilities = new List<int>();
+        public List<string> DescriptionConditions = new List<string>();
+
+        public override bool GetIntFromDataPath(DataPath dp, out int result)
+        {
+            if (!base.GetIntFromDataPath(dp, out result))
+            {
+                if (dp == DataPath.APCost)
+                    result = APCost;
+                else if (dp == DataPath.Level)
+                    result = Level;
+                else if (dp == DataPath.Cooldown)
+                    result = Cooldown;
+                else
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override string ToString()
+        {
+            if (Level > 0)
+                return Name + " " + Level.ToString();
+            else
+                return Name;
+        }
+    }
+}
