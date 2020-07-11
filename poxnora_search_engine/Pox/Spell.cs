@@ -12,6 +12,7 @@ namespace poxnora_search_engine.Pox
 
         public List<int> DescriptionAbilities = new List<int>();
         public List<string> DescriptionConditions = new List<string>();
+        public List<Ability> DescriptionAbilities_refs = new List<Ability>();
 
         public override bool GetStringFromDataPath(DataPath dp, out string result)
         {

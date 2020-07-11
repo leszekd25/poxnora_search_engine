@@ -531,14 +531,14 @@ namespace poxnora_search_engine
                 }
                 else if (selected_node.Parent != null)
                 {
-                    if (selected_node.Tag is Pox.Filters.AndFilter)
+                    if (selected_node.Parent.Tag is Pox.Filters.AndFilter)
                     {
                         selected_node.Parent.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
                         ((Pox.Filters.AndFilter)selected_node.Parent.Tag).Filters.Add(bf);
                     }
                     else if (selected_node.Parent.Tag is Pox.Filters.OrFilter)
                     {
-                        selected_node.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
+                        selected_node.Parent.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
                         ((Pox.Filters.OrFilter)selected_node.Parent.Tag).Filters.Add(bf);
                     }
                 }
@@ -878,6 +878,104 @@ namespace poxnora_search_engine
             RemoveFilter(FilterTree.SelectedNode);
         }
 
+        private void wrapIntoAnySubfiltersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FilterTree.Nodes.Count == 0)
+                return;
+
+            TreeNode selected_node = FilterTree.SelectedNode;
+            if (selected_node == null)
+                return;
+
+            OrFilter fl = new OrFilter();
+            TreeNode or_node = new TreeNode() { Text = fl.ToString(), Tag = fl };
+            // check if the node is the root
+            if(selected_node.Parent == null)
+            {
+                FilterTree.Nodes.Clear();
+                FilterTree.Nodes.Add(or_node);
+            }
+            else
+            {
+                TreeNode pt = selected_node.Parent;
+                pt.Nodes.Insert(pt.Nodes.IndexOf(selected_node), or_node);
+                pt.Nodes.Remove(selected_node);
+            }
+            or_node.Nodes.Add(selected_node);
+            FilterTree.SelectedNode = selected_node;
+
+            ShowFilterProperties((BaseFilter)selected_node.Tag);
+        }
+
+        private void wrapIntoAllSubfiltersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FilterTree.Nodes.Count == 0)
+                return;
+
+            TreeNode selected_node = FilterTree.SelectedNode;
+            if (selected_node == null)
+                return;
+
+            AndFilter fl = new AndFilter();
+            TreeNode and_node = new TreeNode() { Text = fl.ToString(), Tag = fl };
+            // check if the node is the root
+            if (selected_node.Parent == null)
+            {
+                FilterTree.Nodes.Clear();
+                FilterTree.Nodes.Add(and_node);
+            }
+            else
+            {
+                TreeNode pt = selected_node.Parent;
+                pt.Nodes.Insert(pt.Nodes.IndexOf(selected_node), and_node);
+                pt.Nodes.Remove(selected_node);
+            }
+            and_node.Nodes.Add(selected_node);
+            FilterTree.SelectedNode = selected_node;
+
+            ShowFilterProperties((BaseFilter)selected_node.Tag);
+        }
+
+        private void popOutOfAnyAllSubfiltersToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (FilterTree.Nodes.Count == 0)
+                return;
+
+            TreeNode selected_node = FilterTree.SelectedNode;
+            if (selected_node == null)
+                return;
+
+            TreeNode pt = selected_node.Parent;
+            if (pt == null)
+                return;
+
+            TreeNode pt2 = pt.Parent;
+            // if pt is top of hierarchy
+            if(pt2 == null)
+            {
+                if((pt.Tag is AndFilter) || (pt.Tag is OrFilter))
+                {
+                    if(pt.Nodes.Count == 1)
+                    {
+                        FilterTree.Nodes.Clear();
+                        FilterTree.Nodes.Add(selected_node);
+                    }
+                }
+            }
+            else
+            {
+                if ((pt.Tag is AndFilter) || (pt.Tag is OrFilter))
+                {
+                    pt.Nodes.Remove(selected_node);
+                    pt2.Nodes.Insert(pt2.Nodes.IndexOf(pt), selected_node);
+                    if (pt.Nodes.Count == 0)
+                        pt2.Nodes.Remove(pt);
+                }
+            }
+
+            ShowFilterProperties((BaseFilter)selected_node.Tag);
+        }
+
         private void GridDataElements_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
             int row = e.RowIndex;
@@ -886,6 +984,7 @@ namespace poxnora_search_engine
 
             int id = (int)GridDataElements.Rows[row].Cells["ID"].Value;
 
+            runeDescriptionControl1.TracerClear();
             switch (ViewType)
             {
                 case GridViewType.CHAMPIONS:
@@ -965,6 +1064,12 @@ namespace poxnora_search_engine
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
                 GridDataElements.Columns[((ToolStripMenuItem)sender).Tag.ToString()].Visible = ((ToolStripMenuItem)sender).Checked;
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var about_box = new AboutBox();
+            about_box.ShowDialog();
         }
     }
 }

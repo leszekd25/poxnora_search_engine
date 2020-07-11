@@ -12,9 +12,22 @@ namespace poxnora_search_engine.Pox
 {
     public partial class RuneDescriptionControl : UserControl
     {
+        struct TracerViewData
+        {
+            public GridViewType Type;
+            public int ID;
+        }
+
         static Font RegularFont = new Font("Arial", 10, FontStyle.Regular);
         static Font BoldFont = new Font("Arial", 10, FontStyle.Bold);
         static Font ItalicFont = new Font("Arial", 10, FontStyle.Italic);
+
+        List<PictureBox> Links = new List<PictureBox>();
+        int CursorY = 0;
+
+        List<TracerViewData> Tracer = new List<TracerViewData>();
+        int TracerPosition = -1;
+        TracerViewData CurrentTracer;
         public RuneDescriptionControl()
         {
             InitializeComponent();
@@ -77,13 +90,18 @@ namespace poxnora_search_engine.Pox
         public void ClearDescription()
         {
             SetRuneImage(null);
+            CursorY = 0;
 
             TextBoxDescription.Clear();
+            foreach (var pb in Links)
+                TextBoxDescription.Controls.Remove(pb);
+            Links.Clear();
         }
 
         private void SetRune(Rune r)
         {
-            SetRuneImage(null);
+            ClearDescription();
+
             Program.image_cache.LoadRuneImage(r.Hash);
 
             TextBoxDescription.Clear();
@@ -96,6 +114,8 @@ namespace poxnora_search_engine.Pox
             TextBoxDescription.SelectionColor = GetColorByRarity(r.Rarity);
             TextBoxDescription.SelectionFont = BoldFont;
             TextBoxDescription.AppendText(r.Name + "\r\n");
+
+            CursorY += 32;
 
             TextBoxDescription.SelectionColor = Color.LightGray;
             AddLine("Expansion: ", r.Expansion);
@@ -142,7 +162,7 @@ namespace poxnora_search_engine.Pox
             AddLine("Abilities:", "");
             foreach (var ab in c.BaseAbilities_refs)
             {
-                if(ab.Name.Contains("Attack: "))
+                if (ab.Name.Contains("Attack: "))
                 {
                     TextBoxDescription.SelectionColor = Color.LightGray;
                     TextBoxDescription.SelectionFont = RegularFont;
@@ -150,21 +170,45 @@ namespace poxnora_search_engine.Pox
 
                     TextBoxDescription.SelectionColor = GetColorByAttackType(ab.Name.Substring(8));
                     TextBoxDescription.SelectionFont = BoldFont;
-                    TextBoxDescription.AppendText(ab.Name.Substring(8) + "\r\n");
+                    TextBoxDescription.AppendText(ab.Name.Substring(8)+"\r\n");
 
+                    CursorY += 16;
                 }
                 else
+                {
                     AddLine("", ab.ToString());
+                }
+
+                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = GridViewType.ABILITIES });
             }
             foreach (var ab in c.UpgradeAbilities1_refs)
             {
                 TextBoxDescription.SelectionColor = Color.PaleTurquoise;
-                AddLine("", ab.ToString());
+                if (c.UpgradeAbilities1_refs.IndexOf(ab) == c.DefaultUpgrade1Index)
+                {
+                    TextBoxDescription.SelectionColor = Color.Cyan;
+                    AddLine(ab.ToString(), "");
+                }
+                else
+                {
+                    TextBoxDescription.SelectionColor = Color.DeepSkyBlue;
+                    AddLine("", ab.ToString());
+                }
+                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = GridViewType.ABILITIES });
             }
             foreach (var ab in c.UpgradeAbilities2_refs)
             {
-                TextBoxDescription.SelectionColor = Color.PaleGreen;
-                AddLine("", ab.ToString());
+                if (c.UpgradeAbilities2_refs.IndexOf(ab) == c.DefaultUpgrade2Index)
+                {
+                    TextBoxDescription.SelectionColor = Color.Lime;
+                    AddLine(ab.ToString(), "");
+                }
+                else
+                {
+                    TextBoxDescription.SelectionColor = Color.LimeGreen;
+                    AddLine("", ab.ToString());
+                }
+                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = GridViewType.ABILITIES });
             }
             TextBoxDescription.SelectionColor = Color.LightGray;
             TextBoxDescription.AppendText("\r\n");
@@ -175,7 +219,7 @@ namespace poxnora_search_engine.Pox
 
         public void SetAbility(Ability a)
         {
-            SetRuneImage(null);
+            ClearDescription();
 
             a.Description = Program.database.ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
 
@@ -248,6 +292,7 @@ namespace poxnora_search_engine.Pox
 
         private void AddLine(string bold_text, string regular_text)
         {
+            CursorY += 16;
             TextBoxDescription.SelectionFont = BoldFont;
             TextBoxDescription.AppendText(bold_text);
             TextBoxDescription.SelectionFont = RegularFont;
@@ -263,6 +308,80 @@ namespace poxnora_search_engine.Pox
         {
             this.Height = h;
             TextBoxDescription.Height = this.Height - RuneImage.Height - 3;
+        }
+
+        // tracer stuff
+        void TracerGoTo(TracerViewData tvd)
+        {
+            while (Tracer.Count > TracerPosition + 1)
+                Tracer.RemoveAt(TracerPosition + 1);
+
+            Tracer.Add(CurrentTracer);
+            TracerPosition += 1;
+
+            TracerSetDescription(tvd);
+        }
+
+        private void TracerSetDescription(TracerViewData tvd)
+        {
+            switch (tvd.Type)
+            {
+                case GridViewType.CHAMPIONS:
+                    if (Program.database.Champions.ContainsKey(tvd.ID))
+                        SetChampionRune(Program.database.Champions[tvd.ID]);
+                    break;
+                case GridViewType.ABILITIES:
+                    if (Program.database.Abilities.ContainsKey(tvd.ID))
+                        SetAbility(Program.database.Abilities[tvd.ID]);
+                    break;
+                case GridViewType.SPELLS:
+                    if (Program.database.Spells.ContainsKey(tvd.ID))
+                        SetSpellRune(Program.database.Spells[tvd.ID]);
+                    break;
+                case GridViewType.RELICS:
+                    if (Program.database.Relics.ContainsKey(tvd.ID))
+                        SetRelicRune(Program.database.Relics[tvd.ID]);
+                    break;
+                case GridViewType.EQUIPMENTS:
+                    if (Program.database.Equipments.ContainsKey(tvd.ID))
+                        SetEquipmentRune(Program.database.Equipments[tvd.ID]);
+                    break;
+                default:
+                    break;
+            }
+
+            CurrentTracer = tvd;
+        }
+
+        public void TracerGoBack()
+        {
+            if (TracerPosition == -1)
+                return;
+
+            TracerViewData tvd = Tracer[TracerPosition];
+            TracerPosition -= 1;
+        }
+
+        public void TracerClear()
+        {
+            Tracer.Clear();
+            TracerPosition = -1;
+        }
+
+        private void AddLink(Point position, TracerViewData tag)
+        {
+            PictureBox pb = new PictureBox() { Location = position, Size = new Size(24, 14), Tag = tag };
+            pb.Image = Properties.Resources.ImageGoTo;
+            pb.Click += new EventHandler(LinkClicked);
+            pb.Cursor = Cursors.Hand;
+            Links.Add(pb);
+            TextBoxDescription.Controls.Add(pb);
+            pb.BringToFront();
+        }
+
+        private void LinkClicked(object sender, EventArgs e)
+        {
+            TracerGoTo((TracerViewData)((PictureBox)sender).Tag);
         }
     }
 }

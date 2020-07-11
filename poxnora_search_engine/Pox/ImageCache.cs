@@ -88,7 +88,7 @@ namespace poxnora_search_engine.Pox
                 }
                 catch(Exception ex)
                 {
-                    Log.Error("OnRuneImageDownloaded(): Uncaught exception, contents: " + ex.ToString());
+                    System.Diagnostics.Debug.WriteLine("OnRuneImageDownloaded(): Uncaught exception, contents: " + ex.ToString());
                 }
             }
             IsDownloadingRuneImage = false;

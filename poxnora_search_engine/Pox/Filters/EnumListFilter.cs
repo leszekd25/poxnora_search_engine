@@ -51,7 +51,7 @@ namespace poxnora_search_engine.Pox.Filters
 
         public override string ToString()
         {
-            string base_str = (NegateResult ? "Negated: " : "") + "Faction ";
+            string base_str = (NegateResult ? "Negated: " : "") + dpath + " ";
             if (FilterType == EnumListFilterType.CONTAINS)
                 return base_str + "contains " + RefValue.ToString();
             return base_str + "UNKNOWN_OPERATOR" + RefValue.ToString();

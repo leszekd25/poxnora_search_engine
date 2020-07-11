@@ -8,6 +8,8 @@ namespace poxnora_search_engine
 {
     static public class Utility
     {
-        const int NO_INDEX = -1;
+        public const int NO_INDEX = -1;
+
+        public const string APP_VERSION = "12.07.2020.1";
     }
 }

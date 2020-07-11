@@ -433,6 +433,30 @@ namespace poxnora_search_engine.Pox
             }
         }
 
+        /*void SetupAbilityAbilities(Ability ab)
+        {
+            foreach (int a in ab.DescriptionAbilities)
+                ab.DescriptionAbilities_refs.Add(Abilities[a]);
+        }
+
+        void SetupSpellAbilities(Spell s)
+        {
+            foreach (int a in s.DescriptionAbilities)
+                s.DescriptionAbilities_refs.Add(Abilities[a]);
+        }
+
+        void SetupRelicAbilities(Relic r)
+        {
+            foreach (int a in r.DescriptionAbilities)
+                r.DescriptionAbilities_refs.Add(Abilities[a]);
+        }
+
+        void SetupEquipmentAbilities(Equipment e)
+        {
+            foreach (int a in e.DescriptionAbilities)
+                e.DescriptionAbilities_refs.Add(Abilities[a]);
+        }*/
+
         void ResolveSimilarAbilities()
         {
             foreach(var kv in Abilities)
