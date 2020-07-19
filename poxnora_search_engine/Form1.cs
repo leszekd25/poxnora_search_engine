@@ -894,13 +894,26 @@ namespace poxnora_search_engine
             {
                 FilterTree.Nodes.Clear();
                 FilterTree.Nodes.Add(or_node);
+                SearchFilter = fl;
             }
             else
             {
                 TreeNode pt = selected_node.Parent;
                 pt.Nodes.Insert(pt.Nodes.IndexOf(selected_node), or_node);
                 pt.Nodes.Remove(selected_node);
+
+                if (pt.Tag is OrFilter)
+                {
+                    ((OrFilter)pt.Tag).Filters.Add(fl);
+                    ((OrFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
+                }
+                else if (pt.Tag is AndFilter)
+                {
+                    ((AndFilter)pt.Tag).Filters.Add(fl);
+                    ((AndFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
+                }
             }
+            fl.Filters.Add((BaseFilter)selected_node.Tag);
             or_node.Nodes.Add(selected_node);
             FilterTree.SelectedNode = selected_node;
 
@@ -923,13 +936,26 @@ namespace poxnora_search_engine
             {
                 FilterTree.Nodes.Clear();
                 FilterTree.Nodes.Add(and_node);
+                SearchFilter = fl;
             }
             else
             {
                 TreeNode pt = selected_node.Parent;
                 pt.Nodes.Insert(pt.Nodes.IndexOf(selected_node), and_node);
                 pt.Nodes.Remove(selected_node);
+
+                if (pt.Tag is OrFilter)
+                {
+                    ((OrFilter)pt.Tag).Filters.Add(fl);
+                    ((OrFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
+                }
+                else if (pt.Tag is AndFilter)
+                {
+                    ((AndFilter)pt.Tag).Filters.Add(fl);
+                    ((AndFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
+                }
             }
+            fl.Filters.Add((BaseFilter)selected_node.Tag);
             and_node.Nodes.Add(selected_node);
             FilterTree.SelectedNode = selected_node;
 
@@ -959,6 +985,7 @@ namespace poxnora_search_engine
                     {
                         FilterTree.Nodes.Clear();
                         FilterTree.Nodes.Add(selected_node);
+                        SearchFilter = (BaseFilter)selected_node.Tag;
                     }
                 }
             }
@@ -967,9 +994,25 @@ namespace poxnora_search_engine
                 if ((pt.Tag is AndFilter) || (pt.Tag is OrFilter))
                 {
                     pt.Nodes.Remove(selected_node);
+                    if (pt.Tag is AndFilter)
+                        ((AndFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
+                    else if (pt.Tag is OrFilter)
+                        ((OrFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
+
                     pt2.Nodes.Insert(pt2.Nodes.IndexOf(pt), selected_node);
+                    if (pt2.Tag is AndFilter)
+                        ((AndFilter)pt2.Tag).Filters.Insert(((AndFilter)pt2.Tag).Filters.IndexOf((BaseFilter)pt.Tag), (BaseFilter)selected_node.Tag);
+                    else if(pt2.Tag is OrFilter)
+                        ((OrFilter)pt2.Tag).Filters.Insert(((OrFilter)pt2.Tag).Filters.IndexOf((BaseFilter)pt.Tag), (BaseFilter)selected_node.Tag);
+
                     if (pt.Nodes.Count == 0)
+                    {
                         pt2.Nodes.Remove(pt);
+                        if (pt2.Tag is AndFilter)
+                            ((AndFilter)pt2.Tag).Filters.Remove((BaseFilter)pt.Tag);
+                        else if (pt2.Tag is OrFilter)
+                            ((OrFilter)pt2.Tag).Filters.Remove((BaseFilter)pt.Tag);
+                    }
                 }
             }
 
