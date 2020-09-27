@@ -19,6 +19,7 @@ namespace poxnora_search_engine.Pox
         public bool Tradeable;
         public bool AllowRanked;
         public int DeckLimit;
+        public int Cooldown;
 
         public void LoadFromJSON(JToken runedata)
         {
@@ -72,6 +73,9 @@ namespace poxnora_search_engine.Pox
 
             if (runedata.SelectToken("deckLimit") != null)
                 DeckLimit = runedata.SelectToken("deckLimit").ToObject<int>();
+
+            if (runedata.SelectToken("cooldown") != null)
+                Cooldown = runedata.SelectToken("cooldown").ToObject<int>();
         }
 
         public override bool GetIntFromDataPath(DataPath dp, out int result)
@@ -80,6 +84,8 @@ namespace poxnora_search_engine.Pox
             {
                 if (dp == DataPath.DeckLimit)
                     result = DeckLimit;
+                else if (dp == DataPath.Cooldown)
+                    result = Cooldown;
                 else
                     return false;
             }

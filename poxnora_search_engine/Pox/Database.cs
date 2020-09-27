@@ -29,6 +29,9 @@ namespace poxnora_search_engine.Pox
         DefaultNoraCost = 13,
         MinimumNoraCost = 14,
         MaximumNoraCost = 15,
+        BaseNoraCost = 16,
+        PrognosedBaseNoraCost = 17,
+        PrognosedBaseNoraCostDifference = 18,
 
         // STRING
         Name = 100,
@@ -85,7 +88,7 @@ namespace poxnora_search_engine.Pox
         public StringLibrary AbilityNames { get; } = new StringLibrary();
 
 
-        bool ready = false;
+        public bool ready { get; private set; } = false;
 
         public void LoadJSON()
         {
@@ -316,6 +319,11 @@ namespace poxnora_search_engine.Pox
             }
             c.MinNoraCost = c.NoraCost + minupg1 + minupg2;
             c.MaxNoraCost = c.NoraCost + maxupg1 + maxupg2;
+            // find base cost without ANY abilities
+            int basecost = c.NoraCost;
+            foreach (var ab in c.Abilities)
+                basecost -= Abilities[ab].NoraCost;
+            c.BaseNoraCost = basecost;
 
             Champions.Add(c.ID, c);
         }
@@ -431,6 +439,9 @@ namespace poxnora_search_engine.Pox
                 c.AllUpgradeAbilities_refs.Add(Abilities[a]);
                 c.AllAbilities_refs.Add(Abilities[a]);
             }
+
+            c.CalculatePrognosedBaseNoraCost();
+            c.PrognosedBaseNoraCostDifference = c.BaseNoraCost - c.PrognosedBaseNoraCost;
         }
 
         /*void SetupAbilityAbilities(Ability ab)
@@ -501,7 +512,7 @@ namespace poxnora_search_engine.Pox
                     else if (description[i + 1] == 'c')
                         cons.Add(ExtractCondition(description, ranges[ranges.Count - 1]));
 
-                    i = ranges[ranges.Count - 1].Item2 + 1;
+                    i = ranges[ranges.Count - 1].Item2;
                 }
             }
 

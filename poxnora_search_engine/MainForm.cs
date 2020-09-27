@@ -18,14 +18,17 @@ namespace poxnora_search_engine
 {
     public enum GridViewType { CHAMPIONS = 0, ABILITIES, SPELLS, RELICS, EQUIPMENTS }
     public enum FilterType { AND, OR, BOOLEAN, INT, STRING, RARITY, EXPANSION, ABILITY_LIST, CLASS_LIST, FACTION_LIST, RACE_LIST }
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         GridViewType ViewType = GridViewType.CHAMPIONS;
         Pox.Filters.BaseFilter SearchFilter = null;
         bool ApplyFilters = false;
 
+        CardRandomizer CardRandomizer_form = null;
+        ChampionBuilder ChampionBuilder_form = null;
+
         BaseFilterControl FilterProperties = null;
-        public Form1()
+        public MainForm()
         {
             InitializeComponent();
             Log.OnLog = ShowLogMessageOnStatusBar;
@@ -90,7 +93,11 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem.Visible });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem2.Checked });
 
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost", Name = "PrognosedBaseNoraCost", ValueType = typeof(int), Visible = prognosedBaseNoraCostToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Base nora cost", Name = "BaseNoraCost", ValueType = typeof(int), Visible = baseNoraCostToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost difference", Name = "PrognosedBaseNoraCostDifference", ValueType = typeof(int), Visible = prognosedBaseNoraCostDifferenceToolStripMenuItem.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Default nora cost", Name = "DefaultNoraCost", ValueType = typeof(int), Visible = defaultNoraCostToolStripMenuItem1.Checked});
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Minimum nora cost", Name = "MinNoraCost", ValueType = typeof(int), Visible = minimumNoraCostToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Maximum nora cost", Name = "MaxNoraCost", ValueType = typeof(int), Visible = maximumNoraCostToolStripMenuItem1.Checked });
@@ -137,6 +144,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem1.Visible });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem1.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem3.Checked });
 
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Flavor text", Name = "FlavorText", ValueType = typeof(string), Visible = flavorToolStripMenuItem.Checked });
                         break;
@@ -156,6 +164,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem2.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem2.Visible });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem2.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem4.Checked });
 
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Flavor text", Name = "FlavorText", ValueType = typeof(string), Visible = flavorToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Defense", Name = "Defense", ValueType = typeof(int), Visible = defenseToolStripMenuItem1.Checked });
@@ -178,6 +187,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem3.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem3.Visible });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem3.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem5.Checked });
 
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Flavor text", Name = "FlavorText", ValueType = typeof(string), Visible = flavorTextToolStripMenuItem.Checked });
                         break;
@@ -287,7 +297,11 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Tradeable"].Value = c.Tradeable;
             GridDataElements.Rows[row].Cells["AllowRanked"].Value = c.AllowRanked;
             GridDataElements.Rows[row].Cells["DeckLimit"].Value = c.DeckLimit;
+            GridDataElements.Rows[row].Cells["Cooldown"].Value = c.Cooldown;
 
+            GridDataElements.Rows[row].Cells["PrognosedBaseNoraCost"].Value = c.PrognosedBaseNoraCost;
+            GridDataElements.Rows[row].Cells["BaseNoraCost"].Value = c.BaseNoraCost; 
+            GridDataElements.Rows[row].Cells["PrognosedBaseNoraCostDifference"].Value = c.PrognosedBaseNoraCostDifference;
             GridDataElements.Rows[row].Cells["DefaultNoraCost"].Value = c.DefaultNoraCost;
             GridDataElements.Rows[row].Cells["MinNoraCost"].Value = c.MinNoraCost;
             GridDataElements.Rows[row].Cells["MaxNoraCost"].Value = c.MaxNoraCost;
@@ -376,6 +390,7 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Tradeable"].Value = s.Tradeable;
             GridDataElements.Rows[row].Cells["AllowRanked"].Value = s.AllowRanked;
             GridDataElements.Rows[row].Cells["DeckLimit"].Value = s.DeckLimit;
+            GridDataElements.Rows[row].Cells["Cooldown"].Value = s.Cooldown;
 
             GridDataElements.Rows[row].Cells["FlavorText"].Value = s.Flavor;
         }
@@ -405,6 +420,7 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Tradeable"].Value = r.Tradeable;
             GridDataElements.Rows[row].Cells["AllowRanked"].Value = r.AllowRanked;
             GridDataElements.Rows[row].Cells["DeckLimit"].Value = r.DeckLimit;
+            GridDataElements.Rows[row].Cells["Cooldown"].Value = r.Cooldown;
 
             GridDataElements.Rows[row].Cells["FlavorText"].Value = r.Flavor;
             GridDataElements.Rows[row].Cells["Defense"].Value = r.Defense;
@@ -437,6 +453,7 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Tradeable"].Value = e.Tradeable;
             GridDataElements.Rows[row].Cells["AllowRanked"].Value = e.AllowRanked;
             GridDataElements.Rows[row].Cells["DeckLimit"].Value = e.DeckLimit;
+            GridDataElements.Rows[row].Cells["Cooldown"].Value = e.Cooldown;
 
             GridDataElements.Rows[row].Cells["FlavorText"].Value = e.Flavor;
         }
@@ -733,6 +750,16 @@ namespace poxnora_search_engine
             AddFilter("Deck limit", FilterType.INT, DataPath.DeckLimit);
         }
 
+        private void prognosedBaseNoraCostToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            AddFilter("Prognosed base nora cost", FilterType.INT, DataPath.PrognosedBaseNoraCost);
+        }
+
+        private void baseNoraCostToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            AddFilter("Base nora cost", FilterType.INT, DataPath.BaseNoraCost);
+        }
+
         private void defaultNoraCostToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddFilter("Default nora cost", FilterType.INT, DataPath.DefaultNoraCost);
@@ -1027,26 +1054,28 @@ namespace poxnora_search_engine
 
             int id = (int)GridDataElements.Rows[row].Cells["ID"].Value;
 
-            runeDescriptionControl1.TracerClear();
+            RuneDescription.TracerClear();
             switch (ViewType)
             {
                 case GridViewType.CHAMPIONS:
-                    runeDescriptionControl1.SetChampionRune(Program.database.Champions[id]);
+                    RuneDescription.SetChampionRune(Program.database.Champions[id]);
+                    if (ChampionBuilder_form != null)
+                        ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
                     break;
                 case GridViewType.ABILITIES:
-                    runeDescriptionControl1.SetAbility(Program.database.Abilities[id]);
+                    RuneDescription.SetAbility(Program.database.Abilities[id]);
                     break;
                 case GridViewType.SPELLS:
-                    runeDescriptionControl1.SetSpellRune(Program.database.Spells[id]);
+                    RuneDescription.SetSpellRune(Program.database.Spells[id]);
                     break;
                 case GridViewType.RELICS:
-                    runeDescriptionControl1.SetRelicRune(Program.database.Relics[id]);
+                    RuneDescription.SetRelicRune(Program.database.Relics[id]);
                     break;
                 case GridViewType.EQUIPMENTS:
-                    runeDescriptionControl1.SetEquipmentRune(Program.database.Equipments[id]);
+                    RuneDescription.SetEquipmentRune(Program.database.Equipments[id]);
                     break;
                 default:
-                    runeDescriptionControl1.ClearDescription();
+                    RuneDescription.ClearDescription();
                     break;
             }
         }
@@ -1060,8 +1089,8 @@ namespace poxnora_search_engine
 
             GridDataElements.Width = this.Width - 1410 + 764;
             GridDataElements.Height = this.Height - 682 + 565;
-            runeDescriptionControl1.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, FilterTree.Location.Y);
-            runeDescriptionControl1.SetHeight(GridDataElements.Height + 32);
+            RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, FilterTree.Location.Y);
+            RuneDescription.SetHeight(GridDataElements.Height + 32);
         }
 
 
@@ -1113,6 +1142,48 @@ namespace poxnora_search_engine
         {
             var about_box = new AboutBox();
             about_box.ShowDialog();
+        }
+
+        private void deckRandomizerToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Program.database.ready)
+                return;
+
+            CardRandomizer_form = new CardRandomizer();
+            CardRandomizer_form.ShowDialog();
+            CardRandomizer_form = null;
+        }
+
+        private void championBuilderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Program.database.ready)
+                return;
+
+            if(ChampionBuilder_form != null)
+            {
+                ChampionBuilder_form.BringToFront();
+                return;
+            }
+
+            ChampionBuilder_form = new ChampionBuilder();
+            ChampionBuilder_form.FormClosed += new FormClosedEventHandler(ChampionBuilder_form_FormClosed);
+
+            ChampionBuilder_form.Show();
+        }
+
+        private void ChampionBuilder_form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            ChampionBuilder_form.FormClosed -= new FormClosedEventHandler(ChampionBuilder_form_FormClosed);
+            ChampionBuilder_form = null;
+        }
+
+        public void external_SetRuneDescriptionAbility(Ability a)
+        {
+            if (a == null)
+                return;
+
+            RuneDescription.TracerClear();
+            RuneDescription.SetAbility(a);
         }
     }
 }

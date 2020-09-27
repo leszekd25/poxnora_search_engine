@@ -11,6 +11,8 @@ namespace poxnora_search_engine
     {
         static public Database database = new Database();
         static public ImageCache image_cache = new ImageCache();
+
+        static public MainForm main_form;
         /// <summary>
         /// The main entry point for the application.
         /// </summary>
@@ -19,7 +21,11 @@ namespace poxnora_search_engine
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            main_form = new MainForm();
+            Application.Run(main_form);
+
+            main_form = null;
         }
     }
 }
