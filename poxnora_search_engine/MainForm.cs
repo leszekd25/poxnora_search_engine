@@ -25,6 +25,7 @@ namespace poxnora_search_engine
 
         CardRandomizer CardRandomizer_form = null;
         ChampionBuilder ChampionBuilder_form = null;
+        DifferenceCalculator DifferenceCalculator_form = null;
 
         BaseFilterControl FilterProperties = null;
         public MainForm()
@@ -62,6 +63,13 @@ namespace poxnora_search_engine
                 null,
                 GridDataElements,
                 new object[] { true });
+
+            Program.image_cache.Subscribers.Add(RuneDescription);
+        }
+
+        private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.image_cache.Subscribers.Remove(RuneDescription);
         }
 
         private void OnDatabaseReady()
@@ -506,7 +514,7 @@ namespace poxnora_search_engine
                     bf = new Pox.Filters.EnumFilter() { dpath = DataPath.Rarity, Options_ref = Program.database.Rarities, FilterType = Pox.Filters.EnumFilterType.EQUAL, RefValue = "" };
                     break;
                 case FilterType.ABILITY_LIST:
-                    bf = new Pox.Filters.AbilityListFilter() { dpath = dpath, FilterType = Pox.Filters.AbilityListFilterType.CONTAINS, RefValue = -1 };
+                    bf = new Pox.Filters.AbilityListFilter() { dpath = dpath, FilterType = Pox.Filters.AbilityListFilterType.CONTAINS, RefValue = 0 };
                     break;
                 case FilterType.CLASS_LIST:
                     bf = new Pox.Filters.EnumListFilter() { dpath = DataPath.Class, Options_ref = Program.database.Classes, FilterType = Pox.Filters.EnumListFilterType.CONTAINS, RefValue = "" };
@@ -1191,8 +1199,32 @@ namespace poxnora_search_engine
             if (!Program.database.ready)
                 return;
 
-            var diff_form = new DifferenceCalculatorForm();
-            diff_form.ShowDialog();
+            if (DifferenceCalculator_form != null)
+            {
+                DifferenceCalculator_form.BringToFront();
+                return;
+            }
+
+            DifferenceCalculator_form = new DifferenceCalculator();
+            DifferenceCalculator_form.FormClosed += new FormClosedEventHandler(DifferenceCalculator_form_FormClosed);
+
+            DifferenceCalculator_form.Show();
+        }
+
+        private void DifferenceCalculator_form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            DifferenceCalculator_form.FormClosed -= new FormClosedEventHandler(DifferenceCalculator_form_FormClosed);
+            DifferenceCalculator_form = null;
+        }
+
+        private void MainForm_Activated(object sender, EventArgs e)
+        {
+            Program.image_cache.Subscribers.Add(RuneDescription);
+        }
+
+        private void MainForm_Deactivate(object sender, EventArgs e)
+        {
+            Program.image_cache.Subscribers.Remove(RuneDescription);
         }
     }
 }

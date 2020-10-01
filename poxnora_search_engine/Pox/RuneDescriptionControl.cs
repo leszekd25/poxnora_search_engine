@@ -10,7 +10,7 @@ using System.Windows.Forms;
 
 namespace poxnora_search_engine.Pox
 {
-    public partial class RuneDescriptionControl : UserControl
+    public partial class RuneDescriptionControl : UserControl, IImageCacheSubscriber
     {
         struct TracerViewData
         {
@@ -33,7 +33,6 @@ namespace poxnora_search_engine.Pox
         public RuneDescriptionControl()
         {
             InitializeComponent();
-            Program.image_cache.ImageLoad_event = SetRuneImage;
         }
 
         private Color GetColorByRarity(string rarity)
@@ -91,7 +90,7 @@ namespace poxnora_search_engine.Pox
 
         public void ClearDescription()
         {
-            SetRuneImage(null);
+            RuneImage.Image = null;
             CursorY = 0;
 
             TextBoxDescription.Clear();
@@ -301,7 +300,7 @@ namespace poxnora_search_engine.Pox
             TextBoxDescription.AppendText(regular_text + "\r\n");
         }
 
-        private void SetRuneImage(Bitmap bmp)
+        public void OnRuneImageLoad(Bitmap bmp)
         {
             RuneImage.Image = bmp;
         }

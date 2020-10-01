@@ -10,6 +10,11 @@ namespace poxnora_search_engine.Pox
 {
     public delegate void OnImageLoad(Bitmap result);
 
+    public interface IImageCacheSubscriber
+    {
+        void OnRuneImageLoad(Bitmap bmp);
+    }
+
     public class ImageCache
     {
         public Dictionary<string, Bitmap> RuneImages { get; } = new Dictionary<string, Bitmap>();
@@ -20,20 +25,23 @@ namespace poxnora_search_engine.Pox
         string QueuedRuneImageHash = "";
         string CurrentRuneImageHash = "";
         bool IsDownloadingRuneImage = false;
-        
-        public OnImageLoad ImageLoad_event;
+
+        public HashSet<IImageCacheSubscriber> Subscribers { get; } = new HashSet<IImageCacheSubscriber>();
 
         public void LoadRuneImage(string hash)
         {
             if(RuneImages.ContainsKey(hash))    // image already loaded
             {
-                ImageLoad_event(RuneImages[hash]);
+                foreach (var s in Subscribers)
+                    s.OnRuneImageLoad(RuneImages[hash]);
             }
             else if(IsRuneImageSavedOnDisk(hash))    // image not loaded, but saved on disk
             {
                 Bitmap bmp = new Bitmap("images\\runes\\lg\\" + hash + ".jpg");
                 RuneImages.Add(hash, bmp);
-                ImageLoad_event(bmp);
+
+                foreach (var s in Subscribers)
+                    s.OnRuneImageLoad(bmp);
             }
             else       //get image from net
             {

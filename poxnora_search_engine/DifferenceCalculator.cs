@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace poxnora_search_engine
 {
-    public partial class DifferenceCalculatorForm : Form
+    public partial class DifferenceCalculator : Form
     {
         Pox.Diff.DatabaseDifferenceCalculator diff_calculator = new Pox.Diff.DatabaseDifferenceCalculator();
         TreeNode selected_treenode = null;
 
-        public DifferenceCalculatorForm()
+        public DifferenceCalculator()
         {
             InitializeComponent();
         }
@@ -56,6 +56,7 @@ namespace poxnora_search_engine
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
+            tn.Text = string.Format("Champions ({0} changes)", tn.Nodes.Count);
         }
 
         private void PopulateAbilityChangeBrowser(TreeNode tn)
@@ -70,6 +71,7 @@ namespace poxnora_search_engine
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
+            tn.Text = string.Format("Abilities ({0} changes)", tn.Nodes.Count);
         }
 
         private void PopulateSpellChangeBrowser(TreeNode tn)
@@ -84,6 +86,7 @@ namespace poxnora_search_engine
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
+            tn.Text = string.Format("Spells ({0} changes)", tn.Nodes.Count);
         }
 
         private void PopulateRelicChangeBrowser(TreeNode tn)
@@ -98,6 +101,7 @@ namespace poxnora_search_engine
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
+            tn.Text = string.Format("Relics ({0} changes)", tn.Nodes.Count);
         }
 
         private void PopulateEquipmentChangeBrowser(TreeNode tn)
@@ -112,6 +116,7 @@ namespace poxnora_search_engine
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
+            tn.Text = string.Format("Equipments ({0} changes)", tn.Nodes.Count);
         }
 
         private void PopulateChangeBrowser()
@@ -137,6 +142,13 @@ namespace poxnora_search_engine
 
             diff_calculator.Calculate();
             PopulateChangeBrowser();
+
+            Program.image_cache.Subscribers.Add(RuneDescription);
+        }
+
+        private void DifferenceCalculator_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            Program.image_cache.Subscribers.Remove(RuneDescription);
         }
 
         private void ClearChangeInfo()
@@ -514,6 +526,16 @@ namespace poxnora_search_engine
 
             RuneDescription.database_ref = diff_calculator.CurrentDatabase_ref;
             ShowDataElementDescription(elem_type, (Pox.DataElement)(ButtonCurrent.Tag));
+        }
+
+        private void DifferenceCalculator_Deactivate(object sender, EventArgs e)
+        {
+            Program.image_cache.Subscribers.Remove(RuneDescription);
+        }
+
+        private void DifferenceCalculator_Activated(object sender, EventArgs e)
+        {
+            Program.image_cache.Subscribers.Add(RuneDescription);
         }
     }
 }

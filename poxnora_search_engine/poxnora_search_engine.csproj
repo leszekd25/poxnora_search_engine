@@ -67,11 +67,11 @@
     <Compile Include="ChampionBuilder.Designer.cs">
       <DependentUpon>ChampionBuilder.cs</DependentUpon>
     </Compile>
-    <Compile Include="DifferenceCalculatorForm.cs">
+    <Compile Include="DifferenceCalculator.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DifferenceCalculatorForm.Designer.cs">
-      <DependentUpon>DifferenceCalculatorForm.cs</DependentUpon>
+    <Compile Include="DifferenceCalculator.Designer.cs">
+      <DependentUpon>DifferenceCalculator.cs</DependentUpon>
     </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -163,8 +163,8 @@
     <EmbeddedResource Include="ChampionBuilder.resx">
       <DependentUpon>ChampionBuilder.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DifferenceCalculatorForm.resx">
-      <DependentUpon>DifferenceCalculatorForm.cs</DependentUpon>
+    <EmbeddedResource Include="DifferenceCalculator.resx">
+      <DependentUpon>DifferenceCalculator.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

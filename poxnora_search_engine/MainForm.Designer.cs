@@ -127,6 +127,7 @@
             this.otherToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deckRandomizerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.championBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.FilterTree = new System.Windows.Forms.TreeView();
@@ -187,7 +188,6 @@
             this.ButtonClearFilter = new System.Windows.Forms.Button();
             this.PanelFilterProperties = new System.Windows.Forms.Panel();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
-            this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
@@ -1127,6 +1127,13 @@
             this.championBuilderToolStripMenuItem.Text = "Champion builder";
             this.championBuilderToolStripMenuItem.Click += new System.EventHandler(this.championBuilderToolStripMenuItem_Click);
             // 
+            // differenceCalculatorToolStripMenuItem
+            // 
+            this.differenceCalculatorToolStripMenuItem.Name = "differenceCalculatorToolStripMenuItem";
+            this.differenceCalculatorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.differenceCalculatorToolStripMenuItem.Text = "Difference calculator";
+            this.differenceCalculatorToolStripMenuItem.Click += new System.EventHandler(this.differenceCalculatorToolStripMenuItem_Click);
+            // 
             // Status
             // 
             this.Status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1635,13 +1642,6 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
-            // differenceCalculatorToolStripMenuItem
-            // 
-            this.differenceCalculatorToolStripMenuItem.Name = "differenceCalculatorToolStripMenuItem";
-            this.differenceCalculatorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.differenceCalculatorToolStripMenuItem.Text = "Difference calculator";
-            this.differenceCalculatorToolStripMenuItem.Click += new System.EventHandler(this.differenceCalculatorToolStripMenuItem_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1660,6 +1660,9 @@
             this.MinimumSize = new System.Drawing.Size(1410, 682);
             this.Name = "MainForm";
             this.Text = "Poxnora Rune Search Tool";
+            this.Activated += new System.EventHandler(this.MainForm_Activated);
+            this.Deactivate += new System.EventHandler(this.MainForm_Deactivate);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.MainMenu.ResumeLayout(false);

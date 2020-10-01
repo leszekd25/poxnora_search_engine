@@ -1,6 +1,6 @@
 ﻿namespace poxnora_search_engine
 {
-    partial class DifferenceCalculatorForm
+    partial class DifferenceCalculator
     {
         /// <summary>
         /// Required designer variable.
@@ -28,11 +28,11 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Champions");
-            System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Abiilities");
-            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Spells");
-            System.Windows.Forms.TreeNode treeNode4 = new System.Windows.Forms.TreeNode("Relics");
-            System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Equipments");
+            System.Windows.Forms.TreeNode treeNode6 = new System.Windows.Forms.TreeNode("Champions");
+            System.Windows.Forms.TreeNode treeNode7 = new System.Windows.Forms.TreeNode("Abiilities");
+            System.Windows.Forms.TreeNode treeNode8 = new System.Windows.Forms.TreeNode("Spells");
+            System.Windows.Forms.TreeNode treeNode9 = new System.Windows.Forms.TreeNode("Relics");
+            System.Windows.Forms.TreeNode treeNode10 = new System.Windows.Forms.TreeNode("Equipments");
             this.LoadOldDatabaseDialog = new System.Windows.Forms.OpenFileDialog();
             this.ChangesTree = new System.Windows.Forms.TreeView();
             this.PanelChangeList = new System.Windows.Forms.Panel();
@@ -49,22 +49,22 @@
             // 
             this.ChangesTree.Location = new System.Drawing.Point(12, 12);
             this.ChangesTree.Name = "ChangesTree";
-            treeNode1.Name = "Champions";
-            treeNode1.Text = "Champions";
-            treeNode2.Name = "Abilities";
-            treeNode2.Text = "Abiilities";
-            treeNode3.Name = "Spells";
-            treeNode3.Text = "Spells";
-            treeNode4.Name = "Relics";
-            treeNode4.Text = "Relics";
-            treeNode5.Name = "Equipments";
-            treeNode5.Text = "Equipments";
+            treeNode6.Name = "Champions";
+            treeNode6.Text = "Champions";
+            treeNode7.Name = "Abilities";
+            treeNode7.Text = "Abiilities";
+            treeNode8.Name = "Spells";
+            treeNode8.Text = "Spells";
+            treeNode9.Name = "Relics";
+            treeNode9.Text = "Relics";
+            treeNode10.Name = "Equipments";
+            treeNode10.Text = "Equipments";
             this.ChangesTree.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
-            treeNode1,
-            treeNode2,
-            treeNode3,
-            treeNode4,
-            treeNode5});
+            treeNode6,
+            treeNode7,
+            treeNode8,
+            treeNode9,
+            treeNode10});
             this.ChangesTree.Size = new System.Drawing.Size(242, 576);
             this.ChangesTree.TabIndex = 0;
             this.ChangesTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ChangesTree_AfterSelect);
@@ -105,7 +105,7 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 1;
             // 
-            // DifferenceCalculatorForm
+            // DifferenceCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -115,8 +115,11 @@
             this.Controls.Add(this.PanelChangeList);
             this.Controls.Add(this.RuneDescription);
             this.Controls.Add(this.ChangesTree);
-            this.Name = "DifferenceCalculatorForm";
+            this.Name = "DifferenceCalculator";
             this.Text = "DifferenceCalculatorForm";
+            this.Activated += new System.EventHandler(this.DifferenceCalculator_Activated);
+            this.Deactivate += new System.EventHandler(this.DifferenceCalculator_Deactivate);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DifferenceCalculator_FormClosed);
             this.Load += new System.EventHandler(this.DifferenceCalculatorForm_Load);
             this.Resize += new System.EventHandler(this.DifferenceCalculatorForm_Resize);
             this.ResumeLayout(false);
