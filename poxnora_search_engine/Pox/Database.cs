@@ -67,7 +67,7 @@ namespace poxnora_search_engine.Pox
     public class Database
     {
 
-        const string POXNORA_JSON_SITE = "https://www.poxnora.com/api/feed.do?t=json";
+        public const string POXNORA_JSON_SITE = "https://www.poxnora.com/api/feed.do?t=json";
 
         System.Net.WebClient wc;
         public OnDatabaseReady ready_trigger;
@@ -90,23 +90,27 @@ namespace poxnora_search_engine.Pox
 
         public bool ready { get; private set; } = false;
 
-        public void LoadJSON()
+        public void LoadJSON(string local_db, string online_backup)
         {
-            if (!File.Exists("database.json"))
+            if (!File.Exists(local_db))//"database.json"))
             {
+                if (online_backup == "")
+                    return;
+
                 Log.Info("Database.LoadJSON(): database.json not found, retrieving from server...");
 
                 wc = new System.Net.WebClient();
                 wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(RetrieveJSON_completed);
 
-                Uri dw_string = new Uri(POXNORA_JSON_SITE);
+                Uri dw_string = new Uri(online_backup);//POXNORA_JSON_SITE);
                 wc.DownloadStringAsync(dw_string);
             }
             else
             {
-                Log.Info("Database.LoadJSON(): database.json found, loading...");
+                if(online_backup != "")    // first load
+                    Log.Info("Database.LoadJSON(): database.json found, loading...");
 
-                string json = File.ReadAllText("database.json");
+                string json = File.ReadAllText(local_db);//"database.json");
 
                 ParseFromJSON(json);
             }
@@ -168,7 +172,7 @@ namespace poxnora_search_engine.Pox
                 foreach (Champion c in Champions.Values)
                     SetupChampionAbilities(c);
 
-                Abilities.Add(-1, new Ability() { Name = "<INVALID_ABILITY>" });
+                Abilities.Add(0, new Ability() { Name = "<INVALID_ABILITY>" });
 
                 ResolveSimilarAbilities();
 
@@ -185,7 +189,8 @@ namespace poxnora_search_engine.Pox
             }
 
             ready = true;
-            ready_trigger();
+            if(ready_trigger != null)
+                ready_trigger();
         }
 
         void AddChampionFromJSON(JToken champ)

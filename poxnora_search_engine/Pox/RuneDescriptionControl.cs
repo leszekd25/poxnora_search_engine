@@ -14,7 +14,7 @@ namespace poxnora_search_engine.Pox
     {
         struct TracerViewData
         {
-            public GridViewType Type;
+            public Pox.DataElement.ElementType Type;
             public int ID;
         }
 
@@ -28,6 +28,8 @@ namespace poxnora_search_engine.Pox
         List<TracerViewData> Tracer = new List<TracerViewData>();
         int TracerPosition = -1;
         TracerViewData CurrentTracer;
+
+        public Database database_ref = null;
         public RuneDescriptionControl()
         {
             InitializeComponent();
@@ -179,7 +181,7 @@ namespace poxnora_search_engine.Pox
                     AddLine("", ab.ToString());
                 }
 
-                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = GridViewType.ABILITIES });
+                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             foreach (var ab in c.UpgradeAbilities1_refs)
             {
@@ -194,7 +196,7 @@ namespace poxnora_search_engine.Pox
                     TextBoxDescription.SelectionColor = Color.DeepSkyBlue;
                     AddLine("", ab.ToString());
                 }
-                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = GridViewType.ABILITIES });
+                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             foreach (var ab in c.UpgradeAbilities2_refs)
             {
@@ -208,7 +210,7 @@ namespace poxnora_search_engine.Pox
                     TextBoxDescription.SelectionColor = Color.LimeGreen;
                     AddLine("", ab.ToString());
                 }
-                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = GridViewType.ABILITIES });
+                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             TextBoxDescription.SelectionColor = Color.LightGray;
             TextBoxDescription.AppendText("\r\n");
@@ -221,7 +223,7 @@ namespace poxnora_search_engine.Pox
         {
             ClearDescription();
 
-            a.Description = Program.database.ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
+            a.Description = database_ref.ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
 
             TextBoxDescription.Clear();
 
@@ -246,7 +248,7 @@ namespace poxnora_search_engine.Pox
         {
             SetRune(s);
 
-            s.Description = Program.database.ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions);
+            s.Description = database_ref.ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions);
 
             AddLine("Nora cost: ", s.NoraCost.ToString());
             AddLine("", "");
@@ -261,7 +263,7 @@ namespace poxnora_search_engine.Pox
         {
             SetRune(r);
 
-            r.Description = Program.database.ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions);
+            r.Description = database_ref.ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions);
 
             AddLine("Nora cost: ", r.NoraCost.ToString());
             AddLine("Defense: ", r.Defense.ToString());
@@ -279,7 +281,7 @@ namespace poxnora_search_engine.Pox
         {
             SetRune(e);
 
-            e.Description = Program.database.ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions);
+            e.Description = database_ref.ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions);
 
             AddLine("Nora cost: ", e.NoraCost.ToString());
             AddLine("", "");
@@ -326,25 +328,25 @@ namespace poxnora_search_engine.Pox
         {
             switch (tvd.Type)
             {
-                case GridViewType.CHAMPIONS:
-                    if (Program.database.Champions.ContainsKey(tvd.ID))
-                        SetChampionRune(Program.database.Champions[tvd.ID]);
+                case Pox.DataElement.ElementType.CHAMPION:
+                    if (database_ref.Champions.ContainsKey(tvd.ID))
+                        SetChampionRune(database_ref.Champions[tvd.ID]);
                     break;
-                case GridViewType.ABILITIES:
-                    if (Program.database.Abilities.ContainsKey(tvd.ID))
-                        SetAbility(Program.database.Abilities[tvd.ID]);
+                case Pox.DataElement.ElementType.ABILITY:
+                    if (database_ref.Abilities.ContainsKey(tvd.ID))
+                        SetAbility(database_ref.Abilities[tvd.ID]);
                     break;
-                case GridViewType.SPELLS:
-                    if (Program.database.Spells.ContainsKey(tvd.ID))
-                        SetSpellRune(Program.database.Spells[tvd.ID]);
+                case Pox.DataElement.ElementType.SPELL:
+                    if (database_ref.Spells.ContainsKey(tvd.ID))
+                        SetSpellRune(database_ref.Spells[tvd.ID]);
                     break;
-                case GridViewType.RELICS:
-                    if (Program.database.Relics.ContainsKey(tvd.ID))
-                        SetRelicRune(Program.database.Relics[tvd.ID]);
+                case Pox.DataElement.ElementType.RELIC:
+                    if (database_ref.Relics.ContainsKey(tvd.ID))
+                        SetRelicRune(database_ref.Relics[tvd.ID]);
                     break;
-                case GridViewType.EQUIPMENTS:
-                    if (Program.database.Equipments.ContainsKey(tvd.ID))
-                        SetEquipmentRune(Program.database.Equipments[tvd.ID]);
+                case Pox.DataElement.ElementType.EQUIPMENT:
+                    if (database_ref.Equipments.ContainsKey(tvd.ID))
+                        SetEquipmentRune(database_ref.Equipments[tvd.ID]);
                     break;
                 default:
                     break;

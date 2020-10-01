@@ -42,5 +42,26 @@ namespace poxnora_search_engine.Pox
             else
                 return Name;
         }
+
+        public override bool Equals(object o)
+        {
+            if (!(o is Ability))
+                return false;
+
+            Ability a = (Ability)o;
+
+            if (APCost != a.APCost)
+                return false;
+            if (ActivationType != a.ActivationType)
+                return false;
+            if (Level != a.Level)
+                return false;
+            if (Cooldown != a.Cooldown)
+                return false;
+            if (IconName != a.IconName)
+                return false;
+
+            return base.Equals((DataElement)o);
+        }
     }
 }

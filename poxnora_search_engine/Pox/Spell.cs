@@ -26,5 +26,18 @@ namespace poxnora_search_engine.Pox
 
             return true;
         }
+
+        public override bool Equals(object o)
+        {
+            if (!(o is Spell))
+                return false;
+
+            Spell s = (Spell)o;
+
+            if (Flavor != s.Flavor)
+                return false;
+
+            return base.Equals((Rune)o);
+        }
     }
 }

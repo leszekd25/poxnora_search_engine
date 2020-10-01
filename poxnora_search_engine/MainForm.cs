@@ -16,11 +16,10 @@ using System.Security.Cryptography;
 
 namespace poxnora_search_engine
 {
-    public enum GridViewType { CHAMPIONS = 0, ABILITIES, SPELLS, RELICS, EQUIPMENTS }
     public enum FilterType { AND, OR, BOOLEAN, INT, STRING, RARITY, EXPANSION, ABILITY_LIST, CLASS_LIST, FACTION_LIST, RACE_LIST }
     public partial class MainForm : Form
     {
-        GridViewType ViewType = GridViewType.CHAMPIONS;
+        Pox.DataElement.ElementType ViewType = Pox.DataElement.ElementType.CHAMPION;
         Pox.Filters.BaseFilter SearchFilter = null;
         bool ApplyFilters = false;
 
@@ -43,7 +42,7 @@ namespace poxnora_search_engine
         private void Form1_Load(object sender, EventArgs e)
         {
             Program.database.ready_trigger = OnDatabaseReady;
-            Program.database.LoadJSON();
+            Program.database.LoadJSON("database.json", Pox.Database.POXNORA_JSON_SITE);
 
             foreach (ToolStripMenuItem column_vis in championsToolStripMenuItem.DropDownItems)
                 column_vis.Click += new EventHandler(OnChampionColumnVisibilityClick);
@@ -67,6 +66,7 @@ namespace poxnora_search_engine
 
         private void OnDatabaseReady()
         {
+            RuneDescription.database_ref = Program.database;
             PrepareGrid();
         }
 
@@ -78,7 +78,7 @@ namespace poxnora_search_engine
 
             switch (ViewType)
             {
-                case GridViewType.CHAMPIONS:
+                case Pox.DataElement.ElementType.CHAMPION:
                     {
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "ID", Name = "ID", ValueType = typeof(int), Visible = iDToolStripMenuItem.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem.Checked });
@@ -116,7 +116,7 @@ namespace poxnora_search_engine
 
                         break;
                     }
-                case GridViewType.ABILITIES:
+                case Pox.DataElement.ElementType.ABILITY:
                     {
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "ID", Name = "ID", ValueType = typeof(int), Visible = iDToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem1.Checked });
@@ -129,7 +129,7 @@ namespace poxnora_search_engine
 
                         break;
                     }
-                case GridViewType.SPELLS:
+                case Pox.DataElement.ElementType.SPELL:
                     {
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "ID", Name = "ID", ValueType = typeof(int), Visible = iDToolStripMenuItem2.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem2.Checked });
@@ -149,7 +149,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Flavor text", Name = "FlavorText", ValueType = typeof(string), Visible = flavorToolStripMenuItem.Checked });
                         break;
                     }
-                case GridViewType.RELICS:
+                case Pox.DataElement.ElementType.RELIC:
                     {
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "ID", Name = "ID", ValueType = typeof(int), Visible = iDToolStripMenuItem3.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem3.Checked });
@@ -172,7 +172,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Size", Name = "Size", ValueType = typeof(int), Visible = sizeToolStripMenuItem1.Checked });
                         break;
                     }
-                case GridViewType.EQUIPMENTS:
+                case Pox.DataElement.ElementType.EQUIPMENT:
                     {
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "ID", Name = "ID", ValueType = typeof(int), Visible = iDToolStripMenuItem4.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem4.Checked });
@@ -212,7 +212,7 @@ namespace poxnora_search_engine
 
             switch (ViewType)
             {
-                case GridViewType.CHAMPIONS:
+                case Pox.DataElement.ElementType.CHAMPION:
                     {
                         List<Champion> champs = new List<Champion>();
                         foreach (var kv in Program.database.Champions)
@@ -223,7 +223,7 @@ namespace poxnora_search_engine
 
                         break;
                     }
-                case GridViewType.ABILITIES:
+                case Pox.DataElement.ElementType.ABILITY:
                     {
                         List<Ability> abs = new List<Ability>();
                         foreach (var kv in Program.database.Abilities)
@@ -234,7 +234,7 @@ namespace poxnora_search_engine
 
                         break;
                     }
-                case GridViewType.SPELLS:
+                case Pox.DataElement.ElementType.SPELL:
                     {
                         List<Spell> sps = new List<Spell>();
                         foreach (var kv in Program.database.Spells)
@@ -245,7 +245,7 @@ namespace poxnora_search_engine
 
                         break;
                     }
-                case GridViewType.RELICS:
+                case Pox.DataElement.ElementType.RELIC:
                     {
                         List<Relic> rls = new List<Relic>();
                         foreach (var kv in Program.database.Relics)
@@ -256,7 +256,7 @@ namespace poxnora_search_engine
 
                         break;
                     }
-                case GridViewType.EQUIPMENTS:
+                case Pox.DataElement.ElementType.EQUIPMENT:
                     {
                         List<Equipment> eqs = new List<Equipment>();
                         foreach (var kv in Program.database.Equipments)
@@ -625,31 +625,31 @@ namespace poxnora_search_engine
 
         private void RadioChampions_CheckedChanged(object sender, EventArgs e)
         {
-            ViewType = GridViewType.CHAMPIONS;
+            ViewType = Pox.DataElement.ElementType.CHAMPION;
             PrepareGrid();
         }
 
         private void RadioAbilities_CheckedChanged(object sender, EventArgs e)
         {
-            ViewType = GridViewType.ABILITIES;
+            ViewType = Pox.DataElement.ElementType.ABILITY;
             PrepareGrid();
         }
 
         private void RadioSpells_CheckedChanged(object sender, EventArgs e)
         {
-            ViewType = GridViewType.SPELLS;
+            ViewType = Pox.DataElement.ElementType.SPELL;
             PrepareGrid();
         }
 
         private void RadioRelics_CheckedChanged(object sender, EventArgs e)
         {
-            ViewType = GridViewType.RELICS;
+            ViewType = Pox.DataElement.ElementType.RELIC;
             PrepareGrid();
         }
 
         private void RadioEquips_CheckedChanged(object sender, EventArgs e)
         {
-            ViewType = GridViewType.EQUIPMENTS;
+            ViewType = Pox.DataElement.ElementType.EQUIPMENT;
             PrepareGrid();
         }
 
@@ -1057,21 +1057,21 @@ namespace poxnora_search_engine
             RuneDescription.TracerClear();
             switch (ViewType)
             {
-                case GridViewType.CHAMPIONS:
+                case Pox.DataElement.ElementType.CHAMPION:
                     RuneDescription.SetChampionRune(Program.database.Champions[id]);
                     if (ChampionBuilder_form != null)
                         ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
                     break;
-                case GridViewType.ABILITIES:
+                case Pox.DataElement.ElementType.ABILITY:
                     RuneDescription.SetAbility(Program.database.Abilities[id]);
                     break;
-                case GridViewType.SPELLS:
+                case Pox.DataElement.ElementType.SPELL:
                     RuneDescription.SetSpellRune(Program.database.Spells[id]);
                     break;
-                case GridViewType.RELICS:
+                case Pox.DataElement.ElementType.RELIC:
                     RuneDescription.SetRelicRune(Program.database.Relics[id]);
                     break;
-                case GridViewType.EQUIPMENTS:
+                case Pox.DataElement.ElementType.EQUIPMENT:
                     RuneDescription.SetEquipmentRune(Program.database.Equipments[id]);
                     break;
                 default:
@@ -1099,7 +1099,7 @@ namespace poxnora_search_engine
 
         private void OnChampionColumnVisibilityClick(object sender, EventArgs e)
         {
-            if (ViewType != GridViewType.CHAMPIONS)
+            if (ViewType != Pox.DataElement.ElementType.CHAMPION)
                 return;
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
@@ -1107,7 +1107,7 @@ namespace poxnora_search_engine
         }
         private void OnAbilityColumnVisibilityClick(object sender, EventArgs e)
         {
-            if (ViewType != GridViewType.ABILITIES)
+            if (ViewType != Pox.DataElement.ElementType.ABILITY)
                 return;
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
@@ -1115,7 +1115,7 @@ namespace poxnora_search_engine
         }
         private void OnSpellColumnVisibilityClick(object sender, EventArgs e)
         {
-            if (ViewType != GridViewType.SPELLS)
+            if (ViewType != Pox.DataElement.ElementType.SPELL)
                 return;
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
@@ -1123,7 +1123,7 @@ namespace poxnora_search_engine
         }
         private void OnRelicColumnVisibilityClick(object sender, EventArgs e)
         {
-            if (ViewType != GridViewType.RELICS)
+            if (ViewType != Pox.DataElement.ElementType.RELIC)
                 return;
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
@@ -1131,7 +1131,7 @@ namespace poxnora_search_engine
         }
         private void OnEquipmentColumnVisibilityClick(object sender, EventArgs e)
         {
-            if (ViewType != GridViewType.EQUIPMENTS)
+            if (ViewType != Pox.DataElement.ElementType.EQUIPMENT)
                 return;
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
@@ -1184,6 +1184,15 @@ namespace poxnora_search_engine
 
             RuneDescription.TracerClear();
             RuneDescription.SetAbility(a);
+        }
+
+        private void differenceCalculatorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Program.database.ready)
+                return;
+
+            var diff_form = new DifferenceCalculatorForm();
+            diff_form.ShowDialog();
         }
     }
 }

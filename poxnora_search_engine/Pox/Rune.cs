@@ -149,5 +149,39 @@ namespace poxnora_search_engine.Pox
 
             return false;
         }
+
+        public override bool Equals(object o)
+        {
+            if (!(o is Rune))
+                return false;
+
+            Rune r = (Rune)o;
+
+            if (Rarity != r.Rarity)
+                return false;
+            if (Hash != r.Hash)
+                return false;
+            if (Artist != r.Artist)
+                return false;
+            foreach (string s in Faction)
+                if (!(r.Faction.Contains(s)))
+                    return false;
+            if (Faction.Count != r.Faction.Count)
+                return false;
+            if (Expansion != r.Expansion)
+                return false;
+            if (ForSale != r.ForSale)
+                return false;
+            if (Tradeable != r.Tradeable)
+                return false;
+            if (AllowRanked != r.AllowRanked)
+                return false;
+            if (DeckLimit != r.DeckLimit)
+                return false;
+            if (Cooldown != r.Cooldown)
+                return false;
+
+            return base.Equals((DataElement)o);
+        }
     }
 }

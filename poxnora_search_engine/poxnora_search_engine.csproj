@@ -67,6 +67,12 @@
     <Compile Include="ChampionBuilder.Designer.cs">
       <DependentUpon>ChampionBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="DifferenceCalculatorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DifferenceCalculatorForm.Designer.cs">
+      <DependentUpon>DifferenceCalculatorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -78,6 +84,9 @@
     <Compile Include="Pox\Champion.cs" />
     <Compile Include="Pox\Database.cs" />
     <Compile Include="Pox\DataElement.cs" />
+    <Compile Include="Pox\Diff\DatabaseDifferenceCalculator.cs" />
+    <Compile Include="Pox\Diff\DifferenceElement.cs" />
+    <Compile Include="Pox\Diff\DifferenceLink.cs" />
     <Compile Include="Pox\Equipment.cs" />
     <Compile Include="Pox\FilterControls\AbilityListFilterControl.cs">
       <SubType>UserControl</SubType>
@@ -153,6 +162,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ChampionBuilder.resx">
       <DependentUpon>ChampionBuilder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="DifferenceCalculatorForm.resx">
+      <DependentUpon>DifferenceCalculatorForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

@@ -26,5 +26,18 @@ namespace poxnora_search_engine.Pox
 
             return true;
         }
+
+        public override bool Equals(object o)
+        {
+            if (!(o is Equipment))
+                return false;
+
+            Equipment e = (Equipment)o;
+
+            if (Flavor != e.Flavor)
+                return false;
+
+            return base.Equals((Rune)o);
+        }
     }
 }

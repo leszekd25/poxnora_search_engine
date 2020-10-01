@@ -8,6 +8,8 @@ namespace poxnora_search_engine.Pox
 {
     public class DataElement
     {
+        public enum ElementType { CHAMPION = 0, ABILITY, SPELL, RELIC, EQUIPMENT }
+
         public int ID;
         public string Name = "";
         public string Description = "";
@@ -68,6 +70,24 @@ namespace poxnora_search_engine.Pox
         {
             result = null;
             return false;
+        }
+
+        public override bool Equals(object o)
+        {
+            if (!(o is DataElement))
+                return false;
+
+            DataElement d = (DataElement)o;
+            if (ID != d.ID)
+                return false;
+            if (Name != d.Name)
+                return false;
+            if (Description != d.Description)
+                return false;
+            if (NoraCost != d.NoraCost)
+                return false;
+
+            return true;
         }
     }
 }

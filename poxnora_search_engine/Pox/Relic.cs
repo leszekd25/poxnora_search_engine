@@ -46,5 +46,24 @@ namespace poxnora_search_engine.Pox
 
             return true;
         }
+
+        public override bool Equals(object o)
+        {
+            if (!(o is Relic))
+                return false;
+
+            Relic r = (Relic)o;
+
+            if (Flavor != r.Flavor)
+                return false;
+            if (Defense != r.Defense)
+                return false;
+            if (HitPoints != r.HitPoints)
+                return false;
+            if (Size != r.Size)
+                return false;
+
+            return base.Equals((Rune)o);
+        }
     }
 }

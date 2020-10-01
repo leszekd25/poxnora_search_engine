@@ -187,6 +187,7 @@
             this.ButtonClearFilter = new System.Windows.Forms.Button();
             this.PanelFilterProperties = new System.Windows.Forms.Panel();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
+            this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
@@ -1106,7 +1107,8 @@
             // 
             this.otherToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deckRandomizerToolStripMenuItem,
-            this.championBuilderToolStripMenuItem});
+            this.championBuilderToolStripMenuItem,
+            this.differenceCalculatorToolStripMenuItem});
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
             this.otherToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.otherToolStripMenuItem.Text = "Other";
@@ -1114,14 +1116,14 @@
             // deckRandomizerToolStripMenuItem
             // 
             this.deckRandomizerToolStripMenuItem.Name = "deckRandomizerToolStripMenuItem";
-            this.deckRandomizerToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.deckRandomizerToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.deckRandomizerToolStripMenuItem.Text = "Card randomizer";
             this.deckRandomizerToolStripMenuItem.Click += new System.EventHandler(this.deckRandomizerToolStripMenuItem_Click);
             // 
             // championBuilderToolStripMenuItem
             // 
             this.championBuilderToolStripMenuItem.Name = "championBuilderToolStripMenuItem";
-            this.championBuilderToolStripMenuItem.Size = new System.Drawing.Size(170, 22);
+            this.championBuilderToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.championBuilderToolStripMenuItem.Text = "Champion builder";
             this.championBuilderToolStripMenuItem.Click += new System.EventHandler(this.championBuilderToolStripMenuItem_Click);
             // 
@@ -1633,6 +1635,13 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
+            // differenceCalculatorToolStripMenuItem
+            // 
+            this.differenceCalculatorToolStripMenuItem.Name = "differenceCalculatorToolStripMenuItem";
+            this.differenceCalculatorToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.differenceCalculatorToolStripMenuItem.Text = "Difference calculator";
+            this.differenceCalculatorToolStripMenuItem.Click += new System.EventHandler(this.differenceCalculatorToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1826,6 +1835,7 @@
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostDifferenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem championBuilderToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem differenceCalculatorToolStripMenuItem;
     }
 }
 
