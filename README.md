@@ -1,1 +1,1 @@
-Current version: 07.10.2020.1
+Current version: 07.10.2020.2
