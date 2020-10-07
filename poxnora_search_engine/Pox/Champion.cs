@@ -106,7 +106,20 @@ namespace poxnora_search_engine.Pox
             return true;
         }
 
+        // helper function
+        public bool IsUpgrade1Default(int ab_id)
+        {
+            return Upgrade1[DefaultUpgrade1Index] == ab_id;
+        }
+
+        public bool IsUpgrade2Default(int ab_id)
+        {
+            return Upgrade2[DefaultUpgrade2Index] == ab_id;
+        }
+
         // calculation of nora cost of base stats; estimated, not accurate
+
+        public const int DefenseLimit = 9;
 
         private float CalculateHPDefenseNoraCost()
         {
@@ -119,10 +132,14 @@ namespace poxnora_search_engine.Pox
             0, 2, 4, 6, 8, 10, 14, 20, 28, 38, 50, 64
         };
 
+        public const int MaxRangeLimit = 12;
+
         private static float[] RangeDifferenceNoraCostCoefficientTable = new float[]
         {
             0f, 1f, 2.5f, 4.5f, 7f, 9f, 11.5f
         };
+
+        public const int RangeDifferenceLimit = 6;
 
         private float CalculateRangeNoraCost()
         {
@@ -145,6 +162,8 @@ namespace poxnora_search_engine.Pox
             22, 24, 26, 28      // 23
         };
 
+        public const int DamageLimit = 23;
+
         private float CalculateDamageNoraCost()
         {
             float coeff = Speed / 4f;
@@ -165,10 +184,14 @@ namespace poxnora_search_engine.Pox
             42
         };
 
+        public const int SpeedLimit = 9;
+
         private float CalculateSpeedNoraCost()
         {
             return SpeedNoraCostTable[Speed];
         }
+
+        public const int SizeLimit = 2;
 
         private float CalculateSizeNoraCost()
         {
@@ -250,6 +273,11 @@ namespace poxnora_search_engine.Pox
                 return false;
 
             return base.Equals((Rune)o);
+        }
+
+        public override string ToString()
+        {
+            return Name + (Rarity == "LIMITED" ? " (LIMITED)" : "");
         }
     }
 }

@@ -64,7 +64,6 @@
             this.baseAbilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.upgrade1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.upgrade2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.abilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iDToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.nameToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -188,6 +187,7 @@
             this.ButtonClearFilter = new System.Windows.Forms.Button();
             this.PanelFilterProperties = new System.Windows.Forms.Panel();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
+            this.StatusNewVersionAvailable = new System.Windows.Forms.ToolStripStatusLabel();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
@@ -260,8 +260,7 @@
             this.raceToolStripMenuItem,
             this.baseAbilitiesToolStripMenuItem,
             this.upgrade1ToolStripMenuItem,
-            this.upgrade2ToolStripMenuItem,
-            this.toolStripMenuItem1});
+            this.upgrade2ToolStripMenuItem});
             this.championsToolStripMenuItem.Name = "championsToolStripMenuItem";
             this.championsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.championsToolStripMenuItem.Text = "Champions";
@@ -543,12 +542,6 @@
             this.upgrade2ToolStripMenuItem.Size = new System.Drawing.Size(266, 22);
             this.upgrade2ToolStripMenuItem.Tag = "Upgrade2";
             this.upgrade2ToolStripMenuItem.Text = "Upgrade 2";
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(266, 22);
-            this.toolStripMenuItem1.Text = "toolStripMenuItem1";
             // 
             // abilitiesToolStripMenuItem
             // 
@@ -1091,15 +1084,15 @@
             // 
             // manualToolStripMenuItem
             // 
-            this.manualToolStripMenuItem.Enabled = false;
             this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
-            this.manualToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.manualToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.manualToolStripMenuItem.Text = "Manual";
+            this.manualToolStripMenuItem.Click += new System.EventHandler(this.manualToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -1137,7 +1130,8 @@
             // Status
             // 
             this.Status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.LastLogMessage});
+            this.LastLogMessage,
+            this.StatusNewVersionAvailable});
             this.Status.Location = new System.Drawing.Point(0, 621);
             this.Status.Name = "Status";
             this.Status.Size = new System.Drawing.Size(1394, 22);
@@ -1642,6 +1636,14 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
+            // StatusNewVersionAvailable
+            // 
+            this.StatusNewVersionAvailable.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.StatusNewVersionAvailable.Name = "StatusNewVersionAvailable";
+            this.StatusNewVersionAvailable.Size = new System.Drawing.Size(1348, 17);
+            this.StatusNewVersionAvailable.Spring = true;
+            this.StatusNewVersionAvailable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1833,12 +1835,12 @@
         private System.Windows.Forms.ToolStripMenuItem cooldownToolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem baseNoraCostToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem baseNoraCostToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostDifferenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem championBuilderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem differenceCalculatorToolStripMenuItem;
+        private System.Windows.Forms.ToolStripStatusLabel StatusNewVersionAvailable;
     }
 }
 

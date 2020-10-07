@@ -23,6 +23,8 @@ namespace poxnora_search_engine
         Pox.Filters.BaseFilter SearchFilter = null;
         bool ApplyFilters = false;
 
+        Updater app_updater = new Updater();
+
         CardRandomizer CardRandomizer_form = null;
         ChampionBuilder ChampionBuilder_form = null;
         DifferenceCalculator DifferenceCalculator_form = null;
@@ -39,6 +41,13 @@ namespace poxnora_search_engine
             LastLogMessage.Text = s;
         }
 
+        void OnFetchCurrentVersion(bool is_current_outdated, string new_version)
+        {
+            if(is_current_outdated)
+            {
+                StatusNewVersionAvailable.Text = "New version available";
+            }
+        }
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -65,6 +74,10 @@ namespace poxnora_search_engine
                 new object[] { true });
 
             Program.image_cache.Subscribers.Add(RuneDescription);
+
+
+            app_updater._OnGetVersion = OnFetchCurrentVersion;
+            app_updater.GetLatestVersion();
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
@@ -1225,6 +1238,11 @@ namespace poxnora_search_engine
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
             Program.image_cache.Subscribers.Remove(RuneDescription);
+        }
+
+        private void manualToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            System.Diagnostics.Process.Start("manual\\index.html");
         }
     }
 }

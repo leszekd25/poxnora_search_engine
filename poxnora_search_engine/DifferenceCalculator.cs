@@ -14,6 +14,7 @@ namespace poxnora_search_engine
     {
         Pox.Diff.DatabaseDifferenceCalculator diff_calculator = new Pox.Diff.DatabaseDifferenceCalculator();
         TreeNode selected_treenode = null;
+        Font ChangeInfoFont = new Font("Arial", 10);
 
         public DifferenceCalculator()
         {
@@ -138,6 +139,7 @@ namespace poxnora_search_engine
             {
                 MessageBox.Show("Could not load databases...");
                 this.Close();
+                return;
             }
 
             diff_calculator.Calculate();
@@ -171,7 +173,8 @@ namespace poxnora_search_engine
                 Location = new Point(previous_location.X, previous_location.Y + previous_height + 5),
                 Text = info,
                 MaximumSize = new Size(PanelChangeList.Width - 32, 0),
-                AutoSize = true
+                AutoSize = true,
+                Font = ChangeInfoFont
             });
         }
 
@@ -243,8 +246,10 @@ namespace poxnora_search_engine
                 PushChangeInfo(string.Format("Hit points changed from {0} to {1}", prev_champion.HitPoints, curr_champion.HitPoints));
             if (prev_champion.Damage != curr_champion.Damage)
                 PushChangeInfo(string.Format("Damage changed from {0} to {1}", prev_champion.Damage, curr_champion.Damage));
+            if (prev_champion.Speed != curr_champion.Speed)
+                PushChangeInfo(string.Format("Speed changed from {0} to {1}", prev_champion.Speed, curr_champion.Speed));
             if (prev_champion.Size != curr_champion.Size)
-                PushChangeInfo(string.Format("Size changed from {0}x{1} to {2}x{2}", prev_champion.Size, prev_champion.Size, curr_champion.Size, curr_champion.Size));
+                PushChangeInfo(string.Format("Size changed from {0}x{1} to {2}x{3}", prev_champion.Size, prev_champion.Size, curr_champion.Size, curr_champion.Size));
             foreach (string c in prev_champion.Class)
                 if (!(curr_champion.Class.Contains(c)))
                     PushChangeInfo(string.Format("Class removed: {0}", c));
@@ -280,13 +285,22 @@ namespace poxnora_search_engine
             if (upgrade1_changed)
             {
                 StringBuilder sb = new StringBuilder("Upgrade 1 changed\r\nOld:\r\n");
-                foreach (int a in prev_champion.Upgrade1)
-                    sb.Append(string.Format("{0}\r\n", diff_calculator.PreviousDatabase.Abilities[a].ToString()));
+                List<int> upg1_sorted = new List<int>(prev_champion.Upgrade1); upg1_sorted.Sort();
+                foreach (int a in upg1_sorted)
+                    sb.Append(string.Format("{0}{1}\r\n", diff_calculator.PreviousDatabase.Abilities[a].ToString(), prev_champion.IsUpgrade1Default(a) ? " (default)" : ""));
                 sb.Append("New:\r\n");
-                foreach (int a in curr_champion.Upgrade1)
-                    sb.Append(string.Format("{0}\r\n", diff_calculator.CurrentDatabase_ref.Abilities[a].ToString()));
+                upg1_sorted = new List<int>(curr_champion.Upgrade1); upg1_sorted.Sort();
+                foreach (int a in upg1_sorted)
+                    sb.Append(string.Format("{0}{1}\r\n", diff_calculator.CurrentDatabase_ref.Abilities[a].ToString(), curr_champion.IsUpgrade1Default(a) ? " (default)" : ""));
 
                 PushChangeInfo(sb.ToString());
+            }
+            else
+            {
+                if (prev_champion.Upgrade1[prev_champion.DefaultUpgrade1Index] != curr_champion.Upgrade1[curr_champion.DefaultUpgrade1Index])
+                    PushChangeInfo(string.Format("Default upgrade 1 changed from {0} to {1}",
+                        diff_calculator.PreviousDatabase.Abilities[prev_champion.Upgrade1[prev_champion.DefaultUpgrade1Index]].ToString(),
+                        diff_calculator.CurrentDatabase_ref.Abilities[curr_champion.Upgrade1[curr_champion.DefaultUpgrade1Index]].ToString()));
             }
 
             bool upgrade2_changed = false;
@@ -305,13 +319,22 @@ namespace poxnora_search_engine
             if (upgrade2_changed)
             {
                 StringBuilder sb = new StringBuilder("Upgrade 2 changed\r\nOld:\r\n");
-                foreach (int a in prev_champion.Upgrade2)
-                    sb.Append(string.Format("{0}\r\n", diff_calculator.PreviousDatabase.Abilities[a].ToString()));
+                List<int> upg2_sorted = new List<int>(prev_champion.Upgrade2); upg2_sorted.Sort();
+                foreach (int a in upg2_sorted)
+                    sb.Append(string.Format("{0}{1}\r\n", diff_calculator.PreviousDatabase.Abilities[a].ToString(), prev_champion.IsUpgrade2Default(a) ? " (default)" : ""));
                 sb.Append("New:\r\n");
-                foreach (int a in curr_champion.Upgrade2)
-                    sb.Append(string.Format("{0}\r\n", diff_calculator.CurrentDatabase_ref.Abilities[a].ToString()));
+                upg2_sorted = new List<int>(curr_champion.Upgrade2); upg2_sorted.Sort();
+                foreach (int a in upg2_sorted)
+                    sb.Append(string.Format("{0}{1}\r\n", diff_calculator.CurrentDatabase_ref.Abilities[a].ToString(), curr_champion.IsUpgrade2Default(a) ? " (default)" : ""));
 
                 PushChangeInfo(sb.ToString());
+            }
+            else
+            {
+                if (prev_champion.Upgrade2[prev_champion.DefaultUpgrade2Index] != curr_champion.Upgrade2[curr_champion.DefaultUpgrade2Index])
+                    PushChangeInfo(string.Format("Default upgrade 2 changed from {0} to {1}",
+                        diff_calculator.PreviousDatabase.Abilities[prev_champion.Upgrade2[prev_champion.DefaultUpgrade2Index]].ToString(),
+                        diff_calculator.CurrentDatabase_ref.Abilities[curr_champion.Upgrade2[curr_champion.DefaultUpgrade2Index]].ToString()));
             }
         }
 

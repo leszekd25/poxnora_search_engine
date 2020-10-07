@@ -158,8 +158,11 @@ namespace poxnora_search_engine
         private void TextDamage_Validated(object sender, EventArgs e)
         {
             int current = champion.Damage;
-            if(!int.TryParse(TextDamage.Text, out champion.Damage))
+            if  (( !int.TryParse(TextDamage.Text, out champion.Damage))
+                || (champion.Damage < 0) 
+                || (champion.Damage > Pox.Champion.DamageLimit))
             {
+                champion.Damage = current;
                 TextDamage.Text = current.ToString();
                 return;
             }
@@ -170,8 +173,11 @@ namespace poxnora_search_engine
         private void TextSpeed_Validated(object sender, EventArgs e)
         {
             int current = champion.Speed;
-            if (!int.TryParse(TextSpeed.Text, out champion.Speed))
+            if ((!int.TryParse(TextSpeed.Text, out champion.Speed))
+                || (champion.Speed < 0)
+                || (champion.Speed > Pox.Champion.SpeedLimit))
             {
+                champion.Speed = current;
                 TextSpeed.Text = current.ToString();
                 return;
             }
@@ -182,8 +188,11 @@ namespace poxnora_search_engine
         private void TextMinRange_Validated(object sender, EventArgs e)
         {
             int current = champion.MinRNG;
-            if (!int.TryParse(TextMinRange.Text, out champion.MinRNG))
+            if ((!int.TryParse(TextMinRange.Text, out champion.MinRNG))
+                ||(champion.MinRNG < 1)
+                ||((champion.MaxRNG - champion.MinRNG) > Pox.Champion.RangeDifferenceLimit))
             {
+                champion.MinRNG = current;
                 TextMinRange.Text = current.ToString();
                 return;
             }
@@ -194,8 +203,12 @@ namespace poxnora_search_engine
         private void TextMaxRange_Validated(object sender, EventArgs e)
         {
             int current = champion.MaxRNG;
-            if (!int.TryParse(TextMaxRange.Text, out champion.MaxRNG))
+            if ((!int.TryParse(TextMaxRange.Text, out champion.MaxRNG))
+                ||(champion.MaxRNG < champion.MinRNG)
+                ||(champion.MaxRNG > Pox.Champion.MaxRangeLimit)
+                ||((champion.MaxRNG - champion.MinRNG) > Pox.Champion.RangeDifferenceLimit))
             {
+                champion.MaxRNG = current;
                 TextMaxRange.Text = current.ToString();
                 return;
             }
@@ -206,8 +219,10 @@ namespace poxnora_search_engine
         private void TextDefense_Validated(object sender, EventArgs e)
         {
             int current = champion.Defense;
-            if (!int.TryParse(TextDefense.Text, out champion.Defense))
+            if ((!int.TryParse(TextDefense.Text, out champion.Defense))
+                ||(champion.Defense > Pox.Champion.DefenseLimit))
             {
+                champion.Defense = current;
                 TextDefense.Text = current.ToString();
                 return;
             }
@@ -230,8 +245,11 @@ namespace poxnora_search_engine
         private void TextSize_Validated(object sender, EventArgs e)
         {
             int current = champion.Size;
-            if (!int.TryParse(TextSize.Text, out champion.Size))
+            if ((!int.TryParse(TextSize.Text, out champion.Size))
+                ||(champion.Size < 1)
+                ||(champion.Size > Pox.Champion.SizeLimit))
             {
+                champion.Size = current;
                 TextSize.Text = current.ToString();
                 return;
             }
@@ -242,7 +260,7 @@ namespace poxnora_search_engine
         private void AddAbility_Click(object sender, EventArgs e)
         {
             int ab_id = Program.database.GetAbilityIDByName(TextAbility.Text);
-            if (ab_id == -1)
+            if (ab_id == 0)
                 return;
 
             champion.AllAbilities_refs.Add(Program.database.Abilities[ab_id]);

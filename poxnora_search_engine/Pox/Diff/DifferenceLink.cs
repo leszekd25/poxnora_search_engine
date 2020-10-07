@@ -18,14 +18,14 @@ namespace poxnora_search_engine.Pox.Diff
                 if (CurrentElement == null)
                     return "<!!!INVALID!!!>";
                 else
-                    return "ADDED: " + CurrentElement.Name;
+                    return "ADDED: " + CurrentElement.ToString();
             }
             else
             {
                 if (CurrentElement == null)
-                    return "REMOVED: " + PreviousElement.Name;
+                    return "REMOVED: " + PreviousElement.ToString();
                 else
-                    return "CHANGED: " + PreviousElement.Name;
+                    return "CHANGED: " + PreviousElement.ToString();
             }
 
             return "<???CODE FLOW ERROR???>";

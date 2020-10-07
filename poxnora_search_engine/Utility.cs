@@ -10,7 +10,7 @@ namespace poxnora_search_engine
     {
         public const int NO_INDEX = -1;
 
-        public const string APP_VERSION = "12.07.2020.1";
+        public const string APP_VERSION = "07.10.2020.1";
 
         public static Random RNG = new Random();
     }

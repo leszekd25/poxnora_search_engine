@@ -370,7 +370,7 @@ namespace poxnora_search_engine.Pox
             if (ability.SelectToken("iconName") != null)
                 a.IconName = ability.SelectToken("iconName").ToObject<string>();
 
-            //a.Description = ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
+            a.Description = ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
 
             Abilities.Add(a.ID, a);
             AbilityNames.AllowedStrings.Add(a.ToString());
@@ -385,7 +385,7 @@ namespace poxnora_search_engine.Pox
             if (spell.SelectToken("flavorText") != null)
                 s.Flavor = spell.SelectToken("flavorText").ToObject<string>();
 
-            //s.Description = ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions);
+            s.Description = ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions);
 
             Spells.Add(s.ID, s);
         }
@@ -407,7 +407,7 @@ namespace poxnora_search_engine.Pox
             if (relic.SelectToken("size") != null)
                 r.Size = ((relic.SelectToken("size").ToObject<string>())[0] == '2' ? 2 : 1);
 
-            //r.Description = ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions);
+            r.Description = ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions);
 
             Relics.Add(r.ID, r);
         }
@@ -420,7 +420,7 @@ namespace poxnora_search_engine.Pox
             if (equip.SelectToken("flavorText") != null)
                 e.Flavor = equip.SelectToken("flavorText").ToObject<string>();
 
-            //e.Description = ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions);
+            e.Description = ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions);
 
             Equipments.Add(e.ID, e);
         }
@@ -614,7 +614,7 @@ namespace poxnora_search_engine.Pox
                 if (kv.Value.ToString() == name)
                     return kv.Key;
 
-            return -1;
+            return 0;
         }
     }
 }
