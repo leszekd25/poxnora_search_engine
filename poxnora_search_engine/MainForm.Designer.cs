@@ -1639,10 +1639,14 @@
             // StatusNewVersionAvailable
             // 
             this.StatusNewVersionAvailable.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.StatusNewVersionAvailable.IsLink = true;
             this.StatusNewVersionAvailable.Name = "StatusNewVersionAvailable";
             this.StatusNewVersionAvailable.Size = new System.Drawing.Size(1348, 17);
             this.StatusNewVersionAvailable.Spring = true;
+            this.StatusNewVersionAvailable.Text = "New version available";
             this.StatusNewVersionAvailable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.StatusNewVersionAvailable.Visible = false;
+            this.StatusNewVersionAvailable.Click += new System.EventHandler(this.StatusNewVersionAvailable_Click);
             // 
             // MainForm
             // 

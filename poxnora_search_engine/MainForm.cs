@@ -43,10 +43,24 @@ namespace poxnora_search_engine
 
         void OnFetchCurrentVersion(bool is_current_outdated, string new_version)
         {
-            if(is_current_outdated)
+            if (is_current_outdated)
             {
-                StatusNewVersionAvailable.Text = "New version available";
+                StatusNewVersionAvailable.Visible = true;
             }
+        }
+
+        void OnFetchCurrentArchiveFailed()
+        {
+            Log.Error("MainForm.OnFetchCurrentArchiveFailed(): Could not install latest version");
+
+            StatusNewVersionAvailable.IsLink = true;
+            StatusNewVersionAvailable.Text = "New version available";
+        }
+
+        void OnFetchCurrentArchiveSuccess(string new_exe)
+        {
+            System.Diagnostics.Process.Start(new_exe);
+            Close();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -77,6 +91,8 @@ namespace poxnora_search_engine
 
 
             app_updater._OnGetVersion = OnFetchCurrentVersion;
+            app_updater._OnGetArchiveFailed = OnFetchCurrentArchiveFailed;
+            app_updater._OnGetArchiveSuccess = OnFetchCurrentArchiveSuccess;
             app_updater.GetLatestVersion();
         }
 
@@ -1243,6 +1259,19 @@ namespace poxnora_search_engine
         private void manualToolStripMenuItem_Click(object sender, EventArgs e)
         {
             System.Diagnostics.Process.Start("manual\\index.html");
+        }
+
+        private void StatusNewVersionAvailable_Click(object sender, EventArgs e)
+        {
+            if (!StatusNewVersionAvailable.Visible)
+                return;
+            if (!StatusNewVersionAvailable.IsLink)
+                return;
+
+            StatusNewVersionAvailable.IsLink = false;
+            StatusNewVersionAvailable.Text = "Downloading...";
+
+            app_updater.ForceInstallLatestVersion();
         }
     }
 }
