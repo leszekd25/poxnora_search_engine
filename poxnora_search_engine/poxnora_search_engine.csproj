@@ -227,4 +227,7 @@
     <None Include="Resources\goback.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy "$(ProjectDir)onupdate.bat" "$(ProjectDir)$(OutDir)onupdate.bat"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

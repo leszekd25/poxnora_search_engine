@@ -12,7 +12,7 @@ namespace poxnora_search_engine
 {
     public delegate void OnGetVersion(bool is_current_outdated, string new_version);
     public delegate void OnGetArchiveFailed();
-    public delegate void OnGetArchiveSuccess(string exe_name);
+    public delegate void OnGetArchiveSuccess();
 
     public class Updater
     {
@@ -151,7 +151,7 @@ namespace poxnora_search_engine
                     }
                 }
 
-                _OnGetArchiveSuccess?.Invoke(appFile);
+                _OnGetArchiveSuccess();
             }
             catch(Exception ex)
             {

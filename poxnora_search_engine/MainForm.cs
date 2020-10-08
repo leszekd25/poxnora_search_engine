@@ -57,10 +57,11 @@ namespace poxnora_search_engine
             StatusNewVersionAvailable.Text = "New version available";
         }
 
-        void OnFetchCurrentArchiveSuccess(string new_exe)
+        void OnFetchCurrentArchiveSuccess()
         {
-            System.Diagnostics.Process.Start(new_exe);
-            Close();
+            string dir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
+            System.Diagnostics.Process.Start(dir+"\\onupdate.bat");
+            Application.Exit();
         }
 
         private void Form1_Load(object sender, EventArgs e)
