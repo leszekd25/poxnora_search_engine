@@ -8,6 +8,8 @@ namespace poxnora_search_engine.Pox.Diff
 {
     public class DifferenceLink
     {
+        public enum ItemType { PREVIOUS, CURRENT }
+        public DataElement.ElementType ElemType;
         public DataElement PreviousElement = null;
         public DataElement CurrentElement = null;
 

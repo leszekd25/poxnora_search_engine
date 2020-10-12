@@ -12,9 +12,12 @@ namespace poxnora_search_engine
 {
     public partial class DifferenceCalculator : Form
     {
+        enum ChangeListMode { CATEGORY, FACTION };
+
         Pox.Diff.DatabaseDifferenceCalculator diff_calculator = new Pox.Diff.DatabaseDifferenceCalculator();
         TreeNode selected_treenode = null;
         Font ChangeInfoFont = new Font("Arial", 10);
+        ChangeListMode changelist_mode = ChangeListMode.CATEGORY;
 
         public DifferenceCalculator()
         {
@@ -49,7 +52,7 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingChampions)
             {
-                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink();
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.CHAMPION };
                 if (diff_calculator.PreviousDatabase.Champions.ContainsKey(diff_elem.id))
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Champions[diff_elem.id];
                 if (diff_calculator.CurrentDatabase_ref.Champions.ContainsKey(diff_elem.id))
@@ -64,7 +67,7 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingAbilities)
             {
-                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink();
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.ABILITY };
                 if (diff_calculator.PreviousDatabase.Abilities.ContainsKey(diff_elem.id))
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Abilities[diff_elem.id];
                 if (diff_calculator.CurrentDatabase_ref.Abilities.ContainsKey(diff_elem.id))
@@ -79,7 +82,7 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingSpells)
             {
-                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink();
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.SPELL };
                 if (diff_calculator.PreviousDatabase.Spells.ContainsKey(diff_elem.id))
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Spells[diff_elem.id];
                 if (diff_calculator.CurrentDatabase_ref.Spells.ContainsKey(diff_elem.id))
@@ -94,7 +97,7 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingRelics)
             {
-                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink();
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.RELIC };
                 if (diff_calculator.PreviousDatabase.Relics.ContainsKey(diff_elem.id))
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Relics[diff_elem.id];
                 if (diff_calculator.CurrentDatabase_ref.Relics.ContainsKey(diff_elem.id))
@@ -109,7 +112,7 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingEquipments)
             {
-                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink();
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.EQUIPMENT };
                 if (diff_calculator.PreviousDatabase.Equipments.ContainsKey(diff_elem.id))
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Equipments[diff_elem.id];
                 if (diff_calculator.CurrentDatabase_ref.Equipments.ContainsKey(diff_elem.id))
@@ -120,13 +123,175 @@ namespace poxnora_search_engine
             tn.Text = string.Format("Equipments ({0} changes)", tn.Nodes.Count);
         }
 
-        private void PopulateChangeBrowser()
+        private void PopulateChangeBrowserPerCategory()
         {
+            ChangesTree.Nodes.Clear();
+
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Champions", Text = "Champions" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Abilities", Text = "Abilities" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Spells", Text = "Spells" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Relics", Text = "Relics" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Equipments", Text = "Equipments" });
+
             PopulateChampionChangeBrowser(ChangesTree.Nodes["Champions"]);
             PopulateAbilityChangeBrowser(ChangesTree.Nodes["Abilities"]);
             PopulateSpellChangeBrowser(ChangesTree.Nodes["Spells"]);
             PopulateRelicChangeBrowser(ChangesTree.Nodes["Relics"]);
             PopulateEquipmentChangeBrowser(ChangesTree.Nodes["Equipments"]);
+        }
+
+        private void PopulateFactionChangeBrowser(TreeNode tn)
+        {
+            // champions
+            foreach (var diff_elem in diff_calculator.DifferingChampions)
+            {
+                bool contains_faction = false;
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.CHAMPION };
+
+                if (diff_calculator.PreviousDatabase.Champions.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.PreviousDatabase.Champions[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.PreviousElement = diff_calculator.PreviousDatabase.Champions[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+                if (diff_calculator.CurrentDatabase_ref.Champions.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+
+                if (!contains_faction)
+                    continue;
+
+                tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
+            }
+
+            // spells
+            foreach (var diff_elem in diff_calculator.DifferingSpells)
+            {
+                bool contains_faction = false;
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.SPELL };
+
+                if (diff_calculator.PreviousDatabase.Spells.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.PreviousDatabase.Spells[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.PreviousElement = diff_calculator.PreviousDatabase.Spells[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+                if (diff_calculator.CurrentDatabase_ref.Spells.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+
+                if (!contains_faction)
+                    continue;
+
+                tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
+            }
+
+            // relics
+            foreach (var diff_elem in diff_calculator.DifferingRelics)
+            {
+                bool contains_faction = false;
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.RELIC };
+
+                if (diff_calculator.PreviousDatabase.Relics.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.PreviousDatabase.Relics[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.PreviousElement = diff_calculator.PreviousDatabase.Relics[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+                if (diff_calculator.CurrentDatabase_ref.Relics.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+
+                if (!contains_faction)
+                    continue;
+
+                tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
+            }
+
+            // equipments
+            foreach (var diff_elem in diff_calculator.DifferingEquipments)
+            {
+                bool contains_faction = false;
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.EQUIPMENT };
+
+                if (diff_calculator.PreviousDatabase.Equipments.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.PreviousDatabase.Equipments[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.PreviousElement = diff_calculator.PreviousDatabase.Equipments[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+                if (diff_calculator.CurrentDatabase_ref.Equipments.ContainsKey(diff_elem.id))
+                {
+                    if (diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id].Faction.Contains(tn.Name))
+                    {
+                        diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id];
+                        contains_faction = true;
+                    }
+                }
+
+                if (!contains_faction)
+                    continue;
+
+                tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
+            }
+
+            tn.Text = string.Format("{0} ({1} changes)", tn.Name, tn.Nodes.Count);
+        }
+
+        private void PopulateChangeBrowserPerFaction()
+        {
+            ChangesTree.Nodes.Clear();
+
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Forglar Swamp", Text = "Forglar Swamp" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Forsaken Wastes", Text = "Forsaken Wastes" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "K'thir Forest", Text = "K'thir Forest" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Ironfist Stronghold", Text = "Ironfist Stronghold" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Savage Tundra", Text = "Savage Tundra" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Shattered Peaks", Text = "Shattered Peaks" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Sundered Lands", Text = "Sundered Lands" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Underdepths", Text = "Underdepths" });
+
+            foreach (TreeNode n in ChangesTree.Nodes)
+                PopulateFactionChangeBrowser(n);
+
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Abilities", Text = "Abilities" });
+            PopulateAbilityChangeBrowser(ChangesTree.Nodes["Abilities"]);
+        }
+
+        private void PopulateChangeBrowser()
+        {
+            switch(changelist_mode)
+            {
+                case ChangeListMode.CATEGORY:
+                    PopulateChangeBrowserPerCategory();
+                    break;
+                case ChangeListMode.FACTION:
+                    PopulateChangeBrowserPerFaction();
+                    break;
+            }
         }
 
         private void DifferenceCalculatorForm_Load(object sender, EventArgs e)
@@ -379,7 +544,7 @@ namespace poxnora_search_engine
         }
 
 
-        private void LoadChangeInfo(Pox.DataElement.ElementType elem_type, Pox.Diff.DifferenceLink diff_link)
+        private void LoadChangeInfo(Pox.Diff.DifferenceLink diff_link)
         {
             ButtonPrevious.Show();
             ButtonCurrent.Show();
@@ -410,7 +575,7 @@ namespace poxnora_search_engine
             }
 
             // load data element change info
-            switch(elem_type)
+            switch(diff_link.ElemType)
             {
                 case Pox.DataElement.ElementType.CHAMPION:
                     LoadChampionChangeInfo((Pox.Champion)prev, (Pox.Champion)curr);
@@ -436,41 +601,40 @@ namespace poxnora_search_engine
         {
             elem_type = Pox.DataElement.ElementType.CHAMPION;
 
-            if (tn.Parent == null)
+            if (tn.Tag == null)
                 return false;
 
-            switch(tn.Parent.Name)
-            {
-                case "Champions":
-                    elem_type = Pox.DataElement.ElementType.CHAMPION;
-                    break;
-                case "Spells":
-                    elem_type = Pox.DataElement.ElementType.SPELL;
-                    break;
-                case "Relics":
-                    elem_type = Pox.DataElement.ElementType.RELIC;
-                    break;
-                case "Abilities":
-                    elem_type = Pox.DataElement.ElementType.ABILITY;
-                    break;
-                case "Equipments":
-                    elem_type = Pox.DataElement.ElementType.EQUIPMENT;
-                    break;
-                default:
-                    return false;
-            }
-
+            elem_type = ((Pox.Diff.DifferenceLink)tn.Tag).ElemType;
             return true;
         }
 
-        private void ShowDataElementDescription(Pox.DataElement.ElementType elem_type, Pox.DataElement elem)
+        private void ShowDataElementDescription(Pox.Diff.DifferenceLink link, Pox.Diff.DifferenceLink.ItemType it)
         {
             RuneDescription.TracerClear();
 
-            if (elem == null)
+            if (link == null)
                 return;
 
-            switch (elem_type)
+            Pox.DataElement elem = null;
+
+            if (it == Pox.Diff.DifferenceLink.ItemType.PREVIOUS)
+            {
+                if (link.PreviousElement == null)
+                    return;
+
+                RuneDescription.database_ref = diff_calculator.PreviousDatabase;
+                elem = link.PreviousElement;
+            }
+            else
+            {
+                if (link.CurrentElement == null)
+                    return;
+
+                RuneDescription.database_ref = diff_calculator.CurrentDatabase_ref;
+                elem = link.CurrentElement;
+            }
+
+            switch (link.ElemType)
             {
                 case Pox.DataElement.ElementType.CHAMPION:
                     RuneDescription.SetChampionRune(RuneDescription.database_ref.Champions[elem.ID]);
@@ -508,21 +672,15 @@ namespace poxnora_search_engine
 
             ClearChangeInfo();
 
-            LoadChangeInfo(elem_type, (Pox.Diff.DifferenceLink)(e.Node.Tag));
+            LoadChangeInfo((Pox.Diff.DifferenceLink)(e.Node.Tag));
 
-            ButtonPrevious.Tag = ((Pox.Diff.DifferenceLink)(e.Node.Tag)).PreviousElement;
-            ButtonCurrent.Tag = ((Pox.Diff.DifferenceLink)(e.Node.Tag)).CurrentElement;
+            ButtonPrevious.Tag = (Pox.Diff.DifferenceLink)(e.Node.Tag);
+            ButtonCurrent.Tag = (Pox.Diff.DifferenceLink)(e.Node.Tag);
 
             if (((Pox.Diff.DifferenceLink)(e.Node.Tag)).CurrentElement != null)
-            {
-                RuneDescription.database_ref = diff_calculator.CurrentDatabase_ref;
-                ShowDataElementDescription(elem_type, ((Pox.Diff.DifferenceLink)(e.Node.Tag)).CurrentElement);
-            }
+                ShowDataElementDescription((Pox.Diff.DifferenceLink)(e.Node.Tag), Pox.Diff.DifferenceLink.ItemType.CURRENT);
             else
-            {
-                RuneDescription.database_ref = diff_calculator.PreviousDatabase;
-                ShowDataElementDescription(elem_type, ((Pox.Diff.DifferenceLink)(e.Node.Tag)).PreviousElement);
-            }
+                ShowDataElementDescription((Pox.Diff.DifferenceLink)(e.Node.Tag), Pox.Diff.DifferenceLink.ItemType.PREVIOUS);
         }
 
         private void ButtonPrevious_Click(object sender, EventArgs e)
@@ -530,12 +688,8 @@ namespace poxnora_search_engine
             if (ButtonPrevious.Tag == null)
                 return;
 
-            Pox.DataElement.ElementType elem_type;
-            if (!GetElementTypeFromNode(selected_treenode, out elem_type))
-                return;
-
-            RuneDescription.database_ref = diff_calculator.PreviousDatabase;
-            ShowDataElementDescription(elem_type, (Pox.DataElement)(ButtonPrevious.Tag));
+            if (((Pox.Diff.DifferenceLink)(ButtonPrevious.Tag)).PreviousElement != null)
+                ShowDataElementDescription((Pox.Diff.DifferenceLink)(ButtonPrevious.Tag), Pox.Diff.DifferenceLink.ItemType.PREVIOUS);
         }
 
         private void ButtonCurrent_Click(object sender, EventArgs e)
@@ -543,12 +697,8 @@ namespace poxnora_search_engine
             if (ButtonCurrent.Tag == null)
                 return;
 
-            Pox.DataElement.ElementType elem_type;
-            if (!GetElementTypeFromNode(selected_treenode, out elem_type))
-                return;
-
-            RuneDescription.database_ref = diff_calculator.CurrentDatabase_ref;
-            ShowDataElementDescription(elem_type, (Pox.DataElement)(ButtonCurrent.Tag));
+            if (((Pox.Diff.DifferenceLink)(ButtonPrevious.Tag)).CurrentElement != null)
+                ShowDataElementDescription((Pox.Diff.DifferenceLink)(ButtonCurrent.Tag), Pox.Diff.DifferenceLink.ItemType.CURRENT);
         }
 
         private void DifferenceCalculator_Deactivate(object sender, EventArgs e)
@@ -559,6 +709,24 @@ namespace poxnora_search_engine
         private void DifferenceCalculator_Activated(object sender, EventArgs e)
         {
             Program.image_cache.Subscribers.Add(RuneDescription);
+        }
+
+        private void showChangesPerCategoryToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (changelist_mode == ChangeListMode.CATEGORY)
+                return;
+
+            changelist_mode = ChangeListMode.CATEGORY;
+            PopulateChangeBrowser();
+        }
+
+        private void showChangesPerFactionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (changelist_mode == ChangeListMode.FACTION)
+                return;
+            
+            changelist_mode = ChangeListMode.FACTION;
+            PopulateChangeBrowser();
         }
     }
 }

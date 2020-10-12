@@ -151,13 +151,13 @@ namespace poxnora_search_engine
 
             public int ExtractRandomChampion(string faction)
             {
+                if (Champions.Count == 0)
+                    return -1;
+
                 int result = -1;
 
                 for (int i = 0; i < 500; i++)
                 {
-                    if (Champions.Count == 0)
-                        return -1;
-
                     int c_index = Utility.RNG.Next(0, Champions.Count);
                     result = Champions[c_index];
                     if (!Program.database.Champions[result].Faction.Contains(faction))

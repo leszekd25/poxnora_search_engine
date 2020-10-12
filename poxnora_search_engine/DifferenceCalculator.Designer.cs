@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("Champions");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("Abiilities");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Spells");
@@ -39,6 +40,10 @@
             this.ButtonPrevious = new System.Windows.Forms.Button();
             this.ButtonCurrent = new System.Windows.Forms.Button();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
+            this.ChangeListModeMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.showChangesPerCategoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showChangesPerFactionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ChangeListModeMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // LoadOldDatabaseDialog
@@ -47,6 +52,7 @@
             // 
             // ChangesTree
             // 
+            this.ChangesTree.ContextMenuStrip = this.ChangeListModeMenu;
             this.ChangesTree.Location = new System.Drawing.Point(12, 12);
             this.ChangesTree.Name = "ChangesTree";
             treeNode1.Name = "Champions";
@@ -106,6 +112,28 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 1;
             // 
+            // ChangeListModeMenu
+            // 
+            this.ChangeListModeMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.showChangesPerCategoryToolStripMenuItem,
+            this.showChangesPerFactionToolStripMenuItem});
+            this.ChangeListModeMenu.Name = "ChangeListModeMenu";
+            this.ChangeListModeMenu.Size = new System.Drawing.Size(220, 48);
+            // 
+            // showChangesPerCategoryToolStripMenuItem
+            // 
+            this.showChangesPerCategoryToolStripMenuItem.Name = "showChangesPerCategoryToolStripMenuItem";
+            this.showChangesPerCategoryToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.showChangesPerCategoryToolStripMenuItem.Text = "Show changes per category";
+            this.showChangesPerCategoryToolStripMenuItem.Click += new System.EventHandler(this.showChangesPerCategoryToolStripMenuItem_Click);
+            // 
+            // showChangesPerFactionToolStripMenuItem
+            // 
+            this.showChangesPerFactionToolStripMenuItem.Name = "showChangesPerFactionToolStripMenuItem";
+            this.showChangesPerFactionToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.showChangesPerFactionToolStripMenuItem.Text = "Show changes per faction";
+            this.showChangesPerFactionToolStripMenuItem.Click += new System.EventHandler(this.showChangesPerFactionToolStripMenuItem_Click);
+            // 
             // DifferenceCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -123,6 +151,7 @@
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.DifferenceCalculator_FormClosed);
             this.Load += new System.EventHandler(this.DifferenceCalculatorForm_Load);
             this.Resize += new System.EventHandler(this.DifferenceCalculatorForm_Resize);
+            this.ChangeListModeMenu.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -135,5 +164,8 @@
         private System.Windows.Forms.Panel PanelChangeList;
         private System.Windows.Forms.Button ButtonPrevious;
         private System.Windows.Forms.Button ButtonCurrent;
+        private System.Windows.Forms.ContextMenuStrip ChangeListModeMenu;
+        private System.Windows.Forms.ToolStripMenuItem showChangesPerCategoryToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem showChangesPerFactionToolStripMenuItem;
     }
 }

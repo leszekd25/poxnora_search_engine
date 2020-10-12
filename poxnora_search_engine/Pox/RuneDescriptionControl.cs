@@ -167,20 +167,24 @@ namespace poxnora_search_engine.Pox
                 {
                     TextBoxDescription.SelectionColor = Color.LightGray;
                     TextBoxDescription.SelectionFont = RegularFont;
-                    TextBoxDescription.AppendText("Attack: ");
+                    TextBoxDescription.AppendText("(" + ab.NoraCost.ToString() + ")  Attack: ");
 
                     TextBoxDescription.SelectionColor = GetColorByAttackType(ab.Name.Substring(8));
                     TextBoxDescription.SelectionFont = BoldFont;
-                    TextBoxDescription.AppendText(ab.Name.Substring(8)+"\r\n");
+                    TextBoxDescription.AppendText(ab.Name.Substring(8) + "\r\n");
+
+                    /*TextBoxDescription.SelectionColor = Color.LightGray;
+                    TextBoxDescription.SelectionFont = RegularFont;
+                    TextBoxDescription.AppendText("  (" + ab.NoraCost.ToString() + ")\r\n");*/
 
                     CursorY += 16;
                 }
                 else
                 {
-                    AddLine("", ab.ToString());
+                    AddLine("", "(" + ab.NoraCost.ToString() + ")  " + ab.ToString());
                 }
 
-                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
+                AddLink(new Point() { X = 220, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             foreach (var ab in c.UpgradeAbilities1_refs)
             {
@@ -188,28 +192,28 @@ namespace poxnora_search_engine.Pox
                 if (c.UpgradeAbilities1_refs.IndexOf(ab) == c.DefaultUpgrade1Index)
                 {
                     TextBoxDescription.SelectionColor = Color.Cyan;
-                    AddLine(ab.ToString(), "");
+                    AddLine("(" + ab.NoraCost.ToString() + ")  " + ab.ToString(), "");
                 }
                 else
                 {
                     TextBoxDescription.SelectionColor = Color.DeepSkyBlue;
-                    AddLine("", ab.ToString());
+                    AddLine("", "(" + ab.NoraCost.ToString() + ")  " + ab.ToString());
                 }
-                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
+                AddLink(new Point() { X = 220, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             foreach (var ab in c.UpgradeAbilities2_refs)
             {
                 if (c.UpgradeAbilities2_refs.IndexOf(ab) == c.DefaultUpgrade2Index)
                 {
                     TextBoxDescription.SelectionColor = Color.Lime;
-                    AddLine(ab.ToString(), "");
+                    AddLine("(" + ab.NoraCost.ToString() + ")  " + ab.ToString(), "");
                 }
                 else
                 {
                     TextBoxDescription.SelectionColor = Color.LimeGreen;
-                    AddLine("", ab.ToString());
+                    AddLine("", "(" + ab.NoraCost.ToString() + ")  " + ab.ToString());
                 }
-                AddLink(new Point() { X = 200, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
+                AddLink(new Point() { X = 220, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             TextBoxDescription.SelectionColor = Color.LightGray;
             TextBoxDescription.AppendText("\r\n");
