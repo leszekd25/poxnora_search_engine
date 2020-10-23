@@ -31,6 +31,7 @@ namespace poxnora_search_engine
         public Updater()
         {
             DeleteOldAssemblies();
+            wc.DownloadDataCompleted += GetVersionArchive_completed;
         }
 
         public void GetLatestVersion()
@@ -150,7 +151,8 @@ namespace poxnora_search_engine
                             string destinationDirectory = Path.GetDirectoryName(destinationPath);
                             Directory.CreateDirectory(destinationDirectory);
 
-                            f.ExtractToFile(destinationPath, true);
+                            if(f.ToString().Contains('.'))
+                                f.ExtractToFile(destinationPath, true);
                         }
                     }
                 }
