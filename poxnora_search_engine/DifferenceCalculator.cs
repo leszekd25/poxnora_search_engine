@@ -310,12 +310,12 @@ namespace poxnora_search_engine
             diff_calculator.Calculate();
             PopulateChangeBrowser();
 
-            Program.image_cache.Subscribers.Add(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
         }
 
         private void DifferenceCalculator_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Program.image_cache.Subscribers.Remove(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
         }
 
         private void ClearChangeInfo()
@@ -703,12 +703,12 @@ namespace poxnora_search_engine
 
         private void DifferenceCalculator_Deactivate(object sender, EventArgs e)
         {
-            Program.image_cache.Subscribers.Remove(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
         }
 
         private void DifferenceCalculator_Activated(object sender, EventArgs e)
         {
-            Program.image_cache.Subscribers.Add(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
         }
 
         private void showChangesPerCategoryToolStripMenuItem_Click(object sender, EventArgs e)

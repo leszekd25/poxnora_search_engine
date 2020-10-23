@@ -304,7 +304,7 @@ namespace poxnora_search_engine.Pox
             TextBoxDescription.AppendText(regular_text + "\r\n");
         }
 
-        public void OnRuneImageLoad(Bitmap bmp)
+        public void OnImageLoad(Bitmap bmp)
         {
             RuneImage.Image = bmp;
         }

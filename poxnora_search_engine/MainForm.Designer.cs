@@ -129,10 +129,12 @@
             this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.StatusNewVersionAvailable = new System.Windows.Forms.ToolStripStatusLabel();
             this.FilterTree = new System.Windows.Forms.TreeView();
             this.GridDataElements = new System.Windows.Forms.DataGridView();
             this.PanelDataMode = new System.Windows.Forms.Panel();
             this.RadioEquips = new System.Windows.Forms.RadioButton();
+            this.ButtonSetViewMode = new System.Windows.Forms.Button();
             this.RadioRelics = new System.Windows.Forms.RadioButton();
             this.RadioSpells = new System.Windows.Forms.RadioButton();
             this.RadioAbilities = new System.Windows.Forms.RadioButton();
@@ -186,8 +188,10 @@
             this.ButtonApplyFilter = new System.Windows.Forms.Button();
             this.ButtonClearFilter = new System.Windows.Forms.Button();
             this.PanelFilterProperties = new System.Windows.Forms.Panel();
+            this.PanelRunePreviews = new System.Windows.Forms.Panel();
+            this.pageSetupDialog1 = new System.Windows.Forms.PageSetupDialog();
+            this.PreviewScrollBar = new System.Windows.Forms.VScrollBar();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
-            this.StatusNewVersionAvailable = new System.Windows.Forms.ToolStripStatusLabel();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
@@ -1085,14 +1089,14 @@
             // manualToolStripMenuItem
             // 
             this.manualToolStripMenuItem.Name = "manualToolStripMenuItem";
-            this.manualToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.manualToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.manualToolStripMenuItem.Text = "Manual";
             this.manualToolStripMenuItem.Click += new System.EventHandler(this.manualToolStripMenuItem_Click);
             // 
             // aboutToolStripMenuItem
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(114, 22);
             this.aboutToolStripMenuItem.Text = "About";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -1143,6 +1147,18 @@
             this.LastLogMessage.Name = "LastLogMessage";
             this.LastLogMessage.Size = new System.Drawing.Size(0, 17);
             // 
+            // StatusNewVersionAvailable
+            // 
+            this.StatusNewVersionAvailable.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.StatusNewVersionAvailable.IsLink = true;
+            this.StatusNewVersionAvailable.Name = "StatusNewVersionAvailable";
+            this.StatusNewVersionAvailable.Size = new System.Drawing.Size(1379, 17);
+            this.StatusNewVersionAvailable.Spring = true;
+            this.StatusNewVersionAvailable.Text = "New version available";
+            this.StatusNewVersionAvailable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.StatusNewVersionAvailable.Visible = false;
+            this.StatusNewVersionAvailable.Click += new System.EventHandler(this.StatusNewVersionAvailable_Click);
+            // 
             // FilterTree
             // 
             this.FilterTree.Location = new System.Drawing.Point(0, 27);
@@ -1168,11 +1184,12 @@
             // PanelDataMode
             // 
             this.PanelDataMode.Controls.Add(this.RadioEquips);
+            this.PanelDataMode.Controls.Add(this.ButtonSetViewMode);
             this.PanelDataMode.Controls.Add(this.RadioRelics);
             this.PanelDataMode.Controls.Add(this.RadioSpells);
             this.PanelDataMode.Controls.Add(this.RadioAbilities);
             this.PanelDataMode.Controls.Add(this.RadioChampions);
-            this.PanelDataMode.Location = new System.Drawing.Point(335, 27);
+            this.PanelDataMode.Location = new System.Drawing.Point(335, 23);
             this.PanelDataMode.Name = "PanelDataMode";
             this.PanelDataMode.Size = new System.Drawing.Size(764, 30);
             this.PanelDataMode.TabIndex = 6;
@@ -1187,6 +1204,16 @@
             this.RadioEquips.Text = "Equipments";
             this.RadioEquips.UseVisualStyleBackColor = true;
             this.RadioEquips.CheckedChanged += new System.EventHandler(this.RadioEquips_CheckedChanged);
+            // 
+            // ButtonSetViewMode
+            // 
+            this.ButtonSetViewMode.Location = new System.Drawing.Point(619, 3);
+            this.ButtonSetViewMode.Name = "ButtonSetViewMode";
+            this.ButtonSetViewMode.Size = new System.Drawing.Size(142, 23);
+            this.ButtonSetViewMode.TabIndex = 0;
+            this.ButtonSetViewMode.Text = "Switch to images";
+            this.ButtonSetViewMode.UseVisualStyleBackColor = true;
+            this.ButtonSetViewMode.Click += new System.EventHandler(this.button1_Click);
             // 
             // RadioRelics
             // 
@@ -1628,6 +1655,23 @@
             this.PanelFilterProperties.Size = new System.Drawing.Size(329, 160);
             this.PanelFilterProperties.TabIndex = 9;
             // 
+            // PanelRunePreviews
+            // 
+            this.PanelRunePreviews.Location = new System.Drawing.Point(335, 518);
+            this.PanelRunePreviews.Name = "PanelRunePreviews";
+            this.PanelRunePreviews.Size = new System.Drawing.Size(200, 100);
+            this.PanelRunePreviews.TabIndex = 10;
+            this.PanelRunePreviews.Visible = false;
+            // 
+            // PreviewScrollBar
+            // 
+            this.PreviewScrollBar.Location = new System.Drawing.Point(1082, 56);
+            this.PreviewScrollBar.Name = "PreviewScrollBar";
+            this.PreviewScrollBar.Size = new System.Drawing.Size(17, 562);
+            this.PreviewScrollBar.TabIndex = 0;
+            this.PreviewScrollBar.Visible = false;
+            this.PreviewScrollBar.ValueChanged += new System.EventHandler(this.PreviewScrollBar_ValueChanged);
+            // 
             // RuneDescription
             // 
             this.RuneDescription.BackColor = System.Drawing.Color.Black;
@@ -1636,23 +1680,12 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
-            // StatusNewVersionAvailable
-            // 
-            this.StatusNewVersionAvailable.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.StatusNewVersionAvailable.IsLink = true;
-            this.StatusNewVersionAvailable.Name = "StatusNewVersionAvailable";
-            this.StatusNewVersionAvailable.Size = new System.Drawing.Size(1348, 17);
-            this.StatusNewVersionAvailable.Spring = true;
-            this.StatusNewVersionAvailable.Text = "New version available";
-            this.StatusNewVersionAvailable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.StatusNewVersionAvailable.Visible = false;
-            this.StatusNewVersionAvailable.Click += new System.EventHandler(this.StatusNewVersionAvailable_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1394, 643);
+            this.Controls.Add(this.PreviewScrollBar);
             this.Controls.Add(this.RuneDescription);
             this.Controls.Add(this.PanelFilterProperties);
             this.Controls.Add(this.ButtonClearFilter);
@@ -1662,6 +1695,7 @@
             this.Controls.Add(this.FilterTree);
             this.Controls.Add(this.Status);
             this.Controls.Add(this.MainMenu);
+            this.Controls.Add(this.PanelRunePreviews);
             this.MainMenuStrip = this.MainMenu;
             this.MinimumSize = new System.Drawing.Size(1410, 682);
             this.Name = "MainForm";
@@ -1845,6 +1879,10 @@
         private System.Windows.Forms.ToolStripMenuItem championBuilderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem differenceCalculatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel StatusNewVersionAvailable;
+        private System.Windows.Forms.Panel PanelRunePreviews;
+        private System.Windows.Forms.PageSetupDialog pageSetupDialog1;
+        private System.Windows.Forms.Button ButtonSetViewMode;
+        private System.Windows.Forms.VScrollBar PreviewScrollBar;
     }
 }
 

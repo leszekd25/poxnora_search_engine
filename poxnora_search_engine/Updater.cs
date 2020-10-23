@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
+using System.Threading;
 using Newtonsoft.Json;
 
 namespace poxnora_search_engine
@@ -23,53 +24,56 @@ namespace poxnora_search_engine
         public OnGetArchiveFailed _OnGetArchiveFailed = null;
         public OnGetArchiveSuccess _OnGetArchiveSuccess = null;
 
+        Thread DownloadVersionStringThread = null;
+
         System.Net.WebClient wc = new System.Net.WebClient();
 
         public Updater()
         {
             DeleteOldAssemblies();
-            wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(GetLatestVersion_completed);
-            wc.DownloadDataCompleted += new System.Net.DownloadDataCompletedEventHandler(GetVersionArchive_completed);
         }
 
         public void GetLatestVersion()
         {
-            wc.DownloadStringAsync(VersionSource);
+            if(DownloadVersionStringThread != null)
+            {
+                DownloadVersionStringThread.Abort();
+                DownloadVersionStringThread = null;
+            }
+
+            DownloadVersionStringThread = new Thread(DownloadStringProcedure);
+            DownloadVersionStringThread.Start();
         }
 
-        void GetLatestVersion_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
+        void DownloadStringProcedure()
         {
-            if (e.Cancelled)
+            try
+            {
+                string s = wc.DownloadString(VersionSource);
+
+                int i = s.IndexOf("Current version:");
+                if (i == Utility.NO_INDEX)
+                {
+                    Log.Error("Updater.GetLatestVersion_completed(): Invalid update info");
+                    _OnGetVersion?.Invoke(false, "");
+                    return;
+                }
+
+                string newest_version = s.Substring(i + "Current version:".Length).Trim();
+                if (newest_version != Utility.APP_VERSION)
+                {
+                    _OnGetVersion?.Invoke(true, newest_version);
+                }
+                else
+                {
+                    _OnGetVersion?.Invoke(false, "");
+                }
+            }
+            catch(System.Net.WebException e)
             {
                 Log.Warning("Updater.GetLatestVersion_completed(): Could not retrieve update info");
                 _OnGetVersion?.Invoke(false, "");
                 return;
-            }
-
-            if (e.Error != null)
-            {
-                Log.Error("Updater.GetLatestVersion_completed(): Error while retrieving update info");
-                _OnGetVersion?.Invoke(false, "");
-                return;
-            }
-
-            string str = e.Result;
-            int i = str.IndexOf("Current version:");
-            if (i == Utility.NO_INDEX)
-            {
-                Log.Error("Updater.GetLatestVersion_completed(): Invalid update info");
-                _OnGetVersion?.Invoke(false, "");
-                return;
-            }
-
-            string newest_version = str.Substring(i + "Current version:".Length).Trim();
-            if (newest_version != Utility.APP_VERSION)
-            {
-                _OnGetVersion?.Invoke(true, newest_version);
-            }
-            else
-            {
-                _OnGetVersion?.Invoke(false, "");
             }
         }
 

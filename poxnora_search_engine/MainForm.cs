@@ -1,5 +1,4 @@
-﻿using poxnora_search_engine.Pox;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -10,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Management.Instrumentation;
+using poxnora_search_engine.Pox;
 using poxnora_search_engine.Pox.Filters;
 using poxnora_search_engine.Pox.FilterControls;
 using System.Security.Cryptography;
@@ -19,6 +19,9 @@ namespace poxnora_search_engine
     public enum FilterType { AND, OR, BOOLEAN, INT, STRING, RARITY, EXPANSION, ABILITY_LIST, CLASS_LIST, FACTION_LIST, RACE_LIST }
     public partial class MainForm : Form
     {
+        enum ViewModeEnum { GRID, IMAGES }
+
+        ViewModeEnum ViewMode = ViewModeEnum.GRID;
         Pox.DataElement.ElementType ViewType = Pox.DataElement.ElementType.CHAMPION;
         Pox.Filters.BaseFilter SearchFilter = null;
         bool ApplyFilters = false;
@@ -80,6 +83,8 @@ namespace poxnora_search_engine
             foreach (ToolStripMenuItem column_vis in equipmentsToolStripMenuItem.DropDownItems)
                 column_vis.Click += new EventHandler(OnEquipmentColumnVisibilityClick);
 
+            PanelRunePreviews.MouseWheel += PanelRunePreviews_MouseWheel;
+
             // this makes datagridview performance bearable :)
             typeof(DataGridView).InvokeMember(
                 "DoubleBuffered",
@@ -88,28 +93,53 @@ namespace poxnora_search_engine
                 GridDataElements,
                 new object[] { true });
 
-            Program.image_cache.Subscribers.Add(RuneDescription);
+           typeof(Panel).InvokeMember(
+                "DoubleBuffered",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                null,
+                PanelRunePreviews,
+                new object[] { true });
+
+            Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
 
 
             app_updater._OnGetVersion = OnFetchCurrentVersion;
             app_updater._OnGetArchiveFailed = OnFetchCurrentArchiveFailed;
             app_updater._OnGetArchiveSuccess = OnFetchCurrentArchiveSuccess;
             app_updater.GetLatestVersion();
+
+            PanelRunePreviews.Location = GridDataElements.Location;
+            PanelRunePreviews.Size = GridDataElements.Size;
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
-            Program.image_cache.Subscribers.Remove(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
+            Program.image_cache.BreakRunePreviewDownload();
         }
 
         private void OnDatabaseReady()
         {
             RuneDescription.database_ref = Program.database;
-            PrepareGrid();
+            PrepareView();
         }
 
-        public void PrepareGrid()
+        private void PrepareView()
         {
+            if (ViewMode == ViewModeEnum.GRID)
+                PrepareGridView();
+            else if (ViewMode == ViewModeEnum.IMAGES)
+                PrepareImageView();
+        }
+
+        public void PrepareGridView()
+        {
+            GridDataElements.Visible = true;
+            PanelRunePreviews.Visible = false;
+            PreviewScrollBar.Hide();
+            Program.image_cache.BreakRunePreviewDownload();
+
+
             GridDataElements.Hide();
             GridDataElements.Rows.Clear();
             GridDataElements.Columns.Clear();
@@ -136,7 +166,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost", Name = "PrognosedBaseNoraCost", ValueType = typeof(int), Visible = prognosedBaseNoraCostToolStripMenuItem.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Base nora cost", Name = "BaseNoraCost", ValueType = typeof(int), Visible = baseNoraCostToolStripMenuItem.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost difference", Name = "PrognosedBaseNoraCostDifference", ValueType = typeof(int), Visible = prognosedBaseNoraCostDifferenceToolStripMenuItem.Checked });
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Default nora cost", Name = "DefaultNoraCost", ValueType = typeof(int), Visible = defaultNoraCostToolStripMenuItem1.Checked});
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Default nora cost", Name = "DefaultNoraCost", ValueType = typeof(int), Visible = defaultNoraCostToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Minimum nora cost", Name = "MinNoraCost", ValueType = typeof(int), Visible = minimumNoraCostToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Maximum nora cost", Name = "MaxNoraCost", ValueType = typeof(int), Visible = maximumNoraCostToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Minimum range", Name = "MinRNG", ValueType = typeof(int), Visible = minimumRangeToolStripMenuItem.Checked });
@@ -241,6 +271,7 @@ namespace poxnora_search_engine
             }
 
             ReloadGrid();
+
             ApplyFilter();
             GridDataElements.Show();
         }
@@ -257,7 +288,7 @@ namespace poxnora_search_engine
                             champs.Add(kv.Value);
 
                         foreach (var c in champs)
-                            AddChampion(c);
+                            GridAddChampion(c);
 
                         break;
                     }
@@ -268,7 +299,7 @@ namespace poxnora_search_engine
                             abs.Add(kv.Value);
 
                         foreach (var a in abs)
-                            AddAbility(a);
+                            GridAddAbility(a);
 
                         break;
                     }
@@ -279,7 +310,7 @@ namespace poxnora_search_engine
                             sps.Add(kv.Value);
 
                         foreach (var s in sps)
-                            AddSpell(s);
+                            GridAddSpell(s);
 
                         break;
                     }
@@ -290,7 +321,7 @@ namespace poxnora_search_engine
                             rls.Add(kv.Value);
 
                         foreach (var r in rls)
-                            AddRelic(r);
+                            GridAddRelic(r);
 
                         break;
                     }
@@ -301,7 +332,7 @@ namespace poxnora_search_engine
                             eqs.Add(kv.Value);
 
                         foreach (var e in eqs)
-                            AddEquipment(e);
+                            GridAddEquipment(e);
 
                         break;
                     }
@@ -310,7 +341,7 @@ namespace poxnora_search_engine
             }
         }
 
-        public void AddChampion(Pox.Champion c)
+        public void GridAddChampion(Pox.Champion c)
         {
             int row = GridDataElements.Rows.Add();
             GridDataElements.Rows[row].Tag = c;
@@ -388,7 +419,7 @@ namespace poxnora_search_engine
         }
 
 
-        public void AddAbility(Pox.Ability a)
+        public void GridAddAbility(Pox.Ability a)
         {
             int row = GridDataElements.Rows.Add();
             GridDataElements.Rows[row].Tag = a;
@@ -403,7 +434,7 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Cooldown"].Value = a.Cooldown;
         }
 
-        public void AddSpell(Pox.Spell s)
+        public void GridAddSpell(Pox.Spell s)
         {
             int row = GridDataElements.Rows.Add();
             GridDataElements.Rows[row].Tag = s;
@@ -433,7 +464,7 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["FlavorText"].Value = s.Flavor;
         }
 
-        public void AddRelic(Pox.Relic r)
+        public void GridAddRelic(Pox.Relic r)
         {
             int row = GridDataElements.Rows.Add();
             GridDataElements.Rows[row].Tag = r;
@@ -466,7 +497,7 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Size"].Value = r.Size;
         }
 
-        public void AddEquipment(Pox.Equipment e)
+        public void GridAddEquipment(Pox.Equipment e)
         {
             int row = GridDataElements.Rows.Add();
             GridDataElements.Rows[row].Tag = e;
@@ -496,24 +527,199 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["FlavorText"].Value = e.Flavor;
         }
 
+        private void PrepareImageView()
+        {
+            GridDataElements.Visible = false;
+            PanelRunePreviews.Visible = true;
+
+            ApplyFilter();
+        }
+
+        private void ReadjustPreviewImages()
+        {
+            PanelRunePreviews.SuspendLayout();
+
+            int items_per_row = (PanelRunePreviews.Width - 6) / 82;
+            for (int i = 0; i < PanelRunePreviews.Controls.Count; i++)
+                PanelRunePreviews.Controls[i].Location = new Point(3 + ((i % items_per_row) * 82), 3 + ((i / items_per_row) * 113));
+
+            PanelRunePreviews.ResumeLayout();
+        }
+
         private void ApplyFilter()
         {
-            if((SearchFilter == null)||(!ApplyFilters))
+            if (ViewMode == ViewModeEnum.GRID)
             {
-                foreach (DataGridViewRow row in GridDataElements.Rows)
-                    row.Visible = true;
-                Log.Info("Items on grid: " + GridDataElements.Rows.Count.ToString());
-                return;
-            }
+                GridDataElements.Hide();
 
-            int total = 0;
-            foreach (DataGridViewRow row in GridDataElements.Rows)
-            {
-                row.Visible = SearchFilter.Satisfies((DataElement)row.Tag);
-                if (row.Visible)
-                    total += 1;
+                if ((SearchFilter == null) || (!ApplyFilters))
+                {
+                    foreach (DataGridViewRow row in GridDataElements.Rows)
+                        row.Visible = true;
+                    Log.Info("Items on grid: " + GridDataElements.Rows.Count.ToString());
+                    return;
+                }
+
+                int total = 0;
+                foreach (DataGridViewRow row in GridDataElements.Rows)
+                {
+                    row.Visible = SearchFilter.Satisfies((DataElement)row.Tag);
+                    if (row.Visible)
+                        total += 1;
+                }
+
+                GridDataElements.Show();
+                Log.Info("Items on grid: " + total.ToString());
             }
-            Log.Info("Items on grid: " + total.ToString());
+            else if (ViewMode == ViewModeEnum.IMAGES)
+            {
+                PanelRunePreviews.SuspendLayout();
+                PanelRunePreviews.Hide();
+
+                Program.image_cache.BreakRunePreviewDownload();
+
+                PanelRunePreviews.VerticalScroll.Value = 0;
+                for(int i = 0; i < PanelRunePreviews.Controls.Count; i++)
+                    PanelRunePreviews.Controls[i].Hide();
+
+                int total = 0;
+                // item size: 76, 107
+                int items_per_row = (PanelRunePreviews.Width - 6) / 82;
+
+                List<string> elems = new List<string>();
+
+                RunePreviewControl rpc;
+
+                switch (ViewType)
+                {
+                    case DataElement.ElementType.CHAMPION:
+
+                        foreach (var champ in Program.database.Champions.Keys)
+                        {
+                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Champions[champ])))
+                            {
+                                if (PanelRunePreviews.Controls.Count > total)
+                                {
+                                    rpc = (RunePreviewControl)(PanelRunePreviews.Controls[total]);
+                                    rpc.LabelText.Text = "";
+                                    rpc.RunePreviewImage.Image = null;
+                                    rpc.Show();
+                                }
+                                else
+                                {
+                                    rpc = new RunePreviewControl();
+                                    rpc.RunePreviewImage.MouseClick += PreviewImage_MouseClick;
+                                    PanelRunePreviews.Controls.Add(rpc);
+                                }
+                                rpc.ElemID = Program.database.Champions[champ].ID;
+                                rpc.LabelText.Text = Program.database.Champions[champ].Name;
+                                elems.Add(Program.database.Champions[champ].Hash);
+                                total += 1;
+                            }
+                        }
+                        break;
+                    case DataElement.ElementType.SPELL:
+
+                        foreach (var champ in Program.database.Spells.Keys)
+                        {
+                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Spells[champ])))
+                            {
+                                if (PanelRunePreviews.Controls.Count > total)
+                                {
+                                    rpc = (RunePreviewControl)(PanelRunePreviews.Controls[total]);
+                                    rpc.LabelText.Text = "";
+                                    rpc.RunePreviewImage.Image = null;
+                                    rpc.Show();
+                                }
+                                else
+                                {
+                                    rpc = new RunePreviewControl();
+                                    rpc.RunePreviewImage.MouseClick += PreviewImage_MouseClick;
+                                    PanelRunePreviews.Controls.Add(rpc);
+                                }
+                                rpc.ElemID = Program.database.Spells[champ].ID;
+                                rpc.LabelText.Text = Program.database.Spells[champ].Name;
+                                elems.Add(Program.database.Spells[champ].Hash);
+                                total += 1;
+                            }
+                        }
+                        break;
+                    case DataElement.ElementType.RELIC:
+
+                        foreach (var champ in Program.database.Relics.Keys)
+                        {
+                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Relics[champ])))
+                            {
+                                if (PanelRunePreviews.Controls.Count > total)
+                                {
+                                    rpc = (RunePreviewControl)(PanelRunePreviews.Controls[total]);
+                                    rpc.LabelText.Text = "";
+                                    rpc.RunePreviewImage.Image = null;
+                                    rpc.Show();
+                                }
+                                else
+                                {
+                                    rpc = new RunePreviewControl();
+                                    rpc.RunePreviewImage.MouseClick += PreviewImage_MouseClick;
+                                    PanelRunePreviews.Controls.Add(rpc);
+                                }
+                                rpc.ElemID = Program.database.Relics[champ].ID;
+                                rpc.LabelText.Text = Program.database.Relics[champ].Name;
+                                elems.Add(Program.database.Relics[champ].Hash);
+                                total += 1;
+                            }
+                        }
+                        break;
+                    case DataElement.ElementType.EQUIPMENT:
+
+                        foreach (var champ in Program.database.Equipments.Keys)
+                        {
+                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Equipments[champ])))
+                            {
+                                if (PanelRunePreviews.Controls.Count > total)
+                                {
+                                    rpc = (RunePreviewControl)(PanelRunePreviews.Controls[total]);
+                                    rpc.LabelText.Text = "";
+                                    rpc.RunePreviewImage.Image = null;
+                                    rpc.Show();
+                                }
+                                else
+                                {
+                                    rpc = new RunePreviewControl();
+                                    rpc.RunePreviewImage.MouseClick += PreviewImage_MouseClick;
+                                    PanelRunePreviews.Controls.Add(rpc);
+                                }
+                                rpc.ElemID = Program.database.Equipments[champ].ID;
+                                rpc.LabelText.Text = Program.database.Equipments[champ].Name;
+                                elems.Add(Program.database.Equipments[champ].Hash);
+                                total += 1;
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+                }
+
+                // get panel height
+                int h = 6 + (((total) / items_per_row) * 113) + 113;
+                PanelRunePreviews.Height = h;
+
+                PreviewScrollBar.Show();
+                PreviewScrollBar.Minimum = 0;
+                PreviewScrollBar.Maximum = Math.Max(0, h - GridDataElements.Height);
+                PreviewScrollBar.Value = 0;
+
+                ReadjustPreviewImages();
+
+                PanelRunePreviews.Show();
+
+                for (int i = 0; i < total; i++)
+                    Program.image_cache.AddRunePreviewSubscriber(elems[i], ((RunePreviewControl)(PanelRunePreviews.Controls[i])));
+
+                Program.image_cache.GetRunePreviews(elems);
+
+                Log.Info("Items displayed: " + total.ToString());
+            }
         }
 
         private void AddFilter(string fname, FilterType ftype, DataPath dpath = DataPath.None)
@@ -664,31 +870,31 @@ namespace poxnora_search_engine
         private void RadioChampions_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.CHAMPION;
-            PrepareGrid();
+            PrepareView();
         }
 
         private void RadioAbilities_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.ABILITY;
-            PrepareGrid();
+            PrepareView();
         }
 
         private void RadioSpells_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.SPELL;
-            PrepareGrid();
+            PrepareView();
         }
 
         private void RadioRelics_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.RELIC;
-            PrepareGrid();
+            PrepareView();
         }
 
         private void RadioEquips_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.EQUIPMENT;
-            PrepareGrid();
+            PrepareView();
         }
 
         // FILTERS
@@ -705,9 +911,8 @@ namespace poxnora_search_engine
             ApplyFilters = true;
             ButtonApplyFilter.BackColor = Color.Orange;
             ButtonClearFilter.BackColor = System.Drawing.SystemColors.Control;
-            GridDataElements.Hide();
+
             ApplyFilter();
-            GridDataElements.Show();
         }
 
 
@@ -716,9 +921,8 @@ namespace poxnora_search_engine
             ApplyFilters = false;
             ButtonApplyFilter.BackColor = System.Drawing.SystemColors.Control;
             ButtonClearFilter.BackColor = Color.Orange;
-            GridDataElements.Hide();
+
             ApplyFilter();
-            GridDataElements.Show();
         }
 
         private void FilterProperties_PropertyValueChanged(BaseFilter bf)
@@ -1118,6 +1322,36 @@ namespace poxnora_search_engine
             }
         }
 
+        private void PreviewImage_MouseClick(object sender, MouseEventArgs e)
+        {
+            int id = ((RunePreviewControl)(((PictureBox)sender).Parent)).ElemID;
+
+            RuneDescription.TracerClear();
+            switch (ViewType)
+            {
+                case Pox.DataElement.ElementType.CHAMPION:
+                    RuneDescription.SetChampionRune(Program.database.Champions[id]);
+                    if (ChampionBuilder_form != null)
+                        ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
+                    break;
+                case Pox.DataElement.ElementType.ABILITY:
+                    RuneDescription.SetAbility(Program.database.Abilities[id]);
+                    break;
+                case Pox.DataElement.ElementType.SPELL:
+                    RuneDescription.SetSpellRune(Program.database.Spells[id]);
+                    break;
+                case Pox.DataElement.ElementType.RELIC:
+                    RuneDescription.SetRelicRune(Program.database.Relics[id]);
+                    break;
+                case Pox.DataElement.ElementType.EQUIPMENT:
+                    RuneDescription.SetEquipmentRune(Program.database.Equipments[id]);
+                    break;
+                default:
+                    RuneDescription.ClearDescription();
+                    break;
+            }
+        }
+
         private void Form1_Resize(object sender, EventArgs e)
         {
             if (this.Width <= 1410 - 764)
@@ -1129,6 +1363,19 @@ namespace poxnora_search_engine
             GridDataElements.Height = this.Height - 682 + 565;
             RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, FilterTree.Location.Y);
             RuneDescription.SetHeight(GridDataElements.Height + 32);
+            PanelRunePreviews.Location = new Point(GridDataElements.Location.X, PreviewScrollBar.Value);
+            PanelRunePreviews.Size = GridDataElements.Size;
+            PanelDataMode.Width = GridDataElements.Width;
+            ButtonSetViewMode.Location = new Point(PanelDataMode.Width - ButtonSetViewMode.Width, ButtonSetViewMode.Location.Y);
+            PreviewScrollBar.Location = new Point(RuneDescription.Location.X - PreviewScrollBar.Width, GridDataElements.Location.Y);
+            PreviewScrollBar.Height = GridDataElements.Height;
+            PreviewScrollBar.Minimum = 0;
+            PreviewScrollBar.Maximum = Math.Max(0, PanelRunePreviews.Height - GridDataElements.Height);
+            PreviewScrollBar.Value = 0;
+            PanelRunePreviews.Location = new Point(PanelRunePreviews.Location.X, GridDataElements.Location.Y);
+            PreviewScrollBar.SmallChange = 113;
+            if (PanelRunePreviews.Visible)
+                ReadjustPreviewImages();
         }
 
 
@@ -1249,12 +1496,12 @@ namespace poxnora_search_engine
 
         private void MainForm_Activated(object sender, EventArgs e)
         {
-            Program.image_cache.Subscribers.Add(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
         }
 
         private void MainForm_Deactivate(object sender, EventArgs e)
         {
-            Program.image_cache.Subscribers.Remove(RuneDescription);
+            Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
         }
 
         private void manualToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1273,6 +1520,38 @@ namespace poxnora_search_engine
             StatusNewVersionAvailable.Text = "Downloading...";
 
             app_updater.ForceInstallLatestVersion();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (ViewMode == ViewModeEnum.GRID)
+            {
+                ViewMode = ViewModeEnum.IMAGES;
+                ButtonSetViewMode.Text = "Switch to grid";
+            }
+            else
+            {
+                ViewMode = ViewModeEnum.GRID;
+                ButtonSetViewMode.Text = "Switch to images";
+            }
+
+            PrepareView();
+        }
+
+        private void PreviewScrollBar_ValueChanged(object sender, EventArgs e)
+        {
+            PanelRunePreviews.SuspendLayout();
+            PanelRunePreviews.Location = new Point(PanelRunePreviews.Location.X, GridDataElements.Location.Y - PreviewScrollBar.Value);
+            PanelRunePreviews.ResumeLayout();
+        }
+
+        private void PanelRunePreviews_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (!PanelRunePreviews.Visible)
+                return;
+
+            int val = e.Delta * 113 / 120;
+            PreviewScrollBar.Value = Math.Max(PreviewScrollBar.Minimum, Math.Min(PreviewScrollBar.Maximum, PreviewScrollBar.Value - val));
         }
     }
 }

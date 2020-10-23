@@ -190,6 +190,7 @@ namespace poxnora_search_engine
             int current = champion.MinRNG;
             if ((!int.TryParse(TextMinRange.Text, out champion.MinRNG))
                 ||(champion.MinRNG < 1)
+                ||(champion.MinRNG > champion.MaxRNG)
                 ||((champion.MaxRNG - champion.MinRNG) > Pox.Champion.RangeDifferenceLimit))
             {
                 champion.MinRNG = current;

@@ -151,6 +151,12 @@
     <Compile Include="Pox\RuneDescriptionControl.Designer.cs">
       <DependentUpon>RuneDescriptionControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pox\RunePreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pox\RunePreviewControl.Designer.cs">
+      <DependentUpon>RunePreviewControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pox\Spell.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -195,6 +201,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Pox\RuneDescriptionControl.resx">
       <DependentUpon>RuneDescriptionControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pox\RunePreviewControl.resx">
+      <DependentUpon>RunePreviewControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
