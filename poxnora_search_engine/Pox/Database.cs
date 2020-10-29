@@ -97,7 +97,7 @@ namespace poxnora_search_engine.Pox
                 if (online_backup == "")
                     return;
 
-                Log.Info("Database.LoadJSON(): database.json not found, retrieving from server...");
+                Log.Info(Log.LogSource.PoxDB, "Database.LoadJSON(): database.json not found, retrieving from server...");
 
                 wc = new System.Net.WebClient();
                 wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(RetrieveJSON_completed);
@@ -108,7 +108,7 @@ namespace poxnora_search_engine.Pox
             else
             {
                 if(online_backup != "")    // first load
-                    Log.Info("Database.LoadJSON(): database.json found, loading...");
+                    Log.Info(Log.LogSource.PoxDB, "Database.LoadJSON(): database.json found, loading...");
 
                 string json = File.ReadAllText(local_db);//"database.json");
 
@@ -123,18 +123,18 @@ namespace poxnora_search_engine.Pox
 
             if (e.Cancelled)
             {
-                Log.Error("Database.RetrieveJSON_completed(): Could not retrieve JSON");
+                Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Could not retrieve JSON");
                 return;
             }
             if (e.Error != null)
             {
-                Log.Error("Database.RetrieveJSON_completed(): Error while retrieving JSON");
+                Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Error while retrieving JSON");
                 return;
             }
 
-            File.WriteAllText("database.json", e.Result);
+            File.WriteAllText(System.Windows.Forms.Application.StartupPath+"\\database.json", e.Result);
 
-            Log.Info("Database.RetrieveJSON_completed(): database.json created, loading...");
+            Log.Info(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): database.json created, loading...");
 
             ParseFromJSON(e.Result);
         }
@@ -147,7 +147,7 @@ namespace poxnora_search_engine.Pox
             }
             catch (Exception)
             {
-                Log.Error("Database.ParseFromJSON(): Input JSON is invalid!");
+                Log.Error(Log.LogSource.PoxDB, "Database.ParseFromJSON(): Input JSON is invalid!");
                 return;
             }
 
@@ -176,11 +176,11 @@ namespace poxnora_search_engine.Pox
 
                 ResolveSimilarAbilities();
 
-                Log.Info("Champs loaded: " + Champions.Count + ", Abilities loaded: " + Abilities.Count + ", Spells loaded: " + Spells.Count + ", Relics loaded: " + Relics.Count + ", Equipments loaded: " + Equipments.Count);
+                Log.Info(Log.LogSource.PoxDB, "Champs loaded: " + Champions.Count + ", Abilities loaded: " + Abilities.Count + ", Spells loaded: " + Spells.Count + ", Relics loaded: " + Relics.Count + ", Equipments loaded: " + Equipments.Count);
             }
             catch (Exception e)
             {
-                Log.Error("Database.RetrieveJSON_completed(): Error while parsing the JSON");
+                Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Error while parsing the JSON");
                 return;
             }
             finally

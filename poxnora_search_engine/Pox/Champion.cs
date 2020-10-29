@@ -202,6 +202,8 @@ namespace poxnora_search_engine.Pox
         {
             float result = 0;
 
+            if(Damage == 0)
+                result += 12;
             
             return result;
         }

@@ -85,6 +85,12 @@
     <Compile Include="Pox\Ability.cs" />
     <Compile Include="Pox\Champion.cs" />
     <Compile Include="Pox\Database.cs" />
+    <Compile Include="Pox\DatabaseFilterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pox\DatabaseFilterControl.Designer.cs">
+      <DependentUpon>DatabaseFilterControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pox\DataElement.cs" />
     <Compile Include="Pox\Diff\DatabaseDifferenceCalculator.cs" />
     <Compile Include="Pox\Diff\DifferenceElement.cs" />
@@ -177,6 +183,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pox\DatabaseFilterControl.resx">
+      <DependentUpon>DatabaseFilterControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Pox\FilterControls\AbilityListFilterControl.resx">
       <DependentUpon>AbilityListFilterControl.cs</DependentUpon>

@@ -36,13 +36,14 @@
             System.Windows.Forms.TreeNode treeNode5 = new System.Windows.Forms.TreeNode("Equipments");
             this.LoadOldDatabaseDialog = new System.Windows.Forms.OpenFileDialog();
             this.ChangesTree = new System.Windows.Forms.TreeView();
+            this.ChangeListModeMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.showChangesPerCategoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showChangesPerFactionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PanelChangeList = new System.Windows.Forms.Panel();
             this.ButtonPrevious = new System.Windows.Forms.Button();
             this.ButtonCurrent = new System.Windows.Forms.Button();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
-            this.ChangeListModeMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.showChangesPerCategoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.showChangesPerFactionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
             this.ChangeListModeMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -71,46 +72,9 @@
             treeNode3,
             treeNode4,
             treeNode5});
-            this.ChangesTree.Size = new System.Drawing.Size(242, 576);
+            this.ChangesTree.Size = new System.Drawing.Size(329, 165);
             this.ChangesTree.TabIndex = 0;
             this.ChangesTree.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ChangesTree_AfterSelect);
-            // 
-            // PanelChangeList
-            // 
-            this.PanelChangeList.AutoScroll = true;
-            this.PanelChangeList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PanelChangeList.Location = new System.Drawing.Point(260, 12);
-            this.PanelChangeList.Name = "PanelChangeList";
-            this.PanelChangeList.Size = new System.Drawing.Size(447, 431);
-            this.PanelChangeList.TabIndex = 2;
-            // 
-            // ButtonPrevious
-            // 
-            this.ButtonPrevious.Location = new System.Drawing.Point(260, 449);
-            this.ButtonPrevious.Name = "ButtonPrevious";
-            this.ButtonPrevious.Size = new System.Drawing.Size(179, 23);
-            this.ButtonPrevious.TabIndex = 3;
-            this.ButtonPrevious.Text = "Previous";
-            this.ButtonPrevious.UseVisualStyleBackColor = true;
-            this.ButtonPrevious.Click += new System.EventHandler(this.ButtonPrevious_Click);
-            // 
-            // ButtonCurrent
-            // 
-            this.ButtonCurrent.Location = new System.Drawing.Point(528, 449);
-            this.ButtonCurrent.Name = "ButtonCurrent";
-            this.ButtonCurrent.Size = new System.Drawing.Size(179, 23);
-            this.ButtonCurrent.TabIndex = 4;
-            this.ButtonCurrent.Text = "Current";
-            this.ButtonCurrent.UseVisualStyleBackColor = true;
-            this.ButtonCurrent.Click += new System.EventHandler(this.ButtonCurrent_Click);
-            // 
-            // RuneDescription
-            // 
-            this.RuneDescription.BackColor = System.Drawing.Color.Black;
-            this.RuneDescription.Location = new System.Drawing.Point(713, 10);
-            this.RuneDescription.Name = "RuneDescription";
-            this.RuneDescription.Size = new System.Drawing.Size(281, 578);
-            this.RuneDescription.TabIndex = 1;
             // 
             // ChangeListModeMenu
             // 
@@ -134,11 +98,56 @@
             this.showChangesPerFactionToolStripMenuItem.Text = "Show changes per faction";
             this.showChangesPerFactionToolStripMenuItem.Click += new System.EventHandler(this.showChangesPerFactionToolStripMenuItem_Click);
             // 
+            // PanelChangeList
+            // 
+            this.PanelChangeList.AutoScroll = true;
+            this.PanelChangeList.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PanelChangeList.Location = new System.Drawing.Point(347, 12);
+            this.PanelChangeList.Name = "PanelChangeList";
+            this.PanelChangeList.Size = new System.Drawing.Size(447, 431);
+            this.PanelChangeList.TabIndex = 2;
+            // 
+            // ButtonPrevious
+            // 
+            this.ButtonPrevious.Location = new System.Drawing.Point(347, 449);
+            this.ButtonPrevious.Name = "ButtonPrevious";
+            this.ButtonPrevious.Size = new System.Drawing.Size(179, 23);
+            this.ButtonPrevious.TabIndex = 3;
+            this.ButtonPrevious.Text = "Previous";
+            this.ButtonPrevious.UseVisualStyleBackColor = true;
+            this.ButtonPrevious.Click += new System.EventHandler(this.ButtonPrevious_Click);
+            // 
+            // ButtonCurrent
+            // 
+            this.ButtonCurrent.Location = new System.Drawing.Point(615, 449);
+            this.ButtonCurrent.Name = "ButtonCurrent";
+            this.ButtonCurrent.Size = new System.Drawing.Size(179, 23);
+            this.ButtonCurrent.TabIndex = 4;
+            this.ButtonCurrent.Text = "Current";
+            this.ButtonCurrent.UseVisualStyleBackColor = true;
+            this.ButtonCurrent.Click += new System.EventHandler(this.ButtonCurrent_Click);
+            // 
+            // RuneDescription
+            // 
+            this.RuneDescription.BackColor = System.Drawing.Color.Black;
+            this.RuneDescription.Location = new System.Drawing.Point(800, 10);
+            this.RuneDescription.Name = "RuneDescription";
+            this.RuneDescription.Size = new System.Drawing.Size(281, 578);
+            this.RuneDescription.TabIndex = 1;
+            // 
+            // DatabaseFilter
+            // 
+            this.DatabaseFilter.Location = new System.Drawing.Point(9, 183);
+            this.DatabaseFilter.Name = "DatabaseFilter";
+            this.DatabaseFilter.Size = new System.Drawing.Size(334, 405);
+            this.DatabaseFilter.TabIndex = 5;
+            // 
             // DifferenceCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1006, 600);
+            this.ClientSize = new System.Drawing.Size(1092, 600);
+            this.Controls.Add(this.DatabaseFilter);
             this.Controls.Add(this.ButtonCurrent);
             this.Controls.Add(this.ButtonPrevious);
             this.Controls.Add(this.PanelChangeList);
@@ -167,5 +176,6 @@
         private System.Windows.Forms.ContextMenuStrip ChangeListModeMenu;
         private System.Windows.Forms.ToolStripMenuItem showChangesPerCategoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showChangesPerFactionToolStripMenuItem;
+        private Pox.DatabaseFilterControl DatabaseFilter;
     }
 }

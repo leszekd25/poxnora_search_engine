@@ -19,13 +19,27 @@ namespace poxnora_search_engine
         [STAThread]
         static void Main()
         {
+            Log.Info(Log.LogSource.Main, "Program.Main() started, application version: " + Utility.APP_VERSION);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            main_form = new MainForm();
-            Application.Run(main_form);
+            try
+            {
+                main_form = new MainForm();
+                Log.Info(Log.LogSource.Main, "Program.Main(): form created");
+                Application.Run(main_form);
 
-            main_form = null;
+                main_form = null;
+            }
+            catch(Exception e)
+            {
+                Log.Error(Log.LogSource.Main, "Program.Main(): Uncaught exception! Exception info:\r\n" + e.Message);
+            }
+            finally
+            {
+                Log.Info(Log.LogSource.Main, "Program.Main(): Saving log");
+                Log.SaveLog("UserLog.txt");
+            }
         }
     }
 }

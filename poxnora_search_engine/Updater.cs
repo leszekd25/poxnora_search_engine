@@ -30,6 +30,7 @@ namespace poxnora_search_engine
 
         public Updater()
         {
+            Log.Info(Log.LogSource.Net, "Updater.Updater() called");
             DeleteOldAssemblies();
             wc.DownloadDataCompleted += GetVersionArchive_completed;
         }
@@ -38,16 +39,20 @@ namespace poxnora_search_engine
         {
             if(DownloadVersionStringThread != null)
             {
+                Log.Info(Log.LogSource.Net, "Updater.GetLatestVersion(): Shutting down old thread");
                 DownloadVersionStringThread.Abort();
                 DownloadVersionStringThread = null;
             }
 
+            Log.Info(Log.LogSource.Net, "Updater.GetLatestVersion(): Starting new thread");
             DownloadVersionStringThread = new Thread(DownloadStringProcedure);
             DownloadVersionStringThread.Start();
         }
 
         void DownloadStringProcedure()
         {
+            Log.Info(Log.LogSource.Net, "Updater.DownloadStringProcedure() called");
+
             try
             {
                 string s = wc.DownloadString(VersionSource);
@@ -55,7 +60,7 @@ namespace poxnora_search_engine
                 int i = s.IndexOf("Current version:");
                 if (i == Utility.NO_INDEX)
                 {
-                    Log.Error("Updater.GetLatestVersion_completed(): Invalid update info");
+                    Log.Error(Log.LogSource.Net, "Updater.GetLatestVersion_completed(): Invalid update info");
                     _OnGetVersion?.Invoke(false, "");
                     return;
                 }
@@ -72,19 +77,25 @@ namespace poxnora_search_engine
             }
             catch(System.Net.WebException e)
             {
-                Log.Warning("Updater.GetLatestVersion_completed(): Could not retrieve update info");
+                Log.Warning(Log.LogSource.Net, "Updater.GetLatestVersion_completed(): Could not retrieve update info");
                 _OnGetVersion?.Invoke(false, "");
-                return;
+            }
+            finally
+            {
+                Log.Info(Log.LogSource.Net, "Updater.DownloadStringProcedure() finished");
             }
         }
 
         public void ForceInstallLatestVersion()
         {
+            Log.Info(Log.LogSource.Net, "Updater.ForceInstallLatestVersion() called");
             wc.DownloadDataAsync(VersionArchive);
         }
 
         void MoveOldAssemblies()
         {
+            Log.Info(Log.LogSource.Utility, "Updater.MoveOldAssemblies() called");
+
             // https://visualstudiomagazine.com/articles/2017/12/15/replace-running-app.aspx
             Assembly currentAssembly = Assembly.GetEntryAssembly();
             Assembly jsonAssembly = Assembly.GetAssembly(typeof(JsonReader));
@@ -103,6 +114,8 @@ namespace poxnora_search_engine
 
         void DeleteOldAssemblies()
         {
+            Log.Info(Log.LogSource.Utility, "Updater.DeleteOldAssemblies() called");
+
             // https://visualstudiomagazine.com/articles/2017/12/15/replace-running-app.aspx
             Assembly currentAssembly = Assembly.GetEntryAssembly();
             Assembly jsonAssembly = Assembly.GetAssembly(typeof(JsonReader));
@@ -123,13 +136,13 @@ namespace poxnora_search_engine
         {
             if (e.Cancelled)
             {
-                Log.Warning("Updater.GetVersionArchive_completed(): Could not retrieve newest version archive");
+                Log.Warning(Log.LogSource.Net, "Updater.GetVersionArchive_completed(): Could not retrieve newest version archive");
                 return;
             }
 
             if (e.Error != null)
             {
-                Log.Error("Updater.GetLatestVersion_completed(): Error while retrieving newest version archive");
+                Log.Error(Log.LogSource.Net, "Updater.GetLatestVersion_completed(): Error while retrieving newest version archive");
                 return;
             }
 
@@ -161,7 +174,7 @@ namespace poxnora_search_engine
             }
             catch(Exception ex)
             {
-                Log.Error("Updater.GetVersionArchive_completed(): Error while unpacking archive: " + ex.ToString());
+                Log.Error(Log.LogSource.Net, "Updater.GetVersionArchive_completed(): Error while unpacking archive: " + ex.ToString());
                 _OnGetArchiveFailed?.Invoke();
             }
         }

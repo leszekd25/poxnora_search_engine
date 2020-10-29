@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayColumnsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -130,7 +129,6 @@
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.StatusNewVersionAvailable = new System.Windows.Forms.ToolStripStatusLabel();
-            this.FilterTree = new System.Windows.Forms.TreeView();
             this.GridDataElements = new System.Windows.Forms.DataGridView();
             this.PanelDataMode = new System.Windows.Forms.Panel();
             this.RadioEquips = new System.Windows.Forms.RadioButton();
@@ -139,64 +137,15 @@
             this.RadioSpells = new System.Windows.Forms.RadioButton();
             this.RadioAbilities = new System.Windows.Forms.RadioButton();
             this.RadioChampions = new System.Windows.Forms.RadioButton();
-            this.FilterTreeContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.addFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.matchAnyFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.matchAllFiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.numberFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.iDToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.noraCostToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.deckLimitToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.defaultNoraCostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.prognosedBaseNoraCostToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.baseNoraCostToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.minimumNoraCostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.maximumNoraCostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.minimumRangeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.maximumRangeToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.defenseToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.speedToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.damageToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.hitPointsToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.sizeToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.aPCostToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.levelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.cooldownToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.textFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.nameToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.descriptionToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
-            this.artistToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.flavorTextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.optionFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rarityToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.expansionToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.binaryFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.forSaleToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.tradeableToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.allowedInRankedToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.abilityListFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.factionToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
-            this.raceToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.classToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.allAbilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.baseAbilitiesToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.upgradeAbilitiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.removeFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wrapIntoAnySubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.wrapIntoAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.popOutOfAnyAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.ButtonApplyFilter = new System.Windows.Forms.Button();
-            this.ButtonClearFilter = new System.Windows.Forms.Button();
-            this.PanelFilterProperties = new System.Windows.Forms.Panel();
             this.PanelRunePreviews = new System.Windows.Forms.Panel();
             this.pageSetupDialog1 = new System.Windows.Forms.PageSetupDialog();
             this.PreviewScrollBar = new System.Windows.Forms.VScrollBar();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
+            this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
             this.PanelDataMode.SuspendLayout();
-            this.FilterTreeContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainMenu
@@ -1159,15 +1108,6 @@
             this.StatusNewVersionAvailable.Visible = false;
             this.StatusNewVersionAvailable.Click += new System.EventHandler(this.StatusNewVersionAvailable_Click);
             // 
-            // FilterTree
-            // 
-            this.FilterTree.Location = new System.Drawing.Point(0, 27);
-            this.FilterTree.Name = "FilterTree";
-            this.FilterTree.Size = new System.Drawing.Size(329, 396);
-            this.FilterTree.TabIndex = 2;
-            this.FilterTree.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.FilterTree_NodeMouseClick);
-            this.FilterTree.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FilterTree_MouseDown);
-            // 
             // GridDataElements
             // 
             this.GridDataElements.AllowUserToAddRows = false;
@@ -1261,400 +1201,6 @@
             this.RadioChampions.UseVisualStyleBackColor = true;
             this.RadioChampions.CheckedChanged += new System.EventHandler(this.RadioChampions_CheckedChanged);
             // 
-            // FilterTreeContextMenu
-            // 
-            this.FilterTreeContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addFilterToolStripMenuItem,
-            this.removeFilterToolStripMenuItem,
-            this.wrapIntoAnySubfiltersToolStripMenuItem,
-            this.wrapIntoAllSubfiltersToolStripMenuItem,
-            this.popOutOfAnyAllSubfiltersToolStripMenuItem});
-            this.FilterTreeContextMenu.Name = "FilterTreeContextMenu";
-            this.FilterTreeContextMenu.Size = new System.Drawing.Size(225, 114);
-            // 
-            // addFilterToolStripMenuItem
-            // 
-            this.addFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.matchAnyFilterToolStripMenuItem,
-            this.matchAllFiltersToolStripMenuItem,
-            this.numberFilterToolStripMenuItem,
-            this.textFilterToolStripMenuItem,
-            this.optionFilterToolStripMenuItem,
-            this.binaryFilterToolStripMenuItem,
-            this.abilityListFilterToolStripMenuItem});
-            this.addFilterToolStripMenuItem.Name = "addFilterToolStripMenuItem";
-            this.addFilterToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.addFilterToolStripMenuItem.Text = "Add filter";
-            // 
-            // matchAnyFilterToolStripMenuItem
-            // 
-            this.matchAnyFilterToolStripMenuItem.Name = "matchAnyFilterToolStripMenuItem";
-            this.matchAnyFilterToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.matchAnyFilterToolStripMenuItem.Text = "Any subfilters";
-            this.matchAnyFilterToolStripMenuItem.Click += new System.EventHandler(this.matchAnyFilterToolStripMenuItem_Click);
-            // 
-            // matchAllFiltersToolStripMenuItem
-            // 
-            this.matchAllFiltersToolStripMenuItem.Name = "matchAllFiltersToolStripMenuItem";
-            this.matchAllFiltersToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.matchAllFiltersToolStripMenuItem.Text = "All subfilter";
-            this.matchAllFiltersToolStripMenuItem.Click += new System.EventHandler(this.matchAllFiltersToolStripMenuItem_Click);
-            // 
-            // numberFilterToolStripMenuItem
-            // 
-            this.numberFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.iDToolStripMenuItem5,
-            this.noraCostToolStripMenuItem5,
-            this.deckLimitToolStripMenuItem4,
-            this.defaultNoraCostToolStripMenuItem,
-            this.prognosedBaseNoraCostToolStripMenuItem1,
-            this.baseNoraCostToolStripMenuItem1,
-            this.minimumNoraCostToolStripMenuItem,
-            this.maximumNoraCostToolStripMenuItem,
-            this.minimumRangeToolStripMenuItem1,
-            this.maximumRangeToolStripMenuItem1,
-            this.defenseToolStripMenuItem2,
-            this.speedToolStripMenuItem1,
-            this.damageToolStripMenuItem1,
-            this.hitPointsToolStripMenuItem2,
-            this.sizeToolStripMenuItem2,
-            this.aPCostToolStripMenuItem1,
-            this.levelToolStripMenuItem1,
-            this.cooldownToolStripMenuItem1});
-            this.numberFilterToolStripMenuItem.Name = "numberFilterToolStripMenuItem";
-            this.numberFilterToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.numberFilterToolStripMenuItem.Text = "Number filter";
-            // 
-            // iDToolStripMenuItem5
-            // 
-            this.iDToolStripMenuItem5.Name = "iDToolStripMenuItem5";
-            this.iDToolStripMenuItem5.Size = new System.Drawing.Size(210, 22);
-            this.iDToolStripMenuItem5.Text = "ID";
-            this.iDToolStripMenuItem5.Click += new System.EventHandler(this.iDToolStripMenuItem5_Click);
-            // 
-            // noraCostToolStripMenuItem5
-            // 
-            this.noraCostToolStripMenuItem5.Name = "noraCostToolStripMenuItem5";
-            this.noraCostToolStripMenuItem5.Size = new System.Drawing.Size(210, 22);
-            this.noraCostToolStripMenuItem5.Text = "Nora cost";
-            this.noraCostToolStripMenuItem5.Click += new System.EventHandler(this.noraCostToolStripMenuItem5_Click);
-            // 
-            // deckLimitToolStripMenuItem4
-            // 
-            this.deckLimitToolStripMenuItem4.Name = "deckLimitToolStripMenuItem4";
-            this.deckLimitToolStripMenuItem4.Size = new System.Drawing.Size(210, 22);
-            this.deckLimitToolStripMenuItem4.Text = "Deck limit";
-            this.deckLimitToolStripMenuItem4.Click += new System.EventHandler(this.deckLimitToolStripMenuItem4_Click);
-            // 
-            // defaultNoraCostToolStripMenuItem
-            // 
-            this.defaultNoraCostToolStripMenuItem.Name = "defaultNoraCostToolStripMenuItem";
-            this.defaultNoraCostToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.defaultNoraCostToolStripMenuItem.Text = "Default nora cost";
-            this.defaultNoraCostToolStripMenuItem.Click += new System.EventHandler(this.defaultNoraCostToolStripMenuItem_Click);
-            // 
-            // prognosedBaseNoraCostToolStripMenuItem1
-            // 
-            this.prognosedBaseNoraCostToolStripMenuItem1.Name = "prognosedBaseNoraCostToolStripMenuItem1";
-            this.prognosedBaseNoraCostToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.prognosedBaseNoraCostToolStripMenuItem1.Text = "Prognosed base nora cost";
-            this.prognosedBaseNoraCostToolStripMenuItem1.Click += new System.EventHandler(this.prognosedBaseNoraCostToolStripMenuItem1_Click);
-            // 
-            // baseNoraCostToolStripMenuItem1
-            // 
-            this.baseNoraCostToolStripMenuItem1.Name = "baseNoraCostToolStripMenuItem1";
-            this.baseNoraCostToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.baseNoraCostToolStripMenuItem1.Text = "Base nora cost";
-            this.baseNoraCostToolStripMenuItem1.Click += new System.EventHandler(this.baseNoraCostToolStripMenuItem1_Click);
-            // 
-            // minimumNoraCostToolStripMenuItem
-            // 
-            this.minimumNoraCostToolStripMenuItem.Name = "minimumNoraCostToolStripMenuItem";
-            this.minimumNoraCostToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.minimumNoraCostToolStripMenuItem.Text = "Minimum nora cost";
-            this.minimumNoraCostToolStripMenuItem.Click += new System.EventHandler(this.minimumNoraCostToolStripMenuItem_Click);
-            // 
-            // maximumNoraCostToolStripMenuItem
-            // 
-            this.maximumNoraCostToolStripMenuItem.Name = "maximumNoraCostToolStripMenuItem";
-            this.maximumNoraCostToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.maximumNoraCostToolStripMenuItem.Text = "Maximum nora cost";
-            this.maximumNoraCostToolStripMenuItem.Click += new System.EventHandler(this.maximumNoraCostToolStripMenuItem_Click);
-            // 
-            // minimumRangeToolStripMenuItem1
-            // 
-            this.minimumRangeToolStripMenuItem1.Name = "minimumRangeToolStripMenuItem1";
-            this.minimumRangeToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.minimumRangeToolStripMenuItem1.Text = "Minimum range";
-            this.minimumRangeToolStripMenuItem1.Click += new System.EventHandler(this.minimumRangeToolStripMenuItem1_Click);
-            // 
-            // maximumRangeToolStripMenuItem1
-            // 
-            this.maximumRangeToolStripMenuItem1.Name = "maximumRangeToolStripMenuItem1";
-            this.maximumRangeToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.maximumRangeToolStripMenuItem1.Text = "Maximum range";
-            this.maximumRangeToolStripMenuItem1.Click += new System.EventHandler(this.maximumRangeToolStripMenuItem1_Click);
-            // 
-            // defenseToolStripMenuItem2
-            // 
-            this.defenseToolStripMenuItem2.Name = "defenseToolStripMenuItem2";
-            this.defenseToolStripMenuItem2.Size = new System.Drawing.Size(210, 22);
-            this.defenseToolStripMenuItem2.Text = "Defense";
-            this.defenseToolStripMenuItem2.Click += new System.EventHandler(this.defenseToolStripMenuItem2_Click);
-            // 
-            // speedToolStripMenuItem1
-            // 
-            this.speedToolStripMenuItem1.Name = "speedToolStripMenuItem1";
-            this.speedToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.speedToolStripMenuItem1.Text = "Speed";
-            this.speedToolStripMenuItem1.Click += new System.EventHandler(this.speedToolStripMenuItem1_Click);
-            // 
-            // damageToolStripMenuItem1
-            // 
-            this.damageToolStripMenuItem1.Name = "damageToolStripMenuItem1";
-            this.damageToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.damageToolStripMenuItem1.Text = "Damage";
-            this.damageToolStripMenuItem1.Click += new System.EventHandler(this.damageToolStripMenuItem1_Click);
-            // 
-            // hitPointsToolStripMenuItem2
-            // 
-            this.hitPointsToolStripMenuItem2.Name = "hitPointsToolStripMenuItem2";
-            this.hitPointsToolStripMenuItem2.Size = new System.Drawing.Size(210, 22);
-            this.hitPointsToolStripMenuItem2.Text = "Hit points";
-            this.hitPointsToolStripMenuItem2.Click += new System.EventHandler(this.hitPointsToolStripMenuItem2_Click);
-            // 
-            // sizeToolStripMenuItem2
-            // 
-            this.sizeToolStripMenuItem2.Name = "sizeToolStripMenuItem2";
-            this.sizeToolStripMenuItem2.Size = new System.Drawing.Size(210, 22);
-            this.sizeToolStripMenuItem2.Text = "Size";
-            this.sizeToolStripMenuItem2.Click += new System.EventHandler(this.sizeToolStripMenuItem2_Click);
-            // 
-            // aPCostToolStripMenuItem1
-            // 
-            this.aPCostToolStripMenuItem1.Name = "aPCostToolStripMenuItem1";
-            this.aPCostToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.aPCostToolStripMenuItem1.Text = "AP cost";
-            this.aPCostToolStripMenuItem1.Click += new System.EventHandler(this.aPCostToolStripMenuItem1_Click);
-            // 
-            // levelToolStripMenuItem1
-            // 
-            this.levelToolStripMenuItem1.Name = "levelToolStripMenuItem1";
-            this.levelToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.levelToolStripMenuItem1.Text = "Level";
-            this.levelToolStripMenuItem1.Click += new System.EventHandler(this.levelToolStripMenuItem1_Click);
-            // 
-            // cooldownToolStripMenuItem1
-            // 
-            this.cooldownToolStripMenuItem1.Name = "cooldownToolStripMenuItem1";
-            this.cooldownToolStripMenuItem1.Size = new System.Drawing.Size(210, 22);
-            this.cooldownToolStripMenuItem1.Text = "Cooldown";
-            this.cooldownToolStripMenuItem1.Click += new System.EventHandler(this.cooldownToolStripMenuItem1_Click);
-            // 
-            // textFilterToolStripMenuItem
-            // 
-            this.textFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.nameToolStripMenuItem5,
-            this.descriptionToolStripMenuItem5,
-            this.artistToolStripMenuItem4,
-            this.flavorTextToolStripMenuItem1});
-            this.textFilterToolStripMenuItem.Name = "textFilterToolStripMenuItem";
-            this.textFilterToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.textFilterToolStripMenuItem.Text = "Text filter";
-            // 
-            // nameToolStripMenuItem5
-            // 
-            this.nameToolStripMenuItem5.Name = "nameToolStripMenuItem5";
-            this.nameToolStripMenuItem5.Size = new System.Drawing.Size(134, 22);
-            this.nameToolStripMenuItem5.Text = "Name";
-            this.nameToolStripMenuItem5.Click += new System.EventHandler(this.nameToolStripMenuItem5_Click);
-            // 
-            // descriptionToolStripMenuItem5
-            // 
-            this.descriptionToolStripMenuItem5.Name = "descriptionToolStripMenuItem5";
-            this.descriptionToolStripMenuItem5.Size = new System.Drawing.Size(134, 22);
-            this.descriptionToolStripMenuItem5.Text = "Description";
-            this.descriptionToolStripMenuItem5.Click += new System.EventHandler(this.descriptionToolStripMenuItem5_Click);
-            // 
-            // artistToolStripMenuItem4
-            // 
-            this.artistToolStripMenuItem4.Name = "artistToolStripMenuItem4";
-            this.artistToolStripMenuItem4.Size = new System.Drawing.Size(134, 22);
-            this.artistToolStripMenuItem4.Text = "Artist";
-            this.artistToolStripMenuItem4.Click += new System.EventHandler(this.artistToolStripMenuItem4_Click);
-            // 
-            // flavorTextToolStripMenuItem1
-            // 
-            this.flavorTextToolStripMenuItem1.Name = "flavorTextToolStripMenuItem1";
-            this.flavorTextToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
-            this.flavorTextToolStripMenuItem1.Text = "Flavor text";
-            this.flavorTextToolStripMenuItem1.Click += new System.EventHandler(this.flavorTextToolStripMenuItem1_Click);
-            // 
-            // optionFilterToolStripMenuItem
-            // 
-            this.optionFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.rarityToolStripMenuItem4,
-            this.expansionToolStripMenuItem4});
-            this.optionFilterToolStripMenuItem.Name = "optionFilterToolStripMenuItem";
-            this.optionFilterToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.optionFilterToolStripMenuItem.Text = "Choice filter";
-            // 
-            // rarityToolStripMenuItem4
-            // 
-            this.rarityToolStripMenuItem4.Name = "rarityToolStripMenuItem4";
-            this.rarityToolStripMenuItem4.Size = new System.Drawing.Size(128, 22);
-            this.rarityToolStripMenuItem4.Text = "Rarity";
-            this.rarityToolStripMenuItem4.Click += new System.EventHandler(this.rarityToolStripMenuItem4_Click);
-            // 
-            // expansionToolStripMenuItem4
-            // 
-            this.expansionToolStripMenuItem4.Name = "expansionToolStripMenuItem4";
-            this.expansionToolStripMenuItem4.Size = new System.Drawing.Size(128, 22);
-            this.expansionToolStripMenuItem4.Text = "Expansion";
-            this.expansionToolStripMenuItem4.Click += new System.EventHandler(this.expansionToolStripMenuItem4_Click);
-            // 
-            // binaryFilterToolStripMenuItem
-            // 
-            this.binaryFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.forSaleToolStripMenuItem4,
-            this.tradeableToolStripMenuItem4,
-            this.allowedInRankedToolStripMenuItem4});
-            this.binaryFilterToolStripMenuItem.Name = "binaryFilterToolStripMenuItem";
-            this.binaryFilterToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.binaryFilterToolStripMenuItem.Text = "Binary filter";
-            // 
-            // forSaleToolStripMenuItem4
-            // 
-            this.forSaleToolStripMenuItem4.Name = "forSaleToolStripMenuItem4";
-            this.forSaleToolStripMenuItem4.Size = new System.Drawing.Size(169, 22);
-            this.forSaleToolStripMenuItem4.Text = "For sale";
-            this.forSaleToolStripMenuItem4.Click += new System.EventHandler(this.forSaleToolStripMenuItem4_Click);
-            // 
-            // tradeableToolStripMenuItem4
-            // 
-            this.tradeableToolStripMenuItem4.Name = "tradeableToolStripMenuItem4";
-            this.tradeableToolStripMenuItem4.Size = new System.Drawing.Size(169, 22);
-            this.tradeableToolStripMenuItem4.Text = "Tradeable";
-            this.tradeableToolStripMenuItem4.Click += new System.EventHandler(this.tradeableToolStripMenuItem4_Click);
-            // 
-            // allowedInRankedToolStripMenuItem4
-            // 
-            this.allowedInRankedToolStripMenuItem4.Name = "allowedInRankedToolStripMenuItem4";
-            this.allowedInRankedToolStripMenuItem4.Size = new System.Drawing.Size(169, 22);
-            this.allowedInRankedToolStripMenuItem4.Text = "Allowed in ranked";
-            this.allowedInRankedToolStripMenuItem4.Click += new System.EventHandler(this.allowedInRankedToolStripMenuItem4_Click);
-            // 
-            // abilityListFilterToolStripMenuItem
-            // 
-            this.abilityListFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.factionToolStripMenuItem4,
-            this.raceToolStripMenuItem1,
-            this.classToolStripMenuItem1,
-            this.allAbilitiesToolStripMenuItem,
-            this.baseAbilitiesToolStripMenuItem1,
-            this.upgradeAbilitiesToolStripMenuItem});
-            this.abilityListFilterToolStripMenuItem.Name = "abilityListFilterToolStripMenuItem";
-            this.abilityListFilterToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
-            this.abilityListFilterToolStripMenuItem.Text = "List filter";
-            // 
-            // factionToolStripMenuItem4
-            // 
-            this.factionToolStripMenuItem4.Name = "factionToolStripMenuItem4";
-            this.factionToolStripMenuItem4.Size = new System.Drawing.Size(162, 22);
-            this.factionToolStripMenuItem4.Text = "Faction";
-            this.factionToolStripMenuItem4.Click += new System.EventHandler(this.factionToolStripMenuItem4_Click);
-            // 
-            // raceToolStripMenuItem1
-            // 
-            this.raceToolStripMenuItem1.Name = "raceToolStripMenuItem1";
-            this.raceToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
-            this.raceToolStripMenuItem1.Text = "Race";
-            this.raceToolStripMenuItem1.Click += new System.EventHandler(this.raceToolStripMenuItem1_Click);
-            // 
-            // classToolStripMenuItem1
-            // 
-            this.classToolStripMenuItem1.Name = "classToolStripMenuItem1";
-            this.classToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
-            this.classToolStripMenuItem1.Text = "Class";
-            this.classToolStripMenuItem1.Click += new System.EventHandler(this.classToolStripMenuItem1_Click);
-            // 
-            // allAbilitiesToolStripMenuItem
-            // 
-            this.allAbilitiesToolStripMenuItem.Name = "allAbilitiesToolStripMenuItem";
-            this.allAbilitiesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.allAbilitiesToolStripMenuItem.Text = "All abilities";
-            this.allAbilitiesToolStripMenuItem.Click += new System.EventHandler(this.allAbilitiesToolStripMenuItem_Click);
-            // 
-            // baseAbilitiesToolStripMenuItem1
-            // 
-            this.baseAbilitiesToolStripMenuItem1.Name = "baseAbilitiesToolStripMenuItem1";
-            this.baseAbilitiesToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
-            this.baseAbilitiesToolStripMenuItem1.Text = "Base abilities";
-            this.baseAbilitiesToolStripMenuItem1.Click += new System.EventHandler(this.baseAbilitiesToolStripMenuItem1_Click);
-            // 
-            // upgradeAbilitiesToolStripMenuItem
-            // 
-            this.upgradeAbilitiesToolStripMenuItem.Name = "upgradeAbilitiesToolStripMenuItem";
-            this.upgradeAbilitiesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.upgradeAbilitiesToolStripMenuItem.Text = "Upgrade abilities";
-            this.upgradeAbilitiesToolStripMenuItem.Click += new System.EventHandler(this.upgradeAbilitiesToolStripMenuItem_Click);
-            // 
-            // removeFilterToolStripMenuItem
-            // 
-            this.removeFilterToolStripMenuItem.Name = "removeFilterToolStripMenuItem";
-            this.removeFilterToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.removeFilterToolStripMenuItem.Text = "Remove filter";
-            this.removeFilterToolStripMenuItem.Click += new System.EventHandler(this.removeFilterToolStripMenuItem_Click);
-            // 
-            // wrapIntoAnySubfiltersToolStripMenuItem
-            // 
-            this.wrapIntoAnySubfiltersToolStripMenuItem.Name = "wrapIntoAnySubfiltersToolStripMenuItem";
-            this.wrapIntoAnySubfiltersToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.wrapIntoAnySubfiltersToolStripMenuItem.Text = "Wrap into Any subfilters";
-            this.wrapIntoAnySubfiltersToolStripMenuItem.Click += new System.EventHandler(this.wrapIntoAnySubfiltersToolStripMenuItem_Click);
-            // 
-            // wrapIntoAllSubfiltersToolStripMenuItem
-            // 
-            this.wrapIntoAllSubfiltersToolStripMenuItem.Name = "wrapIntoAllSubfiltersToolStripMenuItem";
-            this.wrapIntoAllSubfiltersToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.wrapIntoAllSubfiltersToolStripMenuItem.Text = "Wrap into All subfilters";
-            this.wrapIntoAllSubfiltersToolStripMenuItem.Click += new System.EventHandler(this.wrapIntoAllSubfiltersToolStripMenuItem_Click);
-            // 
-            // popOutOfAnyAllSubfiltersToolStripMenuItem
-            // 
-            this.popOutOfAnyAllSubfiltersToolStripMenuItem.Name = "popOutOfAnyAllSubfiltersToolStripMenuItem";
-            this.popOutOfAnyAllSubfiltersToolStripMenuItem.Size = new System.Drawing.Size(224, 22);
-            this.popOutOfAnyAllSubfiltersToolStripMenuItem.Text = "Pop out of Any/All subfilters";
-            this.popOutOfAnyAllSubfiltersToolStripMenuItem.Click += new System.EventHandler(this.popOutOfAnyAllSubfiltersToolStripMenuItem_Click);
-            // 
-            // ButtonApplyFilter
-            // 
-            this.ButtonApplyFilter.Location = new System.Drawing.Point(207, 429);
-            this.ButtonApplyFilter.Name = "ButtonApplyFilter";
-            this.ButtonApplyFilter.Size = new System.Drawing.Size(122, 23);
-            this.ButtonApplyFilter.TabIndex = 7;
-            this.ButtonApplyFilter.Text = "Apply filters";
-            this.ButtonApplyFilter.UseVisualStyleBackColor = true;
-            this.ButtonApplyFilter.Click += new System.EventHandler(this.ButtonApplyFilter_Click);
-            // 
-            // ButtonClearFilter
-            // 
-            this.ButtonClearFilter.BackColor = System.Drawing.Color.Orange;
-            this.ButtonClearFilter.Location = new System.Drawing.Point(0, 429);
-            this.ButtonClearFilter.Name = "ButtonClearFilter";
-            this.ButtonClearFilter.Size = new System.Drawing.Size(122, 23);
-            this.ButtonClearFilter.TabIndex = 8;
-            this.ButtonClearFilter.Text = "Clear filters";
-            this.ButtonClearFilter.UseVisualStyleBackColor = false;
-            this.ButtonClearFilter.Click += new System.EventHandler(this.ButtonClearFilter_Click);
-            // 
-            // PanelFilterProperties
-            // 
-            this.PanelFilterProperties.Location = new System.Drawing.Point(0, 458);
-            this.PanelFilterProperties.Name = "PanelFilterProperties";
-            this.PanelFilterProperties.Size = new System.Drawing.Size(329, 160);
-            this.PanelFilterProperties.TabIndex = 9;
-            // 
             // PanelRunePreviews
             // 
             this.PanelRunePreviews.Location = new System.Drawing.Point(335, 518);
@@ -1680,19 +1226,23 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
+            // DatabaseFilter
+            // 
+            this.DatabaseFilter.Location = new System.Drawing.Point(-2, 21);
+            this.DatabaseFilter.Name = "DatabaseFilter";
+            this.DatabaseFilter.Size = new System.Drawing.Size(334, 400);
+            this.DatabaseFilter.TabIndex = 11;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1394, 643);
+            this.Controls.Add(this.DatabaseFilter);
             this.Controls.Add(this.PreviewScrollBar);
             this.Controls.Add(this.RuneDescription);
-            this.Controls.Add(this.PanelFilterProperties);
-            this.Controls.Add(this.ButtonClearFilter);
-            this.Controls.Add(this.ButtonApplyFilter);
             this.Controls.Add(this.PanelDataMode);
             this.Controls.Add(this.GridDataElements);
-            this.Controls.Add(this.FilterTree);
             this.Controls.Add(this.Status);
             this.Controls.Add(this.MainMenu);
             this.Controls.Add(this.PanelRunePreviews);
@@ -1712,7 +1262,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).EndInit();
             this.PanelDataMode.ResumeLayout(false);
             this.PanelDataMode.PerformLayout();
-            this.FilterTreeContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1722,7 +1271,6 @@
 
         private System.Windows.Forms.MenuStrip MainMenu;
         private System.Windows.Forms.StatusStrip Status;
-        private System.Windows.Forms.TreeView FilterTree;
         private System.Windows.Forms.DataGridView GridDataElements;
         private System.Windows.Forms.ToolStripMenuItem viewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem displayColumnsToolStripMenuItem;
@@ -1810,61 +1358,14 @@
         private System.Windows.Forms.ToolStripMenuItem allowedInRankedToolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem deckLimitToolStripMenuItem3;
         private System.Windows.Forms.ToolStripMenuItem flavorTextToolStripMenuItem;
-        private System.Windows.Forms.ContextMenuStrip FilterTreeContextMenu;
-        private System.Windows.Forms.ToolStripMenuItem addFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem matchAnyFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem matchAllFiltersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem numberFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem textFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem optionFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem binaryFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem abilityListFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem removeFilterToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem iDToolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem noraCostToolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem deckLimitToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem minimumRangeToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem maximumRangeToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem defenseToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem speedToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem damageToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem hitPointsToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem sizeToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem aPCostToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem levelToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem cooldownToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem nameToolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem descriptionToolStripMenuItem5;
-        private System.Windows.Forms.ToolStripMenuItem artistToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem flavorTextToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem rarityToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem expansionToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem forSaleToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem tradeableToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem allowedInRankedToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem factionToolStripMenuItem4;
-        private System.Windows.Forms.ToolStripMenuItem raceToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem classToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem allAbilitiesToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem baseAbilitiesToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem upgradeAbilitiesToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem manualToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
-        private System.Windows.Forms.Button ButtonApplyFilter;
-        private System.Windows.Forms.Button ButtonClearFilter;
-        private System.Windows.Forms.Panel PanelFilterProperties;
         private Pox.RuneDescriptionControl RuneDescription;
-        private System.Windows.Forms.ToolStripMenuItem defaultNoraCostToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem minimumNoraCostToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem maximumNoraCostToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem defaultNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem minimumNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem maximumNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripStatusLabel LastLogMessage;
-        private System.Windows.Forms.ToolStripMenuItem wrapIntoAnySubfiltersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem wrapIntoAllSubfiltersToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem popOutOfAnyAllSubfiltersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem otherToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deckRandomizerToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cooldownToolStripMenuItem2;
@@ -1872,9 +1373,7 @@
         private System.Windows.Forms.ToolStripMenuItem cooldownToolStripMenuItem4;
         private System.Windows.Forms.ToolStripMenuItem cooldownToolStripMenuItem5;
         private System.Windows.Forms.ToolStripMenuItem baseNoraCostToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem baseNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem prognosedBaseNoraCostDifferenceToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem championBuilderToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem differenceCalculatorToolStripMenuItem;
@@ -1883,6 +1382,7 @@
         private System.Windows.Forms.PageSetupDialog pageSetupDialog1;
         private System.Windows.Forms.Button ButtonSetViewMode;
         private System.Windows.Forms.VScrollBar PreviewScrollBar;
+        private Pox.DatabaseFilterControl DatabaseFilter;
     }
 }
 

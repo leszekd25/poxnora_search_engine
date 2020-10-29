@@ -26,13 +26,14 @@ namespace poxnora_search_engine
 
         private void DifferenceCalculatorForm_Resize(object sender, EventArgs e)
         {
-            if (this.Width <= 740)
+            if (this.Width <= 826)
                 return;
             if (this.Height <= 200)
                 return;
 
-            ChangesTree.Height = this.Height - 64;
-            PanelChangeList.Width = this.Width - 1022 + ChangesTree.Width + RuneDescription.Width - 64;
+            ChangesTree.Height = this.Height - 64 - 6 - DatabaseFilter.Height;
+            DatabaseFilter.Location = new Point(ChangesTree.Location.X - 3, ChangesTree.Location.Y + ChangesTree.Height + 6);
+            PanelChangeList.Width = this.Width - 1108 + ChangesTree.Width + RuneDescription.Width - 64 - 84;
             PanelChangeList.Height = this.Height - 200;
             if (PanelChangeList.Width > (ButtonPrevious.Width + ButtonCurrent.Width + 16))
             {
@@ -48,15 +49,35 @@ namespace poxnora_search_engine
             RuneDescription.SetHeight(this.Height - 64);
         }
 
+        private bool ElementPassesFilter(Pox.DataElement elem)
+        {
+            return ((!DatabaseFilter.ApplyFilters) || (DatabaseFilter.SearchFilter == null) || (DatabaseFilter.SearchFilter.Satisfies(elem)));
+        }
+
         private void PopulateChampionChangeBrowser(TreeNode tn)
         {
             foreach (var diff_elem in diff_calculator.DifferingChampions)
             {
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.CHAMPION };
                 if (diff_calculator.PreviousDatabase.Champions.ContainsKey(diff_elem.id))
+                {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Champions[diff_elem.id]))
+                        passes_filter = true;
+
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Champions[diff_elem.id];
+                }
                 if (diff_calculator.CurrentDatabase_ref.Champions.ContainsKey(diff_elem.id))
+                {
+                    if ((!passes_filter)&&(ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id])))
+                        passes_filter = true;
+
                     diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id];
+                }
+
+                if (!passes_filter)
+                    continue;
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
@@ -67,11 +88,26 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingAbilities)
             {
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.ABILITY };
                 if (diff_calculator.PreviousDatabase.Abilities.ContainsKey(diff_elem.id))
+                {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Abilities[diff_elem.id]))
+                        passes_filter = true;
+
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Abilities[diff_elem.id];
+                }
                 if (diff_calculator.CurrentDatabase_ref.Abilities.ContainsKey(diff_elem.id))
+                {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Abilities[diff_elem.id])))
+                        passes_filter = true;
+
                     diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Abilities[diff_elem.id];
+                }
+
+                if (!passes_filter)
+                    continue;
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
@@ -82,11 +118,26 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingSpells)
             {
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.SPELL };
                 if (diff_calculator.PreviousDatabase.Spells.ContainsKey(diff_elem.id))
+                {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Spells[diff_elem.id]))
+                        passes_filter = true;
+
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Spells[diff_elem.id];
+                }
                 if (diff_calculator.CurrentDatabase_ref.Spells.ContainsKey(diff_elem.id))
+                {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id])))
+                        passes_filter = true;
+
                     diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id];
+                }
+
+                if (!passes_filter)
+                    continue;
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
@@ -97,11 +148,26 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingRelics)
             {
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.RELIC };
                 if (diff_calculator.PreviousDatabase.Relics.ContainsKey(diff_elem.id))
+                {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Relics[diff_elem.id]))
+                        passes_filter = true;
+
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Relics[diff_elem.id];
+                }
                 if (diff_calculator.CurrentDatabase_ref.Relics.ContainsKey(diff_elem.id))
+                {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id])))
+                        passes_filter = true;
+
                     diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id];
+                }
+
+                if (!passes_filter)
+                    continue;
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
@@ -112,11 +178,26 @@ namespace poxnora_search_engine
         {
             foreach (var diff_elem in diff_calculator.DifferingEquipments)
             {
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.EQUIPMENT };
                 if (diff_calculator.PreviousDatabase.Equipments.ContainsKey(diff_elem.id))
+                {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Equipments[diff_elem.id]))
+                        passes_filter = true;
+
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Equipments[diff_elem.id];
+                }
                 if (diff_calculator.CurrentDatabase_ref.Equipments.ContainsKey(diff_elem.id))
+                {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id])))
+                        passes_filter = true;
+
                     diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id];
+                }
+
+                if (!passes_filter)
+                    continue;
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
@@ -146,10 +227,15 @@ namespace poxnora_search_engine
             foreach (var diff_elem in diff_calculator.DifferingChampions)
             {
                 bool contains_faction = false;
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.CHAMPION };
 
                 if (diff_calculator.PreviousDatabase.Champions.ContainsKey(diff_elem.id))
                 {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Champions[diff_elem.id]))
+                        passes_filter = true;
+
                     if (diff_calculator.PreviousDatabase.Champions[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.PreviousElement = diff_calculator.PreviousDatabase.Champions[diff_elem.id];
@@ -158,6 +244,9 @@ namespace poxnora_search_engine
                 }
                 if (diff_calculator.CurrentDatabase_ref.Champions.ContainsKey(diff_elem.id))
                 {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id])))
+                        passes_filter = true;
+
                     if (diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Champions[diff_elem.id];
@@ -168,6 +257,9 @@ namespace poxnora_search_engine
                 if (!contains_faction)
                     continue;
 
+                if (!passes_filter)
+                    continue;
+
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
 
@@ -175,10 +267,15 @@ namespace poxnora_search_engine
             foreach (var diff_elem in diff_calculator.DifferingSpells)
             {
                 bool contains_faction = false;
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.SPELL };
 
                 if (diff_calculator.PreviousDatabase.Spells.ContainsKey(diff_elem.id))
                 {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Spells[diff_elem.id]))
+                        passes_filter = true;
+
                     if (diff_calculator.PreviousDatabase.Spells[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.PreviousElement = diff_calculator.PreviousDatabase.Spells[diff_elem.id];
@@ -187,6 +284,9 @@ namespace poxnora_search_engine
                 }
                 if (diff_calculator.CurrentDatabase_ref.Spells.ContainsKey(diff_elem.id))
                 {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id])))
+                        passes_filter = true;
+
                     if (diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Spells[diff_elem.id];
@@ -197,6 +297,9 @@ namespace poxnora_search_engine
                 if (!contains_faction)
                     continue;
 
+                if (!passes_filter)
+                    continue;
+
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
 
@@ -204,10 +307,15 @@ namespace poxnora_search_engine
             foreach (var diff_elem in diff_calculator.DifferingRelics)
             {
                 bool contains_faction = false;
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.RELIC };
 
                 if (diff_calculator.PreviousDatabase.Relics.ContainsKey(diff_elem.id))
                 {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Relics[diff_elem.id]))
+                        passes_filter = true;
+
                     if (diff_calculator.PreviousDatabase.Relics[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.PreviousElement = diff_calculator.PreviousDatabase.Relics[diff_elem.id];
@@ -216,6 +324,9 @@ namespace poxnora_search_engine
                 }
                 if (diff_calculator.CurrentDatabase_ref.Relics.ContainsKey(diff_elem.id))
                 {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id])))
+                        passes_filter = true;
+
                     if (diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Relics[diff_elem.id];
@@ -226,6 +337,9 @@ namespace poxnora_search_engine
                 if (!contains_faction)
                     continue;
 
+                if (!passes_filter)
+                    continue;
+
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
 
@@ -233,10 +347,15 @@ namespace poxnora_search_engine
             foreach (var diff_elem in diff_calculator.DifferingEquipments)
             {
                 bool contains_faction = false;
+                bool passes_filter = false;
+
                 Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.EQUIPMENT };
 
                 if (diff_calculator.PreviousDatabase.Equipments.ContainsKey(diff_elem.id))
                 {
+                    if (ElementPassesFilter(diff_calculator.PreviousDatabase.Equipments[diff_elem.id]))
+                        passes_filter = true;
+
                     if (diff_calculator.PreviousDatabase.Equipments[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.PreviousElement = diff_calculator.PreviousDatabase.Equipments[diff_elem.id];
@@ -245,6 +364,9 @@ namespace poxnora_search_engine
                 }
                 if (diff_calculator.CurrentDatabase_ref.Equipments.ContainsKey(diff_elem.id))
                 {
+                    if ((!passes_filter) && (ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id])))
+                        passes_filter = true;
+
                     if (diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id].Faction.Contains(tn.Name))
                     {
                         diff_link.CurrentElement = diff_calculator.CurrentDatabase_ref.Equipments[diff_elem.id];
@@ -253,6 +375,9 @@ namespace poxnora_search_engine
                 }
 
                 if (!contains_faction)
+                    continue;
+
+                if (!passes_filter)
                     continue;
 
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
@@ -297,7 +422,10 @@ namespace poxnora_search_engine
         private void DifferenceCalculatorForm_Load(object sender, EventArgs e)
         {
             if (LoadOldDatabaseDialog.ShowDialog() != DialogResult.OK)
+            {
                 this.Close();
+                return;
+            }
 
             diff_calculator.LoadDatabases(LoadOldDatabaseDialog.FileName);
             if(!diff_calculator.ready)
@@ -309,6 +437,8 @@ namespace poxnora_search_engine
 
             diff_calculator.Calculate();
             PopulateChangeBrowser();
+
+            DatabaseFilter.ApplyFilters_callback = ApplyFilters;
 
             Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
         }
@@ -726,6 +856,11 @@ namespace poxnora_search_engine
                 return;
             
             changelist_mode = ChangeListMode.FACTION;
+            PopulateChangeBrowser();
+        }
+
+        private void ApplyFilters()
+        {
             PopulateChangeBrowser();
         }
     }

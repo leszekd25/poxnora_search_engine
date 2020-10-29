@@ -396,7 +396,7 @@ namespace poxnora_search_engine
             }
             catch(Exception e)
             {
-                Log.Error("CardRandomizer.SaveSettings() failed: " + e.ToString());
+                Log.Error(Log.LogSource.Utility, "CardRandomizer.SaveSettings() failed: " + e.ToString());
             }
         }
 
@@ -451,7 +451,7 @@ namespace poxnora_search_engine
             catch (Exception e)
             {
                 SetStatus("Could not load previous session settings");
-                Log.Error("CardRandomizer.LoadSettings() failed: " + e.ToString());
+                Log.Error(Log.LogSource.Utility, "CardRandomizer.LoadSettings() failed: " + e.ToString());
             }
         }
 

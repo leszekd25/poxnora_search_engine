@@ -23,8 +23,6 @@ namespace poxnora_search_engine
 
         ViewModeEnum ViewMode = ViewModeEnum.GRID;
         Pox.DataElement.ElementType ViewType = Pox.DataElement.ElementType.CHAMPION;
-        Pox.Filters.BaseFilter SearchFilter = null;
-        bool ApplyFilters = false;
 
         Updater app_updater = new Updater();
 
@@ -32,36 +30,46 @@ namespace poxnora_search_engine
         ChampionBuilder ChampionBuilder_form = null;
         DifferenceCalculator DifferenceCalculator_form = null;
 
-        BaseFilterControl FilterProperties = null;
         public MainForm()
         {
             InitializeComponent();
             Log.OnLog = ShowLogMessageOnStatusBar;
         }
 
-        private void ShowLogMessageOnStatusBar(string s)
+        // when a message is logged, it shows on status bar (unless its a mundane info message)
+        private void ShowLogMessageOnStatusBar(Log.LogOption o, Log.LogSource s, string d)
         {
-            LastLogMessage.Text = s;
+            System.Diagnostics.Debug.WriteLine("[" + o.ToString() + "] " + s.ToString() + ": " + d);
+            if (o != Log.LogOption.INFO)
+                LastLogMessage.Text = s.ToString()+": "+d;
         }
 
+        // called when latest version number is retrieved from the server
         void OnFetchCurrentVersion(bool is_current_outdated, string new_version)
         {
             if (is_current_outdated)
             {
                 StatusNewVersionAvailable.Visible = true;
+                Log.Info(Log.LogSource.Net, "MainForm.OnFetchCurrentVersion(): New version available: " + new_version);
             }
+            else
+                Log.Info(Log.LogSource.Net, "MainForm.OnFetchCurrentVersion(): No new version available");
         }
 
+        // called when could not download or extract latest version archive
         void OnFetchCurrentArchiveFailed()
         {
-            Log.Error("MainForm.OnFetchCurrentArchiveFailed(): Could not install latest version");
+            Log.Error(Log.LogSource.Net, "MainForm.OnFetchCurrentArchiveFailed(): Could not install latest version");
 
             StatusNewVersionAvailable.IsLink = true;
             StatusNewVersionAvailable.Text = "New version available";
         }
 
+        // called when latest version was installed, it will shut down current instance and start a new one
         void OnFetchCurrentArchiveSuccess()
         {
+            Log.Info(Log.LogSource.Net, "MainForm.OnFetchCurrentArchiveSuccess(): New version successfully installed, restarting...");
+
             string dir = System.IO.Path.GetDirectoryName(Application.ExecutablePath);
             System.Diagnostics.Process.Start(dir+"\\onupdate.bat");
             Application.Exit();
@@ -69,6 +77,8 @@ namespace poxnora_search_engine
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            Log.Info(Log.LogSource.UI, "MainForm.Form1_Load() called");
+
             Program.database.ready_trigger = OnDatabaseReady;
             Program.database.LoadJSON("database.json", Pox.Database.POXNORA_JSON_SITE);
 
@@ -102,7 +112,7 @@ namespace poxnora_search_engine
 
             Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
 
-
+            // retrieve latest version number from the server
             app_updater._OnGetVersion = OnFetchCurrentVersion;
             app_updater._OnGetArchiveFailed = OnFetchCurrentArchiveFailed;
             app_updater._OnGetArchiveSuccess = OnFetchCurrentArchiveSuccess;
@@ -110,20 +120,32 @@ namespace poxnora_search_engine
 
             PanelRunePreviews.Location = GridDataElements.Location;
             PanelRunePreviews.Size = GridDataElements.Size;
+
+            DatabaseFilter.ApplyFilters_callback = ApplyFilter;
+
+            Log.Info(Log.LogSource.UI, "MainForm.Form1_Load() finished");
         }
 
         private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Log.Info(Log.LogSource.UI, "MainForm.MainForm_FormClosed() called");
+
             Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
             Program.image_cache.BreakRunePreviewDownload();
+
+            Log.Info(Log.LogSource.UI, "MainForm.MainForm_FormClosed() finished");
         }
 
+        // called when database was loaded
         private void OnDatabaseReady()
         {
+            Log.Info(Log.LogSource.PoxDB, "MainForm.OnDatabaseReady() called");
+
             RuneDescription.database_ref = Program.database;
             PrepareView();
         }
 
+        // refreshes the database elements view
         private void PrepareView()
         {
             if (ViewMode == ViewModeEnum.GRID)
@@ -132,8 +154,11 @@ namespace poxnora_search_engine
                 PrepareImageView();
         }
 
+        // refreshes the grid view
         public void PrepareGridView()
         {
+            Log.Info(Log.LogSource.UI, "MainForm.PrepareGridView() called");
+
             GridDataElements.Visible = true;
             PanelRunePreviews.Visible = false;
             PreviewScrollBar.Hide();
@@ -274,10 +299,14 @@ namespace poxnora_search_engine
 
             ApplyFilter();
             GridDataElements.Show();
+
+            Log.Info(Log.LogSource.UI, "MainForm.PrepareGridView() finished");
         }
 
+        // adds elements to the grid
         void ReloadGrid()
         {
+            Log.Info(Log.LogSource.UI, "MainForm.ReloadGrid() called");
 
             switch (ViewType)
             {
@@ -339,6 +368,8 @@ namespace poxnora_search_engine
                 default:
                     break;
             }
+
+            Log.Info(Log.LogSource.UI, "MainForm.ReloadGrid() finished");
         }
 
         public void GridAddChampion(Pox.Champion c)
@@ -527,16 +558,24 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["FlavorText"].Value = e.Flavor;
         }
 
+        // refreshes image view
         private void PrepareImageView()
         {
+            Log.Info(Log.LogSource.UI, "MainForm.PrepareImageView() called");
+
             GridDataElements.Visible = false;
             PanelRunePreviews.Visible = true;
 
             ApplyFilter();
+
+            Log.Info(Log.LogSource.UI, "MainForm.PrepareImageView() finished");
         }
 
+        // resets image positions in image view
         private void ReadjustPreviewImages()
         {
+            Log.Info(Log.LogSource.UI, "MainForm.ReadjustPreviewImages() called");
+
             PanelRunePreviews.SuspendLayout();
 
             int items_per_row = (PanelRunePreviews.Width - 6) / 82;
@@ -544,32 +583,38 @@ namespace poxnora_search_engine
                 PanelRunePreviews.Controls[i].Location = new Point(3 + ((i % items_per_row) * 82), 3 + ((i / items_per_row) * 113));
 
             PanelRunePreviews.ResumeLayout();
+
+            Log.Info(Log.LogSource.UI, "MainForm.ReadjustPreviewImages() finished");
         }
 
+        // limits elements in the view to the ones that meet filter criteria
         private void ApplyFilter()
         {
+            Log.Info(Log.LogSource.UI, "MainForm.ApplyFilter() called");
+
             if (ViewMode == ViewModeEnum.GRID)
             {
                 GridDataElements.Hide();
 
-                if ((SearchFilter == null) || (!ApplyFilters))
+                if ((DatabaseFilter.SearchFilter == null) || (!DatabaseFilter.ApplyFilters))
                 {
                     foreach (DataGridViewRow row in GridDataElements.Rows)
                         row.Visible = true;
-                    Log.Info("Items on grid: " + GridDataElements.Rows.Count.ToString());
-                    return;
+                    LastLogMessage.Text = "Items on grid: " + GridDataElements.Rows.Count.ToString();
                 }
-
-                int total = 0;
-                foreach (DataGridViewRow row in GridDataElements.Rows)
+                else
                 {
-                    row.Visible = SearchFilter.Satisfies((DataElement)row.Tag);
-                    if (row.Visible)
-                        total += 1;
+                    int total = 0;
+                    foreach (DataGridViewRow row in GridDataElements.Rows)
+                    {
+                        row.Visible = DatabaseFilter.SearchFilter.Satisfies((DataElement)row.Tag);
+                        if (row.Visible)
+                            total += 1;
+                    }
+                    LastLogMessage.Text = "Items on grid: " + total.ToString();
                 }
 
                 GridDataElements.Show();
-                Log.Info("Items on grid: " + total.ToString());
             }
             else if (ViewMode == ViewModeEnum.IMAGES)
             {
@@ -596,7 +641,7 @@ namespace poxnora_search_engine
 
                         foreach (var champ in Program.database.Champions.Keys)
                         {
-                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Champions[champ])))
+                            if (((DatabaseFilter.SearchFilter == null) || (!DatabaseFilter.ApplyFilters)) || (DatabaseFilter.SearchFilter.Satisfies(Program.database.Champions[champ])))
                             {
                                 if (PanelRunePreviews.Controls.Count > total)
                                 {
@@ -622,7 +667,7 @@ namespace poxnora_search_engine
 
                         foreach (var champ in Program.database.Spells.Keys)
                         {
-                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Spells[champ])))
+                            if (((DatabaseFilter.SearchFilter == null) || (!DatabaseFilter.ApplyFilters)) || (DatabaseFilter.SearchFilter.Satisfies(Program.database.Spells[champ])))
                             {
                                 if (PanelRunePreviews.Controls.Count > total)
                                 {
@@ -648,7 +693,7 @@ namespace poxnora_search_engine
 
                         foreach (var champ in Program.database.Relics.Keys)
                         {
-                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Relics[champ])))
+                            if (((DatabaseFilter.SearchFilter == null) || (!DatabaseFilter.ApplyFilters)) || (DatabaseFilter.SearchFilter.Satisfies(Program.database.Relics[champ])))
                             {
                                 if (PanelRunePreviews.Controls.Count > total)
                                 {
@@ -674,7 +719,7 @@ namespace poxnora_search_engine
 
                         foreach (var champ in Program.database.Equipments.Keys)
                         {
-                            if (((SearchFilter == null) || (!ApplyFilters)) || (SearchFilter.Satisfies(Program.database.Equipments[champ])))
+                            if (((DatabaseFilter.SearchFilter == null) || (!DatabaseFilter.ApplyFilters)) || (DatabaseFilter.SearchFilter.Satisfies(Program.database.Equipments[champ])))
                             {
                                 if (PanelRunePreviews.Controls.Count > total)
                                 {
@@ -700,7 +745,7 @@ namespace poxnora_search_engine
                         break;
                 }
 
-                // get panel height
+                // set up panel for viewing and scrolling
                 int h = 6 + (((total) / items_per_row) * 113) + 113;
                 PanelRunePreviews.Height = h;
 
@@ -718,154 +763,13 @@ namespace poxnora_search_engine
 
                 Program.image_cache.GetRunePreviews(elems);
 
-                Log.Info("Items displayed: " + total.ToString());
+                LastLogMessage.Text = "Items displayed: " + total.ToString();
             }
+
+            Log.Info(Log.LogSource.UI, "MainForm.ApplyFilter() finished");
         }
 
-        private void AddFilter(string fname, FilterType ftype, DataPath dpath = DataPath.None)
-        {
-            Pox.Filters.BaseFilter bf;
-
-            switch(ftype)
-            {
-                case FilterType.AND:
-                    bf = new Pox.Filters.AndFilter();
-                    break;
-                case FilterType.OR:
-                    bf = new Pox.Filters.OrFilter();
-                    break;
-                case FilterType.INT:
-                    bf = new Pox.Filters.IntFilter() { dpath = dpath, FilterType = Pox.Filters.IntFilterType.EQUAL, RefValue = 0 };
-                    break;
-                case FilterType.STRING:
-                    bf = new Pox.Filters.StringFilter() { dpath = dpath, IgnoreCase = true, FilterType = Pox.Filters.StringFilterType.CONTAINS, RefValue = "", RefValueLowerCase = "" };
-                    break;
-                case FilterType.BOOLEAN:
-                    bf = new Pox.Filters.BooleanFilter() { dpath = dpath, FilterType = Pox.Filters.BooleanFilterType.EQUAL, RefValue = true };
-                    break;
-                case FilterType.EXPANSION:
-                    bf = new Pox.Filters.EnumFilter() { dpath = DataPath.Expansion, Options_ref = Program.database.Expansions, FilterType = Pox.Filters.EnumFilterType.EQUAL, RefValue = "" };
-                    break;
-                case FilterType.RARITY:
-                    bf = new Pox.Filters.EnumFilter() { dpath = DataPath.Rarity, Options_ref = Program.database.Rarities, FilterType = Pox.Filters.EnumFilterType.EQUAL, RefValue = "" };
-                    break;
-                case FilterType.ABILITY_LIST:
-                    bf = new Pox.Filters.AbilityListFilter() { dpath = dpath, FilterType = Pox.Filters.AbilityListFilterType.CONTAINS, RefValue = 0 };
-                    break;
-                case FilterType.CLASS_LIST:
-                    bf = new Pox.Filters.EnumListFilter() { dpath = DataPath.Class, Options_ref = Program.database.Classes, FilterType = Pox.Filters.EnumListFilterType.CONTAINS, RefValue = "" };
-                    break;
-                case FilterType.FACTION_LIST:
-                    bf = new Pox.Filters.EnumListFilter() { dpath = DataPath.Faction, Options_ref = Program.database.Factions, FilterType = Pox.Filters.EnumListFilterType.CONTAINS, RefValue = "" };
-                    break;
-                case FilterType.RACE_LIST:
-                    bf = new Pox.Filters.EnumListFilter() { dpath = DataPath.Race, Options_ref = Program.database.Races, FilterType = Pox.Filters.EnumListFilterType.CONTAINS, RefValue = "" };
-                    break;
-
-                default:
-                    Log.Error("Form1.AddFilter(): Unknown filter type");
-                    throw new Exception("Form1.AddFilter(): Error while adding filter");
-            }
-            bf.Name = fname;
-
-            // determine which filter is selected right now
-            if(FilterTree.Nodes.Count == 0)
-            {
-                FilterTree.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
-                SearchFilter = null;
-                SearchFilter = bf;
-            }
-            else
-            {
-                TreeNode selected_node = FilterTree.SelectedNode;
-                if (selected_node == null)
-                    selected_node = FilterTree.Nodes[0];
-                if (selected_node.Tag is Pox.Filters.AndFilter)
-                {
-                    selected_node.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
-                    ((Pox.Filters.AndFilter)selected_node.Tag).Filters.Add(bf);
-                }
-                else if (selected_node.Tag is Pox.Filters.OrFilter)
-                {
-                    selected_node.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
-                    ((Pox.Filters.OrFilter)selected_node.Tag).Filters.Add(bf);
-                }
-                else if (selected_node.Parent != null)
-                {
-                    if (selected_node.Parent.Tag is Pox.Filters.AndFilter)
-                    {
-                        selected_node.Parent.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
-                        ((Pox.Filters.AndFilter)selected_node.Parent.Tag).Filters.Add(bf);
-                    }
-                    else if (selected_node.Parent.Tag is Pox.Filters.OrFilter)
-                    {
-                        selected_node.Parent.Nodes.Add(new TreeNode() { Text = bf.ToString(), Tag = bf });
-                        ((Pox.Filters.OrFilter)selected_node.Parent.Tag).Filters.Add(bf);
-                    }
-                }
-                else
-                {
-                    Log.Error("Form1.AddFilter(): Could not add new filter. Select a valid filter to add new filter to.");
-                    return;
-                }
-            }
-
-            ShowFilterProperties(bf);
-        }
-
-        private void RemoveFilter(TreeNode f)
-        {
-            if (f == null)
-                return;
-            if(f.Parent == null)
-            {
-                SearchFilter = null;
-                FilterTree.Nodes.Clear();
-            }
-            else
-            {
-                if (f.Parent.Tag is Pox.Filters.AndFilter)
-                    ((Pox.Filters.AndFilter)f.Parent.Tag).Filters.Remove((Pox.Filters.BaseFilter)f.Tag);
-                else if(f.Parent.Tag is Pox.Filters.OrFilter)
-                    ((Pox.Filters.OrFilter)f.Parent.Tag).Filters.Remove((Pox.Filters.BaseFilter)f.Tag);
-                f.Parent.Nodes.Remove(f);
-            }
-
-            ShowFilterProperties(null);
-        }
-
-        private void ShowFilterProperties(BaseFilter bf)
-        {
-            if(FilterProperties != null)
-            {
-                PanelFilterProperties.Controls.Clear();
-                FilterProperties.Hide();
-                FilterProperties = null;
-            }
-            if (bf is IntFilter)
-                FilterProperties = new IntFilterControl();
-            else if (bf is StringFilter)
-                FilterProperties = new StringFilterControl();
-            else if (bf is BooleanFilter)
-                FilterProperties = new BooleanFilterControl();
-            else if (bf is EnumFilter)
-                FilterProperties = new EnumFilterControl();
-            else if (bf is EnumListFilter)
-                FilterProperties = new EnumListFilterControl();
-            else if (bf is AbilityListFilter)
-                FilterProperties = new AbilityListFilterControl();
-            else
-                FilterProperties = new BaseFilterControl();
-
-            FilterProperties.FilterUpdate_action = FilterProperties_PropertyValueChanged;
-            FilterProperties.SetFilter(bf);
-            FilterProperties.Location = new Point(3, 3);
-
-            PanelFilterProperties.Controls.Add(FilterProperties);
-            FilterProperties.BringToFront();
-            FilterProperties.Show();
-        }
-
+        
 
         private void RadioChampions_CheckedChanged(object sender, EventArgs e)
         {
@@ -897,396 +801,6 @@ namespace poxnora_search_engine
             PrepareView();
         }
 
-        // FILTERS
-
-        private void FilterTree_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button != MouseButtons.Right)
-                return;
-            FilterTreeContextMenu.Show(new Point(e.X+Location.X, e.Y+Location.Y));
-        }
-
-        private void ButtonApplyFilter_Click(object sender, EventArgs e)
-        {
-            ApplyFilters = true;
-            ButtonApplyFilter.BackColor = Color.Orange;
-            ButtonClearFilter.BackColor = System.Drawing.SystemColors.Control;
-
-            ApplyFilter();
-        }
-
-
-        private void ButtonClearFilter_Click(object sender, EventArgs e)
-        {
-            ApplyFilters = false;
-            ButtonApplyFilter.BackColor = System.Drawing.SystemColors.Control;
-            ButtonClearFilter.BackColor = Color.Orange;
-
-            ApplyFilter();
-        }
-
-        private void FilterProperties_PropertyValueChanged(BaseFilter bf)
-        {
-            // find filter on filter tree list
-            if (FilterTree.Nodes.Count == 0)
-                return;
-
-            TreeNode tn = FilterTree.Nodes[0];
-            int c_index = -1;
-            while (true)
-            {
-                if (c_index >= tn.Nodes.Count)
-                {
-                    if (tn.Parent == null)
-                        break;
-
-                    c_index = tn.Parent.Nodes.IndexOf(tn) + 1;
-                    tn = tn.Parent;
-
-                    continue;
-                }
-
-                if(c_index != -1)
-                {
-                    tn = tn.Nodes[c_index];
-                    c_index = -1;
-                }
-
-                if (tn.Tag == bf)
-                {
-                    tn.Text = bf.ToString();
-                    break;
-                }
-
-                c_index += 1;
-            }
-        }
-
-        private void FilterTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
-        {
-            ShowFilterProperties((BaseFilter)e.Node.Tag);
-        }
-
-        private void matchAnyFilterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("Any subfilters", FilterType.OR);
-        }
-
-        private void matchAllFiltersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("All subfilters", FilterType.AND);
-        }
-
-        private void iDToolStripMenuItem5_Click(object sender, EventArgs e)
-        {
-            AddFilter("ID", FilterType.INT, DataPath.ID);
-        }
-
-        private void noraCostToolStripMenuItem5_Click(object sender, EventArgs e)
-        {
-            AddFilter("Nora cost", FilterType.INT, DataPath.NoraCost);
-        }
-
-        private void deckLimitToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Deck limit", FilterType.INT, DataPath.DeckLimit);
-        }
-
-        private void prognosedBaseNoraCostToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Prognosed base nora cost", FilterType.INT, DataPath.PrognosedBaseNoraCost);
-        }
-
-        private void baseNoraCostToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Base nora cost", FilterType.INT, DataPath.BaseNoraCost);
-        }
-
-        private void defaultNoraCostToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("Default nora cost", FilterType.INT, DataPath.DefaultNoraCost);
-        }
-
-        private void minimumNoraCostToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("Minimum nora cost", FilterType.INT, DataPath.MinimumNoraCost);
-        }
-
-        private void maximumNoraCostToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("Maximum nora cost", FilterType.INT, DataPath.MaximumNoraCost);
-        }
-
-        private void minimumRangeToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Minimum range", FilterType.INT, DataPath.MinRNG);
-        }
-
-        private void maximumRangeToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Maximum range", FilterType.INT, DataPath.MaxRNG);
-        }
-
-        private void defenseToolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            AddFilter("Defense", FilterType.INT, DataPath.Defense);
-        }
-
-        private void speedToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Speed", FilterType.INT, DataPath.Speed);
-        }
-
-        private void damageToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Damage", FilterType.INT, DataPath.Damage);
-        }
-
-        private void hitPointsToolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            AddFilter("Hit points", FilterType.INT, DataPath.HitPoints);
-        }
-
-        private void sizeToolStripMenuItem2_Click(object sender, EventArgs e)
-        {
-            AddFilter("Size", FilterType.INT, DataPath.Size);
-        }
-
-        private void aPCostToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("AP cost", FilterType.INT, DataPath.APCost);
-        }
-
-        private void levelToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Level", FilterType.INT, DataPath.Level);
-        }
-
-        private void cooldownToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Cooldown", FilterType.INT, DataPath.Cooldown);
-        }
-
-        private void nameToolStripMenuItem5_Click(object sender, EventArgs e)
-        {
-            AddFilter("Name", FilterType.STRING, DataPath.Name);
-        }
-
-        private void descriptionToolStripMenuItem5_Click(object sender, EventArgs e)
-        {
-            AddFilter("Description", FilterType.STRING, DataPath.Description);
-        }
-
-        private void artistToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Artist", FilterType.STRING, DataPath.Artist);
-        }
-
-        private void flavorTextToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Flavor text", FilterType.STRING, DataPath.FlavorText);
-        }
-
-        private void rarityToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Rarity", FilterType.RARITY);
-        }
-
-        private void expansionToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Expansion", FilterType.EXPANSION);
-        }
-
-        private void forSaleToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("For sale", FilterType.BOOLEAN, DataPath.ForSale);
-        }
-
-        private void tradeableToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Tradeable", FilterType.BOOLEAN, DataPath.Tradeable);
-        }
-
-        private void allowedInRankedToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Allowed in ranked", FilterType.BOOLEAN, DataPath.AllowRanked);
-        }
-
-        private void factionToolStripMenuItem4_Click(object sender, EventArgs e)
-        {
-            AddFilter("Faction", FilterType.FACTION_LIST);
-        }
-
-        private void raceToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Race", FilterType.RACE_LIST);
-        }
-
-        private void classToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Class", FilterType.CLASS_LIST);
-        }
-
-        private void allAbilitiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("All abilities", FilterType.ABILITY_LIST, DataPath.AllAbilities);
-        }
-
-        private void baseAbilitiesToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            AddFilter("Base abiities", FilterType.ABILITY_LIST, DataPath.BaseAbilities);
-        }
-
-        private void upgradeAbilitiesToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            AddFilter("Upgrade abilities", FilterType.ABILITY_LIST, DataPath.UpgradeAbilities);
-        }
-
-        private void removeFilterToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            RemoveFilter(FilterTree.SelectedNode);
-        }
-
-        private void wrapIntoAnySubfiltersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (FilterTree.Nodes.Count == 0)
-                return;
-
-            TreeNode selected_node = FilterTree.SelectedNode;
-            if (selected_node == null)
-                return;
-
-            OrFilter fl = new OrFilter();
-            TreeNode or_node = new TreeNode() { Text = fl.ToString(), Tag = fl };
-            // check if the node is the root
-            if(selected_node.Parent == null)
-            {
-                FilterTree.Nodes.Clear();
-                FilterTree.Nodes.Add(or_node);
-                SearchFilter = fl;
-            }
-            else
-            {
-                TreeNode pt = selected_node.Parent;
-                pt.Nodes.Insert(pt.Nodes.IndexOf(selected_node), or_node);
-                pt.Nodes.Remove(selected_node);
-
-                if (pt.Tag is OrFilter)
-                {
-                    ((OrFilter)pt.Tag).Filters.Add(fl);
-                    ((OrFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
-                }
-                else if (pt.Tag is AndFilter)
-                {
-                    ((AndFilter)pt.Tag).Filters.Add(fl);
-                    ((AndFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
-                }
-            }
-            fl.Filters.Add((BaseFilter)selected_node.Tag);
-            or_node.Nodes.Add(selected_node);
-            FilterTree.SelectedNode = selected_node;
-
-            ShowFilterProperties((BaseFilter)selected_node.Tag);
-        }
-
-        private void wrapIntoAllSubfiltersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (FilterTree.Nodes.Count == 0)
-                return;
-
-            TreeNode selected_node = FilterTree.SelectedNode;
-            if (selected_node == null)
-                return;
-
-            AndFilter fl = new AndFilter();
-            TreeNode and_node = new TreeNode() { Text = fl.ToString(), Tag = fl };
-            // check if the node is the root
-            if (selected_node.Parent == null)
-            {
-                FilterTree.Nodes.Clear();
-                FilterTree.Nodes.Add(and_node);
-                SearchFilter = fl;
-            }
-            else
-            {
-                TreeNode pt = selected_node.Parent;
-                pt.Nodes.Insert(pt.Nodes.IndexOf(selected_node), and_node);
-                pt.Nodes.Remove(selected_node);
-
-                if (pt.Tag is OrFilter)
-                {
-                    ((OrFilter)pt.Tag).Filters.Add(fl);
-                    ((OrFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
-                }
-                else if (pt.Tag is AndFilter)
-                {
-                    ((AndFilter)pt.Tag).Filters.Add(fl);
-                    ((AndFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
-                }
-            }
-            fl.Filters.Add((BaseFilter)selected_node.Tag);
-            and_node.Nodes.Add(selected_node);
-            FilterTree.SelectedNode = selected_node;
-
-            ShowFilterProperties((BaseFilter)selected_node.Tag);
-        }
-
-        private void popOutOfAnyAllSubfiltersToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (FilterTree.Nodes.Count == 0)
-                return;
-
-            TreeNode selected_node = FilterTree.SelectedNode;
-            if (selected_node == null)
-                return;
-
-            TreeNode pt = selected_node.Parent;
-            if (pt == null)
-                return;
-
-            TreeNode pt2 = pt.Parent;
-            // if pt is top of hierarchy
-            if(pt2 == null)
-            {
-                if((pt.Tag is AndFilter) || (pt.Tag is OrFilter))
-                {
-                    if(pt.Nodes.Count == 1)
-                    {
-                        FilterTree.Nodes.Clear();
-                        FilterTree.Nodes.Add(selected_node);
-                        SearchFilter = (BaseFilter)selected_node.Tag;
-                    }
-                }
-            }
-            else
-            {
-                if ((pt.Tag is AndFilter) || (pt.Tag is OrFilter))
-                {
-                    pt.Nodes.Remove(selected_node);
-                    if (pt.Tag is AndFilter)
-                        ((AndFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
-                    else if (pt.Tag is OrFilter)
-                        ((OrFilter)pt.Tag).Filters.Remove((BaseFilter)selected_node.Tag);
-
-                    pt2.Nodes.Insert(pt2.Nodes.IndexOf(pt), selected_node);
-                    if (pt2.Tag is AndFilter)
-                        ((AndFilter)pt2.Tag).Filters.Insert(((AndFilter)pt2.Tag).Filters.IndexOf((BaseFilter)pt.Tag), (BaseFilter)selected_node.Tag);
-                    else if(pt2.Tag is OrFilter)
-                        ((OrFilter)pt2.Tag).Filters.Insert(((OrFilter)pt2.Tag).Filters.IndexOf((BaseFilter)pt.Tag), (BaseFilter)selected_node.Tag);
-
-                    if (pt.Nodes.Count == 0)
-                    {
-                        pt2.Nodes.Remove(pt);
-                        if (pt2.Tag is AndFilter)
-                            ((AndFilter)pt2.Tag).Filters.Remove((BaseFilter)pt.Tag);
-                        else if (pt2.Tag is OrFilter)
-                            ((OrFilter)pt2.Tag).Filters.Remove((BaseFilter)pt.Tag);
-                    }
-                }
-            }
-
-            ShowFilterProperties((BaseFilter)selected_node.Tag);
-        }
 
         private void GridDataElements_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
@@ -1354,6 +868,8 @@ namespace poxnora_search_engine
 
         private void Form1_Resize(object sender, EventArgs e)
         {
+            Log.Info(Log.LogSource.UI, "MainForm.Form1_Resize() called, new size: "+Size.ToString());
+
             if (this.Width <= 1410 - 764)
                 return;
             if (this.Height <= 686 - 565)
@@ -1361,7 +877,8 @@ namespace poxnora_search_engine
 
             GridDataElements.Width = this.Width - 1410 + 764;
             GridDataElements.Height = this.Height - 682 + 565;
-            RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, FilterTree.Location.Y);
+
+            RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, DatabaseFilter.Location.Y);
             RuneDescription.SetHeight(GridDataElements.Height + 32);
             PanelRunePreviews.Location = new Point(GridDataElements.Location.X, PreviewScrollBar.Value);
             PanelRunePreviews.Size = GridDataElements.Size;
@@ -1434,9 +951,13 @@ namespace poxnora_search_engine
             if (!Program.database.ready)
                 return;
 
+            Log.Info(Log.LogSource.UI, "MainForm.deckRandomizerToolStripMenuItem_Click() called");
+
             CardRandomizer_form = new CardRandomizer();
             CardRandomizer_form.ShowDialog();
             CardRandomizer_form = null;
+
+            Log.Info(Log.LogSource.UI, "MainForm.deckRandomizerToolStripMenuItem_Click() finished");
         }
 
         private void championBuilderToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1444,12 +965,13 @@ namespace poxnora_search_engine
             if (!Program.database.ready)
                 return;
 
-            if(ChampionBuilder_form != null)
+            if (ChampionBuilder_form != null)
             {
                 ChampionBuilder_form.BringToFront();
                 return;
             }
 
+            Log.Info(Log.LogSource.UI, "MainForm.championBuilderToolStripMenuItem_Click(): Creating new form");
             ChampionBuilder_form = new ChampionBuilder();
             ChampionBuilder_form.FormClosed += new FormClosedEventHandler(ChampionBuilder_form_FormClosed);
 
@@ -1460,6 +982,8 @@ namespace poxnora_search_engine
         {
             ChampionBuilder_form.FormClosed -= new FormClosedEventHandler(ChampionBuilder_form_FormClosed);
             ChampionBuilder_form = null;
+
+            Log.Info(Log.LogSource.UI, "MainForm.ChampionBuilder_form_FormClosed(): Form closed");
         }
 
         public void external_SetRuneDescriptionAbility(Ability a)
@@ -1482,6 +1006,7 @@ namespace poxnora_search_engine
                 return;
             }
 
+            Log.Info(Log.LogSource.UI, "MainForm.differenceCalculatorToolStripMenuItem_Click(): Creating new form");
             DifferenceCalculator_form = new DifferenceCalculator();
             DifferenceCalculator_form.FormClosed += new FormClosedEventHandler(DifferenceCalculator_form_FormClosed);
 
@@ -1492,6 +1017,8 @@ namespace poxnora_search_engine
         {
             DifferenceCalculator_form.FormClosed -= new FormClosedEventHandler(DifferenceCalculator_form_FormClosed);
             DifferenceCalculator_form = null;
+
+            Log.Info(Log.LogSource.UI, "MainForm.DifferenceCalculator_form_FormClosed(): Form closed");
         }
 
         private void MainForm_Activated(object sender, EventArgs e)
