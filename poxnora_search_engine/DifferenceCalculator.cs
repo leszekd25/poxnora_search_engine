@@ -631,6 +631,11 @@ namespace poxnora_search_engine
                         diff_calculator.PreviousDatabase.Abilities[prev_champion.Upgrade2[prev_champion.DefaultUpgrade2Index]].ToString(),
                         diff_calculator.CurrentDatabase_ref.Abilities[curr_champion.Upgrade2[curr_champion.DefaultUpgrade2Index]].ToString()));
             }
+
+            // special: calculate new prognosed nora cost difference
+            if (prev_champion.PrognosedBaseNoraCostDifference != curr_champion.PrognosedBaseNoraCostDifference)
+                PushChangeInfo(string.Format("Prognosed nora cost difference changed from {0} to {1}",
+                    prev_champion.PrognosedBaseNoraCostDifference, curr_champion.PrognosedBaseNoraCostDifference));
         }
 
         private void LoadAbilityChangeInfo(Pox.Ability prev_ability, Pox.Ability curr_ability)

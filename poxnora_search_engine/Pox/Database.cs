@@ -63,6 +63,7 @@ namespace poxnora_search_engine.Pox
     }
 
     public delegate void OnDatabaseReady();
+    public delegate void OnDatabaseDownloadProgressChanged(int p);
 
     public class Database
     {
@@ -71,6 +72,8 @@ namespace poxnora_search_engine.Pox
 
         System.Net.WebClient wc;
         public OnDatabaseReady ready_trigger;
+        public OnDatabaseDownloadProgressChanged progress_trigger;
+        int bytes_received = 0;
 
         JObject json_main = null;
         public Dictionary<int, Champion> Champions { get; } = new Dictionary<int, Champion>();
@@ -87,23 +90,28 @@ namespace poxnora_search_engine.Pox
         public StringLibrary Expansions { get; } = new StringLibrary();
         public StringLibrary AbilityNames { get; } = new StringLibrary();
 
-
+        public bool loading { get; private set; } = false;
         public bool ready { get; private set; } = false;
 
-        public void LoadJSON(string local_db, string online_backup)
+        // returns if the DB needs to be downloaded
+        public bool LoadJSON(string local_db, string online_backup)
         {
             if (!File.Exists(local_db))//"database.json"))
             {
                 if (online_backup == "")
-                    return;
+                    return true;
 
-                Log.Info(Log.LogSource.PoxDB, "Database.LoadJSON(): database.json not found, retrieving from server...");
+                Log.Warning(Log.LogSource.PoxDB, "Database.LoadJSON(): database.json not found, retrieving from server...");
 
                 wc = new System.Net.WebClient();
                 wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(RetrieveJSON_completed);
+                wc.DownloadProgressChanged += DownloadProgress_changed;
 
+                loading = true;
                 Uri dw_string = new Uri(online_backup);//POXNORA_JSON_SITE);
                 wc.DownloadStringAsync(dw_string);
+
+                return false;
             }
             else
             {
@@ -113,21 +121,31 @@ namespace poxnora_search_engine.Pox
                 string json = File.ReadAllText(local_db);//"database.json");
 
                 ParseFromJSON(json);
+
+                return true;
             }
+        }
+
+        private void DownloadProgress_changed(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        {
+            progress_trigger?.Invoke((int)(100*(e.BytesReceived/6000000f)));
         }
 
         void RetrieveJSON_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
         {
+
             wc.DownloadStringCompleted -= new System.Net.DownloadStringCompletedEventHandler(RetrieveJSON_completed);
             wc = null;
 
             if (e.Cancelled)
             {
+                loading = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Could not retrieve JSON");
                 return;
             }
             if (e.Error != null)
             {
+                loading = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Error while retrieving JSON");
                 return;
             }
@@ -147,9 +165,12 @@ namespace poxnora_search_engine.Pox
             }
             catch (Exception)
             {
+                loading = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.ParseFromJSON(): Input JSON is invalid!");
                 return;
             }
+
+            ready = true;
 
             try
             {
@@ -181,10 +202,13 @@ namespace poxnora_search_engine.Pox
             catch (Exception e)
             {
                 Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Error while parsing the JSON");
+                Unload();
+                ready = false;     // for posterity
                 return;
             }
             finally
             {
+                loading = false;
                 json_main = null;
             }
 
@@ -615,6 +639,30 @@ namespace poxnora_search_engine.Pox
                     return kv.Key;
 
             return 0;
+        }
+
+        public void Unload()
+        {
+            Log.Info(Log.LogSource.PoxDB, "Database.Unload() called");
+            if (!ready)
+                return;
+            // todo: what if it is loading?
+
+            Champions.Clear();
+            Abilities.Clear();
+            Abilities_similar.Clear();
+            Spells.Clear();
+            Relics.Clear();
+            Equipments.Clear();
+
+            Factions.Clear();
+            Races.Clear();
+            Classes.Clear();
+            Rarities.Clear();
+            Expansions.Clear();
+            AbilityNames.Clear();
+
+            ready = false;
         }
     }
 }

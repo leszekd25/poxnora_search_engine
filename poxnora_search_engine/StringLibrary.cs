@@ -21,6 +21,15 @@ namespace poxnora_search_engine
             }
         }
 
+        public List<string> GetStringsSortedDefault()
+        {
+            List<string> sorted_strings = AllowedStrings.ToList();
+
+            sorted_strings.Sort();
+
+            return sorted_strings;
+        }
+
         public void GetStringsSorted(string input, ref List<string> output, int max_results)
         {
             List<string> sorted_strings = AllowedStrings.ToList();
@@ -30,6 +39,11 @@ namespace poxnora_search_engine
             output.Clear();
             for (int i = 0; i < Math.Min(max_results, sorted_strings.Count); i++)
                 output.Add(sorted_strings[i]);
+        }
+
+        public void Clear()
+        {
+            AllowedStrings.Clear();
         }
 
         private static int GetLevenshteinDistance(string s1, string s2)

@@ -34,7 +34,6 @@ namespace poxnora_search_engine.Pox.FilterControls
 
         protected virtual void OnFilterSet()
         {
-
             if (Filter_ref != null)
             {
                 LabelName.Text = Filter_ref.Name;

@@ -28,6 +28,12 @@ namespace poxnora_search_engine.Pox
             InitializeComponent();
         }
 
+        public void Clear()
+        {
+            if(FilterTree.Nodes.Count != 0)
+                RemoveFilter(FilterTree.Nodes[0]);
+        }
+
 
         private void AddFilter(string fname, FilterType ftype, DataPath dpath = DataPath.None)
         {
@@ -568,6 +574,119 @@ namespace poxnora_search_engine.Pox
             }
 
             ShowFilterProperties((BaseFilter)selected_node.Tag);
+        }
+
+        private void quickFilterToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            QuickFilterForm qff = new QuickFilterForm();
+            if (qff.ShowDialog() != DialogResult.OK)
+                return;
+
+
+            // remove current filter
+            if (FilterTree.Nodes.Count != 0)
+                RemoveFilter(FilterTree.Nodes[0]);
+
+            // add all subfilter
+            AddFilter("All subfilters", FilterType.AND);
+
+            int cur_subf = 0;
+            // add faction filter
+            FilterTree.SelectedNode = FilterTree.Nodes[0];
+            if ((!qff.NegateFactions)||(qff.AllowedFactions.Count != 0))
+            {
+                AddFilter("Any subfilters", FilterType.OR);
+                FilterTree.SelectedNode = FilterTree.Nodes[0].Nodes[cur_subf];
+                ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).NegateResult = qff.NegateFactions;
+                FilterTree.SelectedNode.Text = ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).ToString();
+
+                for (int i = 0; i < qff.AllowedFactions.Count; i++)
+                {
+                    AddFilter("Faction", FilterType.FACTION_LIST);
+                    ((Pox.Filters.EnumListFilter)FilterTree.SelectedNode.Nodes[i].Tag).RefValue = qff.AllowedFactions[i];
+                    FilterTree.SelectedNode.Nodes[i].Text = ((Pox.Filters.EnumListFilter)FilterTree.SelectedNode.Nodes[i].Tag).ToString();
+                }
+
+                cur_subf += 1;
+            }
+
+            // add class filter
+            FilterTree.SelectedNode = FilterTree.Nodes[0];
+            if ((!qff.NegateClasses) || (qff.AllowedClasses.Count != 0))
+            {
+                AddFilter("Any subfilters", FilterType.OR);
+                FilterTree.SelectedNode = FilterTree.Nodes[0].Nodes[cur_subf];
+                ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).NegateResult = qff.NegateClasses;
+                FilterTree.SelectedNode.Text = ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).ToString();
+
+                for (int i = 0; i < qff.AllowedClasses.Count; i++)
+                {
+                    AddFilter("Class", FilterType.CLASS_LIST);
+                    ((Pox.Filters.EnumListFilter)FilterTree.SelectedNode.Nodes[i].Tag).RefValue = qff.AllowedClasses[i];
+                    FilterTree.SelectedNode.Nodes[i].Text = ((Pox.Filters.EnumListFilter)FilterTree.SelectedNode.Nodes[i].Tag).ToString();
+                }
+
+                cur_subf += 1;
+            }
+
+            // add race filter
+            FilterTree.SelectedNode = FilterTree.Nodes[0];
+            if ((!qff.NegateRaces) || (qff.AllowedRaces.Count != 0))
+            {
+                AddFilter("Any subfilters", FilterType.OR);
+                FilterTree.SelectedNode = FilterTree.Nodes[0].Nodes[cur_subf];
+                ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).NegateResult = qff.NegateRaces;
+                FilterTree.SelectedNode.Text = ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).ToString();
+
+                for (int i = 0; i < qff.AllowedRaces.Count; i++)
+                {
+                    AddFilter("Race", FilterType.RACE_LIST);
+                    ((Pox.Filters.EnumListFilter)FilterTree.SelectedNode.Nodes[i].Tag).RefValue = qff.AllowedRaces[i];
+                    FilterTree.SelectedNode.Nodes[i].Text = ((Pox.Filters.EnumListFilter)FilterTree.SelectedNode.Nodes[i].Tag).ToString();
+                }
+
+                cur_subf += 1;
+            }
+
+            // add rarity filter
+            FilterTree.SelectedNode = FilterTree.Nodes[0];
+            if ((!qff.NegateRarities) || (qff.AllowedRarities.Count != 0))
+            {
+                AddFilter("Any subfilters", FilterType.OR);
+                FilterTree.SelectedNode = FilterTree.Nodes[0].Nodes[cur_subf];
+                ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).NegateResult = qff.NegateRarities;
+                FilterTree.SelectedNode.Text = ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).ToString();
+
+                for (int i = 0; i < qff.AllowedRarities.Count; i++)
+                {
+                    AddFilter("Rarity", FilterType.RARITY);
+                    ((Pox.Filters.EnumFilter)FilterTree.SelectedNode.Nodes[i].Tag).RefValue = qff.AllowedRarities[i];
+                    FilterTree.SelectedNode.Nodes[i].Text = ((Pox.Filters.EnumFilter)FilterTree.SelectedNode.Nodes[i].Tag).ToString();
+                }
+
+                cur_subf += 1;
+            }
+
+            // add expansion filter
+            FilterTree.SelectedNode = FilterTree.Nodes[0];
+            if ((!qff.NegateExpansions) || (qff.AllowedExpansions.Count != 0))
+            {
+                AddFilter("Any subfilters", FilterType.OR);
+                FilterTree.SelectedNode = FilterTree.Nodes[0].Nodes[cur_subf];
+                ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).NegateResult = qff.NegateExpansions;
+                FilterTree.SelectedNode.Text = ((Pox.Filters.OrFilter)FilterTree.SelectedNode.Tag).ToString();
+
+                for (int i = 0; i < qff.AllowedExpansions.Count; i++)
+                {
+                    AddFilter("Expansion", FilterType.EXPANSION);
+                    ((Pox.Filters.EnumFilter)FilterTree.SelectedNode.Nodes[i].Tag).RefValue = qff.AllowedExpansions[i];
+                    FilterTree.SelectedNode.Nodes[i].Text = ((Pox.Filters.EnumFilter)FilterTree.SelectedNode.Nodes[i].Tag).ToString();
+                }
+
+                cur_subf += 1;
+            }
+
+            ButtonApplyFilter_Click(null, null);
         }
     }
 }

@@ -128,7 +128,9 @@
             this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
+            this.DBDownloadProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.StatusNewVersionAvailable = new System.Windows.Forms.ToolStripStatusLabel();
+            this.ArchiveDownloadProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.GridDataElements = new System.Windows.Forms.DataGridView();
             this.PanelDataMode = new System.Windows.Forms.Panel();
             this.RadioEquips = new System.Windows.Forms.RadioButton();
@@ -138,10 +140,11 @@
             this.RadioAbilities = new System.Windows.Forms.RadioButton();
             this.RadioChampions = new System.Windows.Forms.RadioButton();
             this.PanelRunePreviews = new System.Windows.Forms.Panel();
-            this.pageSetupDialog1 = new System.Windows.Forms.PageSetupDialog();
             this.PreviewScrollBar = new System.Windows.Forms.VScrollBar();
-            this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
             this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
+            this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
+            this.loadOlderDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DBLoadDialog = new System.Windows.Forms.OpenFileDialog();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
@@ -1054,7 +1057,8 @@
             this.otherToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.deckRandomizerToolStripMenuItem,
             this.championBuilderToolStripMenuItem,
-            this.differenceCalculatorToolStripMenuItem});
+            this.differenceCalculatorToolStripMenuItem,
+            this.loadOlderDatabaseToolStripMenuItem});
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
             this.otherToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.otherToolStripMenuItem.Text = "Other";
@@ -1084,7 +1088,9 @@
             // 
             this.Status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.LastLogMessage,
-            this.StatusNewVersionAvailable});
+            this.DBDownloadProgress,
+            this.StatusNewVersionAvailable,
+            this.ArchiveDownloadProgress});
             this.Status.Location = new System.Drawing.Point(0, 621);
             this.Status.Name = "Status";
             this.Status.Size = new System.Drawing.Size(1394, 22);
@@ -1096,17 +1102,29 @@
             this.LastLogMessage.Name = "LastLogMessage";
             this.LastLogMessage.Size = new System.Drawing.Size(0, 17);
             // 
+            // DBDownloadProgress
+            // 
+            this.DBDownloadProgress.Name = "DBDownloadProgress";
+            this.DBDownloadProgress.Size = new System.Drawing.Size(100, 16);
+            this.DBDownloadProgress.Visible = false;
+            // 
             // StatusNewVersionAvailable
             // 
             this.StatusNewVersionAvailable.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.StatusNewVersionAvailable.IsLink = true;
             this.StatusNewVersionAvailable.Name = "StatusNewVersionAvailable";
-            this.StatusNewVersionAvailable.Size = new System.Drawing.Size(1379, 17);
+            this.StatusNewVersionAvailable.Size = new System.Drawing.Size(1277, 17);
             this.StatusNewVersionAvailable.Spring = true;
             this.StatusNewVersionAvailable.Text = "New version available";
             this.StatusNewVersionAvailable.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.StatusNewVersionAvailable.Visible = false;
             this.StatusNewVersionAvailable.Click += new System.EventHandler(this.StatusNewVersionAvailable_Click);
+            // 
+            // ArchiveDownloadProgress
+            // 
+            this.ArchiveDownloadProgress.Name = "ArchiveDownloadProgress";
+            this.ArchiveDownloadProgress.Size = new System.Drawing.Size(100, 16);
+            this.ArchiveDownloadProgress.Visible = false;
             // 
             // GridDataElements
             // 
@@ -1218,6 +1236,13 @@
             this.PreviewScrollBar.Visible = false;
             this.PreviewScrollBar.ValueChanged += new System.EventHandler(this.PreviewScrollBar_ValueChanged);
             // 
+            // DatabaseFilter
+            // 
+            this.DatabaseFilter.Location = new System.Drawing.Point(-2, 21);
+            this.DatabaseFilter.Name = "DatabaseFilter";
+            this.DatabaseFilter.Size = new System.Drawing.Size(334, 400);
+            this.DatabaseFilter.TabIndex = 11;
+            // 
             // RuneDescription
             // 
             this.RuneDescription.BackColor = System.Drawing.Color.Black;
@@ -1226,12 +1251,17 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
-            // DatabaseFilter
+            // loadOlderDatabaseToolStripMenuItem
             // 
-            this.DatabaseFilter.Location = new System.Drawing.Point(-2, 21);
-            this.DatabaseFilter.Name = "DatabaseFilter";
-            this.DatabaseFilter.Size = new System.Drawing.Size(334, 400);
-            this.DatabaseFilter.TabIndex = 11;
+            this.loadOlderDatabaseToolStripMenuItem.Name = "loadOlderDatabaseToolStripMenuItem";
+            this.loadOlderDatabaseToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.loadOlderDatabaseToolStripMenuItem.Text = "Load older database";
+            this.loadOlderDatabaseToolStripMenuItem.Click += new System.EventHandler(this.loadOlderDatabaseToolStripMenuItem_Click);
+            // 
+            // DBLoadDialog
+            // 
+            this.DBLoadDialog.FileName = "database.json";
+            this.DBLoadDialog.Filter = "JSON file|*.json";
             // 
             // MainForm
             // 
@@ -1379,10 +1409,13 @@
         private System.Windows.Forms.ToolStripMenuItem differenceCalculatorToolStripMenuItem;
         private System.Windows.Forms.ToolStripStatusLabel StatusNewVersionAvailable;
         private System.Windows.Forms.Panel PanelRunePreviews;
-        private System.Windows.Forms.PageSetupDialog pageSetupDialog1;
         private System.Windows.Forms.Button ButtonSetViewMode;
         private System.Windows.Forms.VScrollBar PreviewScrollBar;
         private Pox.DatabaseFilterControl DatabaseFilter;
+        private System.Windows.Forms.ToolStripProgressBar DBDownloadProgress;
+        private System.Windows.Forms.ToolStripProgressBar ArchiveDownloadProgress;
+        private System.Windows.Forms.ToolStripMenuItem loadOlderDatabaseToolStripMenuItem;
+        private System.Windows.Forms.OpenFileDialog DBLoadDialog;
     }
 }
 

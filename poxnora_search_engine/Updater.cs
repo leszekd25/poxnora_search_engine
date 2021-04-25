@@ -14,6 +14,7 @@ namespace poxnora_search_engine
     public delegate void OnGetVersion(bool is_current_outdated, string new_version);
     public delegate void OnGetArchiveFailed();
     public delegate void OnGetArchiveSuccess();
+    public delegate void OnArchiveProgressChanged(int p);
 
     public class Updater
     {
@@ -23,6 +24,7 @@ namespace poxnora_search_engine
         public OnGetVersion _OnGetVersion = null;
         public OnGetArchiveFailed _OnGetArchiveFailed = null;
         public OnGetArchiveSuccess _OnGetArchiveSuccess = null;
+        public OnArchiveProgressChanged _OnArchiveProgressChanged = null;
 
         Thread DownloadVersionStringThread = null;
 
@@ -33,6 +35,7 @@ namespace poxnora_search_engine
             Log.Info(Log.LogSource.Net, "Updater.Updater() called");
             DeleteOldAssemblies();
             wc.DownloadDataCompleted += GetVersionArchive_completed;
+            wc.DownloadProgressChanged += GetArchive_ProgressChanged;
         }
 
         public void GetLatestVersion()
@@ -177,6 +180,11 @@ namespace poxnora_search_engine
                 Log.Error(Log.LogSource.Net, "Updater.GetVersionArchive_completed(): Error while unpacking archive: " + ex.ToString());
                 _OnGetArchiveFailed?.Invoke();
             }
+        }
+
+        void GetArchive_ProgressChanged(object sender, System.Net.DownloadProgressChangedEventArgs e)
+        {
+            _OnArchiveProgressChanged?.Invoke((int)(100 * (e.BytesReceived / 1000000f)));
         }
     }
 }

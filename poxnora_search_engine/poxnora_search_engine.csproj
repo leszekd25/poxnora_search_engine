@@ -149,6 +149,12 @@
     <Compile Include="Pox\Filters\OrFilter.cs" />
     <Compile Include="Pox\Filters\StringFilter.cs" />
     <Compile Include="Pox\ImageCache.cs" />
+    <Compile Include="Pox\QuickFilterForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Pox\QuickFilterForm.Designer.cs">
+      <DependentUpon>QuickFilterForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pox\Relic.cs" />
     <Compile Include="Pox\Rune.cs" />
     <Compile Include="Pox\RuneDescriptionControl.cs">
@@ -207,6 +213,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Pox\FilterControls\StringFilterControl.resx">
       <DependentUpon>StringFilterControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pox\QuickFilterForm.resx">
+      <DependentUpon>QuickFilterForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Pox\RuneDescriptionControl.resx">
       <DependentUpon>RuneDescriptionControl.cs</DependentUpon>

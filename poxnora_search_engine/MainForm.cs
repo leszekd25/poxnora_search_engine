@@ -44,6 +44,17 @@ namespace poxnora_search_engine
                 LastLogMessage.Text = s.ToString()+": "+d;
         }
 
+        // called to update progress bar on downloading database and updated archive, respectively
+        void OnDBDownloadProgressChanged(int percentage)
+        {
+            DBDownloadProgress.Value = Math.Min(100, Math.Max(0, percentage));
+        }
+
+        void OnArchiveProgressChanged(int percentage)
+        {
+            ArchiveDownloadProgress.Value = Math.Min(100, Math.Max(0, percentage));
+        }
+
         // called when latest version number is retrieved from the server
         void OnFetchCurrentVersion(bool is_current_outdated, string new_version)
         {
@@ -63,6 +74,8 @@ namespace poxnora_search_engine
 
             StatusNewVersionAvailable.IsLink = true;
             StatusNewVersionAvailable.Text = "New version available";
+
+            ArchiveDownloadProgress.Visible = false;
         }
 
         // called when latest version was installed, it will shut down current instance and start a new one
@@ -80,7 +93,10 @@ namespace poxnora_search_engine
             Log.Info(Log.LogSource.UI, "MainForm.Form1_Load() called");
 
             Program.database.ready_trigger = OnDatabaseReady;
-            Program.database.LoadJSON("database.json", Pox.Database.POXNORA_JSON_SITE);
+            Program.database.progress_trigger = OnDBDownloadProgressChanged;
+
+            bool dbload_result = Program.database.LoadJSON("database.json", Pox.Database.POXNORA_JSON_SITE);
+            DBDownloadProgress.Visible = !dbload_result;
 
             foreach (ToolStripMenuItem column_vis in championsToolStripMenuItem.DropDownItems)
                 column_vis.Click += new EventHandler(OnChampionColumnVisibilityClick);
@@ -116,6 +132,7 @@ namespace poxnora_search_engine
             app_updater._OnGetVersion = OnFetchCurrentVersion;
             app_updater._OnGetArchiveFailed = OnFetchCurrentArchiveFailed;
             app_updater._OnGetArchiveSuccess = OnFetchCurrentArchiveSuccess;
+            app_updater._OnArchiveProgressChanged = OnArchiveProgressChanged;
             app_updater.GetLatestVersion();
 
             PanelRunePreviews.Location = GridDataElements.Location;
@@ -142,6 +159,9 @@ namespace poxnora_search_engine
             Log.Info(Log.LogSource.PoxDB, "MainForm.OnDatabaseReady() called");
 
             RuneDescription.database_ref = Program.database;
+
+            DBDownloadProgress.Visible = false;
+
             PrepareView();
         }
 
@@ -1046,6 +1066,7 @@ namespace poxnora_search_engine
             StatusNewVersionAvailable.IsLink = false;
             StatusNewVersionAvailable.Text = "Downloading...";
 
+            ArchiveDownloadProgress.Visible = true;
             app_updater.ForceInstallLatestVersion();
         }
 
@@ -1079,6 +1100,50 @@ namespace poxnora_search_engine
 
             int val = e.Delta * 113 / 120;
             PreviewScrollBar.Value = Math.Max(PreviewScrollBar.Minimum, Math.Min(PreviewScrollBar.Maximum, PreviewScrollBar.Value - val));
+        }
+
+        private void loadOlderDatabaseToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // cant do it while database is being downloaded
+            if (Program.database.loading)
+                return;
+
+            if (DBLoadDialog.ShowDialog() != DialogResult.OK)
+                return;
+
+
+            // unload current database
+            if(CardRandomizer_form != null)
+                CardRandomizer_form.Close();
+            CardRandomizer_form = null;
+
+            if (ChampionBuilder_form != null)
+                ChampionBuilder_form.Close();
+            ChampionBuilder_form = null;
+
+            if (DifferenceCalculator_form != null)
+                DifferenceCalculator_form.Close();
+            DifferenceCalculator_form = null;
+
+            RuneDescription.ClearDescription();
+            Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
+            Program.image_cache.BreakRunePreviewDownload();
+            RuneDescription.database_ref = null;
+
+            DatabaseFilter.Clear();
+
+            GridDataElements.Rows.Clear();
+            PanelRunePreviews.Controls.Clear();
+
+            Program.database.Unload();
+
+            // load new database from file
+            Program.database.LoadJSON(DBLoadDialog.FileName, "");
+            if (!Program.database.ready)
+                return;
+
+            RuneDescription.database_ref = Program.database;
+            Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
         }
     }
 }
