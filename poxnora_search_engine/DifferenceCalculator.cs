@@ -12,7 +12,7 @@ namespace poxnora_search_engine
 {
     public partial class DifferenceCalculator : Form
     {
-        enum ChangeListMode { CATEGORY, FACTION };
+        enum ChangeListMode { CATEGORY, FACTION, ABILITY };
 
         Pox.Diff.DatabaseDifferenceCalculator diff_calculator = new Pox.Diff.DatabaseDifferenceCalculator();
         TreeNode selected_treenode = null;
@@ -406,6 +406,60 @@ namespace poxnora_search_engine
             PopulateAbilityChangeBrowser(ChangesTree.Nodes["Abilities"]);
         }
 
+        private void PopulateAbilityAffectedChampionBrowser(TreeNode tn)
+        {
+            // 1. find all abilities that changed
+            HashSet<int> AbilityList = new HashSet<int>();
+            foreach (var diff_elem in diff_calculator.DifferingAbilities)
+            {
+                if ((diff_calculator.PreviousDatabase.Abilities.ContainsKey(diff_elem.id)) && (diff_calculator.CurrentDatabase_ref.Abilities.ContainsKey(diff_elem.id)))
+                    AbilityList.Add(diff_elem.id);
+            }
+
+            // 2. find all champions that now have abilities that changed cost
+            List<Pox.Diff.DifferenceLink> ChampionList = new List<Pox.Diff.DifferenceLink>();
+            foreach (var kv in diff_calculator.CurrentDatabase_ref.Champions)
+            {
+                if (!ElementPassesFilter(diff_calculator.CurrentDatabase_ref.Champions[kv.Key]))
+                    continue;
+
+                bool contains_changed_ability = false;
+                foreach (var ab in kv.Value.AllAbilities_refs)
+                {
+                    if (AbilityList.Contains(ab.ID))
+                    {
+                        contains_changed_ability = true;
+                        break;
+                    }
+                }
+
+                if (!contains_changed_ability)
+                    continue;
+
+                Pox.Diff.DifferenceLink diff_link = new Pox.Diff.DifferenceLink() { ElemType = Pox.DataElement.ElementType.CHAMPION };
+                diff_link.CurrentElement = kv.Value;
+                if (diff_calculator.PreviousDatabase.Champions.ContainsKey(kv.Key))
+                {
+                    diff_link.PreviousElement = diff_calculator.PreviousDatabase.Champions[kv.Key];
+                }
+
+                tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
+            }
+
+            tn.Text = string.Format("{0} ({1} changes)", tn.Name, tn.Nodes.Count);
+        }
+
+        private void PopulateChangeBrowserPerAbility()
+        {
+            ChangesTree.Nodes.Clear();
+
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Champions", Text = "Champions" });
+            ChangesTree.Nodes.Add(new TreeNode() { Name = "Abilities", Text = "Abilities" });
+
+            PopulateAbilityAffectedChampionBrowser(ChangesTree.Nodes["Champions"]);
+            PopulateAbilityChangeBrowser(ChangesTree.Nodes["Abilities"]);
+        }
+
         private void PopulateChangeBrowser()
         {
             switch(changelist_mode)
@@ -415,6 +469,9 @@ namespace poxnora_search_engine
                     break;
                 case ChangeListMode.FACTION:
                     PopulateChangeBrowserPerFaction();
+                    break;
+                case ChangeListMode.ABILITY:
+                    PopulateChangeBrowserPerAbility();
                     break;
             }
         }
@@ -861,6 +918,15 @@ namespace poxnora_search_engine
                 return;
             
             changelist_mode = ChangeListMode.FACTION;
+            PopulateChangeBrowser();
+        }
+
+        private void showChampionsAffectedByAbilityChangesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (changelist_mode == ChangeListMode.ABILITY)
+                return;
+
+            changelist_mode = ChangeListMode.ABILITY;
             PopulateChangeBrowser();
         }
 

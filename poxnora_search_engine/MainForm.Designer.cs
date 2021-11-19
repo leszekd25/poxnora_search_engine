@@ -126,6 +126,7 @@
             this.deckRandomizerToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.championBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadOlderDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.DBDownloadProgress = new System.Windows.Forms.ToolStripProgressBar();
@@ -143,12 +144,14 @@
             this.PreviewScrollBar = new System.Windows.Forms.VScrollBar();
             this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
-            this.loadOlderDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DBLoadDialog = new System.Windows.Forms.OpenFileDialog();
+            this.PanelCards = new System.Windows.Forms.Panel();
+            this.ButtonAddCard = new System.Windows.Forms.Button();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
             this.PanelDataMode.SuspendLayout();
+            this.PanelCards.SuspendLayout();
             this.SuspendLayout();
             // 
             // MainMenu
@@ -1084,6 +1087,13 @@
             this.differenceCalculatorToolStripMenuItem.Text = "Difference calculator";
             this.differenceCalculatorToolStripMenuItem.Click += new System.EventHandler(this.differenceCalculatorToolStripMenuItem_Click);
             // 
+            // loadOlderDatabaseToolStripMenuItem
+            // 
+            this.loadOlderDatabaseToolStripMenuItem.Name = "loadOlderDatabaseToolStripMenuItem";
+            this.loadOlderDatabaseToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.loadOlderDatabaseToolStripMenuItem.Text = "Load older database";
+            this.loadOlderDatabaseToolStripMenuItem.Click += new System.EventHandler(this.loadOlderDatabaseToolStripMenuItem_Click);
+            // 
             // Status
             // 
             this.Status.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1132,10 +1142,10 @@
             this.GridDataElements.AllowUserToDeleteRows = false;
             this.GridDataElements.AllowUserToOrderColumns = true;
             this.GridDataElements.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.GridDataElements.Location = new System.Drawing.Point(335, 53);
+            this.GridDataElements.Location = new System.Drawing.Point(335, 84);
             this.GridDataElements.Name = "GridDataElements";
             this.GridDataElements.ReadOnly = true;
-            this.GridDataElements.Size = new System.Drawing.Size(764, 565);
+            this.GridDataElements.Size = new System.Drawing.Size(764, 534);
             this.GridDataElements.TabIndex = 4;
             this.GridDataElements.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.GridDataElements_CellEnter);
             // 
@@ -1147,7 +1157,7 @@
             this.PanelDataMode.Controls.Add(this.RadioSpells);
             this.PanelDataMode.Controls.Add(this.RadioAbilities);
             this.PanelDataMode.Controls.Add(this.RadioChampions);
-            this.PanelDataMode.Location = new System.Drawing.Point(335, 23);
+            this.PanelDataMode.Location = new System.Drawing.Point(335, 54);
             this.PanelDataMode.Name = "PanelDataMode";
             this.PanelDataMode.Size = new System.Drawing.Size(764, 30);
             this.PanelDataMode.TabIndex = 6;
@@ -1229,9 +1239,9 @@
             // 
             // PreviewScrollBar
             // 
-            this.PreviewScrollBar.Location = new System.Drawing.Point(1082, 56);
+            this.PreviewScrollBar.Location = new System.Drawing.Point(1082, 87);
             this.PreviewScrollBar.Name = "PreviewScrollBar";
-            this.PreviewScrollBar.Size = new System.Drawing.Size(17, 562);
+            this.PreviewScrollBar.Size = new System.Drawing.Size(17, 531);
             this.PreviewScrollBar.TabIndex = 0;
             this.PreviewScrollBar.Visible = false;
             this.PreviewScrollBar.ValueChanged += new System.EventHandler(this.PreviewScrollBar_ValueChanged);
@@ -1251,23 +1261,35 @@
             this.RuneDescription.Size = new System.Drawing.Size(281, 578);
             this.RuneDescription.TabIndex = 0;
             // 
-            // loadOlderDatabaseToolStripMenuItem
-            // 
-            this.loadOlderDatabaseToolStripMenuItem.Name = "loadOlderDatabaseToolStripMenuItem";
-            this.loadOlderDatabaseToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
-            this.loadOlderDatabaseToolStripMenuItem.Text = "Load older database";
-            this.loadOlderDatabaseToolStripMenuItem.Click += new System.EventHandler(this.loadOlderDatabaseToolStripMenuItem_Click);
-            // 
             // DBLoadDialog
             // 
             this.DBLoadDialog.FileName = "database.json";
             this.DBLoadDialog.Filter = "JSON file|*.json";
+            // 
+            // PanelCards
+            // 
+            this.PanelCards.Controls.Add(this.ButtonAddCard);
+            this.PanelCards.Location = new System.Drawing.Point(335, 27);
+            this.PanelCards.Name = "PanelCards";
+            this.PanelCards.Size = new System.Drawing.Size(764, 24);
+            this.PanelCards.TabIndex = 12;
+            // 
+            // ButtonAddCard
+            // 
+            this.ButtonAddCard.Location = new System.Drawing.Point(0, 1);
+            this.ButtonAddCard.Name = "ButtonAddCard";
+            this.ButtonAddCard.Size = new System.Drawing.Size(22, 23);
+            this.ButtonAddCard.TabIndex = 0;
+            this.ButtonAddCard.Text = "+";
+            this.ButtonAddCard.UseVisualStyleBackColor = true;
+            this.ButtonAddCard.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonAddCard_MouseDown);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1394, 643);
+            this.Controls.Add(this.PanelCards);
             this.Controls.Add(this.DatabaseFilter);
             this.Controls.Add(this.PreviewScrollBar);
             this.Controls.Add(this.RuneDescription);
@@ -1292,6 +1314,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).EndInit();
             this.PanelDataMode.ResumeLayout(false);
             this.PanelDataMode.PerformLayout();
+            this.PanelCards.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1416,6 +1439,8 @@
         private System.Windows.Forms.ToolStripProgressBar ArchiveDownloadProgress;
         private System.Windows.Forms.ToolStripMenuItem loadOlderDatabaseToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog DBLoadDialog;
+        private System.Windows.Forms.Panel PanelCards;
+        private System.Windows.Forms.Button ButtonAddCard;
     }
 }
 

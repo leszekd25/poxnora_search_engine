@@ -130,6 +130,43 @@ namespace poxnora_search_engine.Pox
             Log.Info(Log.LogSource.UI, "MainForm.AddFilter() finished");
         }
 
+        public void RebuildFilter(BaseFilter bf)
+        {
+            Clear();
+
+            SearchFilter = bf;
+            if(bf == null)
+                return;
+
+            FilterTree.Nodes.Add(new TreeNode());
+            AddSubNode(FilterTree.Nodes[0], bf);
+        }
+
+        private void AddSubNode(TreeNode tn, BaseFilter bf)
+        {
+            tn.Text = bf.ToString();
+            tn.Tag = bf;
+
+            if (bf is OrFilter)
+            {
+                foreach (var bff in ((OrFilter)bf).Filters)
+                {
+                    TreeNode tn2 = new TreeNode();
+                    tn.Nodes.Add(tn2);
+                    AddSubNode(tn2, bff);
+                }
+            }
+            else if (bf is AndFilter)
+            {
+                foreach (var bff in ((AndFilter)bf).Filters)
+                {
+                    TreeNode tn2 = new TreeNode();
+                    tn.Nodes.Add(tn2);
+                    AddSubNode(tn2, bff); 
+                }
+            }
+        }
+
         private void RemoveFilter(TreeNode f)
         {
             Log.Info(Log.LogSource.UI, "MainForm.RemoveFilter() called");

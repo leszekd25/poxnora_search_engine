@@ -19,10 +19,13 @@ namespace poxnora_search_engine
     public enum FilterType { AND, OR, BOOLEAN, INT, STRING, RARITY, EXPANSION, ABILITY_LIST, CLASS_LIST, FACTION_LIST, RACE_LIST }
     public partial class MainForm : Form
     {
-        enum ViewModeEnum { GRID, IMAGES }
+        ViewModeEnum ViewMode = ViewModeEnum.NONE;
+        Pox.DataElement.ElementType ViewType = Pox.DataElement.ElementType.NONE;
 
-        ViewModeEnum ViewMode = ViewModeEnum.GRID;
-        Pox.DataElement.ElementType ViewType = Pox.DataElement.ElementType.CHAMPION;
+        List<RuneListInfo> Cards = new List<RuneListInfo>();
+        int HighestCard = 0;
+        int SelectedCard = Utility.NO_INDEX;
+        const int MaxCard = 6;
 
         Updater app_updater = new Updater();
 
@@ -33,6 +36,7 @@ namespace poxnora_search_engine
         public MainForm()
         {
             InitializeComponent();
+            ButtonAddCard.Tag = -1;
             Log.OnLog = ShowLogMessageOnStatusBar;
         }
 
@@ -162,7 +166,130 @@ namespace poxnora_search_engine
 
             DBDownloadProgress.Visible = false;
 
-            PrepareView();
+            ViewMode = ViewModeEnum.NONE;
+            ViewType = Pox.DataElement.ElementType.NONE;
+
+            if (Cards.Count == 0)
+                SelectedCard = AddCard(new RuneListInfo() { Filter = null, ApplyFilter = false, ViewMode = ViewModeEnum.GRID, ViewType = DataElement.ElementType.CHAMPION });
+
+            ReloadCard(SelectedCard);
+        }
+
+        private void OnCardButtonClick(object sender, EventArgs e)
+        {
+            SelectCard((int)((Button)sender).Tag);
+        }
+
+        private int AddCard(RuneListInfo card)
+        {
+            if (Cards.Count >= MaxCard)
+                return -1;
+
+            Cards.Add(card);
+            HighestCard += 1;
+
+            Button b = new Button();
+            b.Tag = Cards.Count - 1;
+            b.Text = String.Format("Card #{0}", HighestCard);
+            b.MouseDown += new MouseEventHandler(ButtonCard_MouseDown);
+            b.Size = new Size(80, 23);
+            b.Location = new Point(ButtonAddCard.Location.X, ButtonAddCard.Location.Y);
+            ButtonAddCard.Location = new Point(ButtonAddCard.Location.X + 86, ButtonAddCard.Location.Y);
+            PanelCards.Controls.Add(b);
+
+            return Cards.Count - 1;
+        }
+
+        private void SelectCard(int card_index)
+        {
+            if (card_index == SelectedCard)
+                return;
+
+            if(SelectedCard != Utility.NO_INDEX)
+                SaveCard(SelectedCard);
+
+            SelectedCard = card_index;
+            ReloadCard(card_index);
+        }
+
+        private void ReloadCard(int card_index)
+        {
+            if ((ViewMode != Cards[card_index].ViewMode) || (ViewType != Cards[card_index].ViewType))
+            {
+                ViewMode = Cards[card_index].ViewMode;
+                ViewType = Cards[card_index].ViewType;
+                PrepareView();
+            }
+
+            UpdateCard(card_index);
+        }
+
+        private void SaveCard(int card_index)
+        {
+            if (card_index == Utility.NO_INDEX)
+                return;
+
+            Cards[card_index].Filter = DatabaseFilter.SearchFilter;
+            Cards[card_index].ApplyFilter = DatabaseFilter.ApplyFilters;
+            Cards[card_index].ViewMode = ViewMode;
+            Cards[card_index].ViewType = ViewType;
+        }
+
+        private void UpdateCard(int card_index)
+        {
+            DatabaseFilter.RebuildFilter(Cards[card_index].Filter);
+            DatabaseFilter.ApplyFilters = Cards[card_index].ApplyFilter;
+            ApplyFilter();
+        }
+
+        private bool RemoveCard(int card_index)
+        {
+            if (Cards.Count == 1)
+                return false;
+
+            Cards.RemoveAt(card_index);
+
+            Control rem_control = null;
+            foreach(Control c in PanelCards.Controls)
+            {
+                int cur_card_index = (int)(c.Tag);
+                if(cur_card_index == -1)
+                {
+                    c.Location = new Point(c.Location.X - 86, c.Location.Y);
+                }
+                else if(cur_card_index == card_index)
+                {
+                    rem_control = c;
+                }
+                else if(cur_card_index > card_index)
+                {
+                    c.Tag = cur_card_index - 1;
+                    c.Location = new Point(c.Location.X - 86, c.Location.Y);
+                }
+            }
+            if(rem_control != null)
+            {
+                rem_control.MouseDown -= new MouseEventHandler(ButtonCard_MouseDown);
+                PanelCards.Controls.Remove(rem_control);
+            }
+            if (SelectedCard == Cards.Count)
+                SelectedCard -= 1;
+
+            return true;
+        }
+
+        private void ClearCards()
+        {
+            if (Cards.Count == 0)
+                AddCard(new RuneListInfo() { Filter = null, ViewMode = ViewModeEnum.GRID, ViewType = DataElement.ElementType.CHAMPION, ApplyFilter = false });
+            else
+            {
+                while (Cards.Count > 1)
+                    RemoveCard(SelectedCard);
+                Cards[0] = new RuneListInfo() { Filter = null, ViewMode = ViewMode, ViewType = ViewType };
+            }
+            SelectedCard = -1;
+            SelectCard(0);
         }
 
         // refreshes the database elements view
@@ -172,6 +299,10 @@ namespace poxnora_search_engine
                 PrepareGridView();
             else if (ViewMode == ViewModeEnum.IMAGES)
                 PrepareImageView();
+            else
+            {
+                Log.Error(Log.LogSource.Main, "PrepareView(): Unknown view mode!");
+            }
         }
 
         // refreshes the grid view
@@ -794,30 +925,35 @@ namespace poxnora_search_engine
         private void RadioChampions_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.CHAMPION;
+            Cards[SelectedCard].ViewType = ViewType;
             PrepareView();
         }
 
         private void RadioAbilities_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.ABILITY;
+            Cards[SelectedCard].ViewType = ViewType;
             PrepareView();
         }
 
         private void RadioSpells_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.SPELL;
+            Cards[SelectedCard].ViewType = ViewType;
             PrepareView();
         }
 
         private void RadioRelics_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.RELIC;
+            Cards[SelectedCard].ViewType = ViewType;
             PrepareView();
         }
 
         private void RadioEquips_CheckedChanged(object sender, EventArgs e)
         {
             ViewType = Pox.DataElement.ElementType.EQUIPMENT;
+            Cards[SelectedCard].ViewType = ViewType;
             PrepareView();
         }
 
@@ -896,12 +1032,13 @@ namespace poxnora_search_engine
                 return;
 
             GridDataElements.Width = this.Width - 1410 + 764;
-            GridDataElements.Height = this.Height - 682 + 565;
+            GridDataElements.Height = this.Height - 682 + 534;
 
             RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, DatabaseFilter.Location.Y);
-            RuneDescription.SetHeight(GridDataElements.Height + 32);
+            RuneDescription.SetHeight(GridDataElements.Height + 53);
             PanelRunePreviews.Location = new Point(GridDataElements.Location.X, PreviewScrollBar.Value);
             PanelRunePreviews.Size = GridDataElements.Size;
+            PanelCards.Width = GridDataElements.Width;
             PanelDataMode.Width = GridDataElements.Width;
             ButtonSetViewMode.Location = new Point(PanelDataMode.Width - ButtonSetViewMode.Width, ButtonSetViewMode.Location.Y);
             PreviewScrollBar.Location = new Point(RuneDescription.Location.X - PreviewScrollBar.Width, GridDataElements.Location.Y);
@@ -1083,6 +1220,7 @@ namespace poxnora_search_engine
                 ButtonSetViewMode.Text = "Switch to images";
             }
 
+            Cards[SelectedCard].ViewMode = ViewMode;
             PrepareView();
         }
 
@@ -1130,6 +1268,7 @@ namespace poxnora_search_engine
             Program.image_cache.BreakRunePreviewDownload();
             RuneDescription.database_ref = null;
 
+            SaveCard(SelectedCard);
             DatabaseFilter.Clear();
 
             GridDataElements.Rows.Clear();
@@ -1144,6 +1283,22 @@ namespace poxnora_search_engine
 
             RuneDescription.database_ref = Program.database;
             Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
+        }
+
+        private void ButtonCard_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+                SelectCard((int)(((Button)sender).Tag));
+            else if (e.Button == MouseButtons.Right)
+            {
+                if (RemoveCard((int)(((Button)sender).Tag)))
+                    ReloadCard(SelectedCard);
+            }
+        }
+
+        private void ButtonAddCard_MouseDown(object sender, MouseEventArgs e)
+        {
+            AddCard(new RuneListInfo() { Filter = null, ViewMode = ViewMode, ViewType = ViewType, ApplyFilter = false });
         }
     }
 }

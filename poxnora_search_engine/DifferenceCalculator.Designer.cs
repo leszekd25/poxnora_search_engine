@@ -44,6 +44,7 @@
             this.ButtonCurrent = new System.Windows.Forms.Button();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
             this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ChangeListModeMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -80,21 +81,22 @@
             // 
             this.ChangeListModeMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.showChangesPerCategoryToolStripMenuItem,
-            this.showChangesPerFactionToolStripMenuItem});
+            this.showChangesPerFactionToolStripMenuItem,
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem});
             this.ChangeListModeMenu.Name = "ChangeListModeMenu";
-            this.ChangeListModeMenu.Size = new System.Drawing.Size(220, 48);
+            this.ChangeListModeMenu.Size = new System.Drawing.Size(310, 92);
             // 
             // showChangesPerCategoryToolStripMenuItem
             // 
             this.showChangesPerCategoryToolStripMenuItem.Name = "showChangesPerCategoryToolStripMenuItem";
-            this.showChangesPerCategoryToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.showChangesPerCategoryToolStripMenuItem.Size = new System.Drawing.Size(309, 22);
             this.showChangesPerCategoryToolStripMenuItem.Text = "Show changes per category";
             this.showChangesPerCategoryToolStripMenuItem.Click += new System.EventHandler(this.showChangesPerCategoryToolStripMenuItem_Click);
             // 
             // showChangesPerFactionToolStripMenuItem
             // 
             this.showChangesPerFactionToolStripMenuItem.Name = "showChangesPerFactionToolStripMenuItem";
-            this.showChangesPerFactionToolStripMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.showChangesPerFactionToolStripMenuItem.Size = new System.Drawing.Size(309, 22);
             this.showChangesPerFactionToolStripMenuItem.Text = "Show changes per faction";
             this.showChangesPerFactionToolStripMenuItem.Click += new System.EventHandler(this.showChangesPerFactionToolStripMenuItem_Click);
             // 
@@ -142,6 +144,13 @@
             this.DatabaseFilter.Size = new System.Drawing.Size(334, 405);
             this.DatabaseFilter.TabIndex = 5;
             // 
+            // showChampionsAffectedByAbilityChangesToolStripMenuItem
+            // 
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Name = "showChampionsAffectedByAbilityChangesToolStripMenuItem";
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Size = new System.Drawing.Size(309, 22);
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Text = "Show champions affected by ability changes";
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Click += new System.EventHandler(this.showChampionsAffectedByAbilityChangesToolStripMenuItem_Click);
+            // 
             // DifferenceCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -177,5 +186,6 @@
         private System.Windows.Forms.ToolStripMenuItem showChangesPerCategoryToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem showChangesPerFactionToolStripMenuItem;
         private Pox.DatabaseFilterControl DatabaseFilter;
+        private System.Windows.Forms.ToolStripMenuItem showChampionsAffectedByAbilityChangesToolStripMenuItem;
     }
 }

@@ -8,7 +8,7 @@ namespace poxnora_search_engine.Pox
 {
     public class DataElement
     {
-        public enum ElementType { CHAMPION = 0, ABILITY, SPELL, RELIC, EQUIPMENT }
+        public enum ElementType { NONE = -1, CHAMPION = 0, ABILITY, SPELL, RELIC, EQUIPMENT }
 
         public int ID;
         public string Name = "";

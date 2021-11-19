@@ -163,6 +163,7 @@
     <Compile Include="Pox\RuneDescriptionControl.Designer.cs">
       <DependentUpon>RuneDescriptionControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Pox\RuneListInfo.cs" />
     <Compile Include="Pox\RunePreviewControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
