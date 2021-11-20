@@ -16,37 +16,39 @@ namespace poxnora_search_engine.Pox
         void OnImageLoad(Bitmap bmp);
     }
 
+    public struct HashSubscriberTuple
+    {
+        public string Hash;
+        public IImageCacheSubscriber Subscriber;
+    }
+
+
     public class ImageCache
     {
         public Dictionary<string, Bitmap> RuneImages { get; } = new Dictionary<string, Bitmap>();
         public Dictionary<string, Bitmap> RunePreviews { get; } = new Dictionary<string, Bitmap>();
 
-
-        
-
-
         const string IMAGE_SERVER = "https://d2aao99y1mip6n.cloudfront.net/";
 
         Thread DownloadRuneImageThread = null;
-        System.Timers.Timer CheckNewPreviewTimer = new System.Timers.Timer(10);
-        bool NewPreviewRequested = false;
-
-        System.Net.WebClient wc = new System.Net.WebClient();
-
         string QueuedRuneImageHash = "";
         string CurrentRuneImageHash = "";
+        System.Net.WebClient wc = new System.Net.WebClient();
 
-        Queue<string> QueuedRunePreviewHashes = new Queue<string>();
+        System.Timers.Timer CheckNewPreviewTimer = new System.Timers.Timer(100);
 
+        System.Collections.Concurrent.ConcurrentDictionary<string, int> QueuedRunePreviewHashes = new System.Collections.Concurrent.ConcurrentDictionary<string, int>();
+        System.Collections.Concurrent.ConcurrentDictionary<string, int> ProcessedRunePreviewHashes = new System.Collections.Concurrent.ConcurrentDictionary<string, int>();
+        System.Collections.Concurrent.ConcurrentDictionary<string, int> ResolvedRunePreviewHashes = new System.Collections.Concurrent.ConcurrentDictionary<string, int>();
 
         public HashSet<IImageCacheSubscriber> RuneImageSubscribers { get; } = new HashSet<IImageCacheSubscriber>();
-        Dictionary<string, HashSet<IImageCacheSubscriber>> RunePreviewSubscribers { get; } = new Dictionary<string, HashSet<IImageCacheSubscriber>>();
+        public List<HashSubscriberTuple> RunePreviewRequestors { get; } = new List<HashSubscriberTuple>();    // requests removed once image preview is resolved
 
         public ImageCache()
         {
-            wc.DownloadDataCompleted += new System.Net.DownloadDataCompletedEventHandler(OnRunePreviewDownloaded);
             CheckNewPreviewTimer.Elapsed += CheckNewPreviewTimer_Elapsed;
             CheckNewPreviewTimer.AutoReset = true;
+            CheckNewPreviewTimer.Start();
         }
 
         public bool IsRuneImageSavedOnDisk(string hash)
@@ -142,41 +144,46 @@ namespace poxnora_search_engine.Pox
 
         public void AddRunePreviewSubscriber(string hash, IImageCacheSubscriber sub)
         {
-            if (!RunePreviewSubscribers.ContainsKey(hash))
-                RunePreviewSubscribers.Add(hash, new HashSet<IImageCacheSubscriber>());
-
-            RunePreviewSubscribers[hash].Add(sub);
+            if(hash == "")
+            {
+                sub.OnImageLoad(null);
+            }
+            else if (!LoadRunePreview(hash))
+            {
+                RunePreviewRequestors.Add(new HashSubscriberTuple() { Hash = hash, Subscriber = sub });
+                QueuedRunePreviewHashes.TryAdd(hash, 0);
+            }
+            else
+            {
+                sub.OnImageLoad(RunePreviews[hash]);
+            }
         }
 
-        /*public void RemoveRunePreviewSubscriber(string hash, IImageCacheSubscriber sub)
+        public void RemoveRunePreviewSubscriber(IImageCacheSubscriber sub)//(string hash, IImageCacheSubscriber sub)
         {
-            if (!RunePreviewSubscribers.ContainsKey(hash))
-                return;
-
-            if (RunePreviewSubscribers[hash].Contains(sub))
-                RunePreviewSubscribers[hash].Remove(sub);
-        }*/
+            for(int i = 0; i < RunePreviewRequestors.Count; i++)
+            {
+                if(RunePreviewRequestors[i].Subscriber == sub)
+                {
+                    RunePreviewRequestors.RemoveAt(i);
+                    i--;
+                }
+            }
+        }
 
         public void RemoveRunePreviewSubscribers(string hash)
         {
-            if (!RunePreviewSubscribers.ContainsKey(hash))
-                return;
-
-            RunePreviewSubscribers[hash].Clear();
+            RunePreviewRequestors.Clear();
         }
 
-        /*public void ClearRunePreviewSubscribers()
-        {
-            foreach (var subs in RunePreviewSubscribers.Values)
-                subs.Clear();
-        }*/
         public void BreakRunePreviewDownload()
         {
             QueuedRunePreviewHashes.Clear();
-            wc.CancelAsync();
-            NewPreviewRequested = false;
-            CheckNewPreviewTimer.Stop();
+            ProcessedRunePreviewHashes.Clear();
+
+            RunePreviewRequestors.Clear();
         }
+
         public bool IsRunePreviewSavedOnDisk(string hash)
         {
             if (Directory.Exists("images\\runes\\sm"))
@@ -198,121 +205,89 @@ namespace poxnora_search_engine.Pox
                     try
                     {
                         bmp = new Bitmap("images\\runes\\sm\\" + hash + ".png");
+                        RunePreviews.Add(hash, bmp);
                     }
-                    catch(ArgumentException e)
+                    catch(Exception e)
                     {
-                        File.Delete("images\\runes\\sm\\" + hash + ".png");
-                        return false;
+                        RunePreviews.Add(hash, null);
                     }
-                    RunePreviews.Add(hash, bmp);
                 }
                 else       // get image from net
                 {
                     return false;
                 }
             }
-
-            foreach (var s in RunePreviewSubscribers[hash])
-                s.OnImageLoad(RunePreviews[hash]);
-
-            RemoveRunePreviewSubscribers(hash);
             return true;
         }
 
-        void RequestRunePreviewFromServer()
-        {
-            if (QueuedRunePreviewHashes.Count == 0)
-                return;
 
-            string hash = QueuedRunePreviewHashes.Peek();
+        private void DownloadRunePreview(Object stateInfo)
+        {
+            string hash = (string)stateInfo;
+
+            System.Net.WebClient wc = new System.Net.WebClient();
+
             Uri dw_string = new Uri(IMAGE_SERVER + "images/runes/sm/" + hash + ".png");
-            while (wc.IsBusy)
-                Thread.Sleep(10);
-            wc.DownloadDataAsync(dw_string);
-        }
-
-        void RequestRunePreviewsFromServer(List<string> image_hashes)
-        {
-            if (wc == null)
-                return;
-
-            BreakRunePreviewDownload();
-
-            CheckNewPreviewTimer.Enabled = true;
-            CheckNewPreviewTimer.Start();
-
-            foreach (var h in image_hashes)
-            {
-                QueuedRunePreviewHashes.Enqueue(h);
-            }
-
-            RequestRunePreviewFromServer();
-        }
-
-        public void GetRunePreviews(List<string> image_hashes)
-        {
-            List<string> failed_images = new List<string>();
-            foreach (var hash in image_hashes)
-                if (!LoadRunePreview(hash))
-                    failed_images.Add(hash);
-
-            RequestRunePreviewsFromServer(failed_images);
-        }
-
-
-        void OnRunePreviewDownloaded(object sender, System.Net.DownloadDataCompletedEventArgs e)
-        {
-            if (QueuedRunePreviewHashes.Count == 0)
-                return;
-
-            string hash = QueuedRunePreviewHashes.Dequeue();
-
+            byte[] img_data = null;
             try
             {
-                if (!e.Cancelled)
-                {
-                    if (e.Error == null)
-                    {
-                        byte[] data = e.Result;
-
-                        if (!Directory.Exists("images\\runes\\sm"))
-                            Directory.CreateDirectory("images\\runes\\sm");
-
-                        using (FileStream fs = new FileStream("images\\runes\\sm\\" + hash + ".png", FileMode.OpenOrCreate, FileAccess.Write))
-                        {
-                            fs.Write(data, 0, data.Length);
-                            fs.Flush();
-                        }
-
-                        LoadRunePreview(hash);
-                    }
-                    else
-                        throw e.Error;
-                }
+                img_data = wc.DownloadData(dw_string);
             }
-            catch(Exception ex)
+            catch(Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(ex.ToString());
+
             }
 
-            NewPreviewRequested = true;
+            // dummy file
+            if (img_data == null)
+                img_data = new byte[] { 0, 0, 0, 0 };
+
+            if (!Directory.Exists("images\\runes\\sm"))
+                Directory.CreateDirectory("images\\runes\\sm");
+
+            using (FileStream fs = new FileStream("images\\runes\\sm\\" + hash + ".png", FileMode.OpenOrCreate, FileAccess.Write))
+            {
+                fs.Write(img_data, 0, img_data.Length);
+                fs.Flush();
+            }
+
+            int dummy;
+            ResolvedRunePreviewHashes.TryAdd(hash, 0);
+            ProcessedRunePreviewHashes.TryRemove(hash, out dummy);
+            QueuedRunePreviewHashes.TryRemove(hash, out dummy);
         }
 
         private void CheckNewPreviewTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if(NewPreviewRequested)
+            foreach(var hash in QueuedRunePreviewHashes.Keys)
             {
-                if(QueuedRunePreviewHashes.Count == 0)
+                if(!ProcessedRunePreviewHashes.ContainsKey(hash))
                 {
-                    CheckNewPreviewTimer.Stop();
+                    ProcessedRunePreviewHashes.TryAdd(hash, 0);
+
+                    ThreadPool.QueueUserWorkItem(DownloadRunePreview, hash);
                 }
-                else
-                {
-                    CheckNewPreviewTimer.Start();
-                    RequestRunePreviewFromServer();
-                }
-                NewPreviewRequested = false;
             }
+
+            foreach (var hash in ResolvedRunePreviewHashes.Keys)
+            {
+                LoadRunePreview(hash);
+                foreach (var request in RunePreviewRequestors)
+                {
+                    if(request.Hash == hash)
+                        request.Subscriber.OnImageLoad(RunePreviews[hash]);
+                }
+                for(int i = 0; i < RunePreviewRequestors.Count; i++)
+                {
+                    if(RunePreviewRequestors[i].Hash == hash)
+                    {
+                        RunePreviewRequestors.RemoveAt(i);
+                        i--;
+                    }
+                }
+            }
+            ResolvedRunePreviewHashes.Clear();
+
         }
     }
 }

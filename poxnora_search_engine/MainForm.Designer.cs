@@ -127,6 +127,7 @@
             this.championBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadOlderDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.battlegroundBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.DBDownloadProgress = new System.Windows.Forms.ToolStripProgressBar();
@@ -1061,7 +1062,8 @@
             this.deckRandomizerToolStripMenuItem,
             this.championBuilderToolStripMenuItem,
             this.differenceCalculatorToolStripMenuItem,
-            this.loadOlderDatabaseToolStripMenuItem});
+            this.loadOlderDatabaseToolStripMenuItem,
+            this.battlegroundBuilderToolStripMenuItem});
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
             this.otherToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.otherToolStripMenuItem.Text = "Other";
@@ -1093,6 +1095,13 @@
             this.loadOlderDatabaseToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.loadOlderDatabaseToolStripMenuItem.Text = "Load older database";
             this.loadOlderDatabaseToolStripMenuItem.Click += new System.EventHandler(this.loadOlderDatabaseToolStripMenuItem_Click);
+            // 
+            // battlegroundBuilderToolStripMenuItem
+            // 
+            this.battlegroundBuilderToolStripMenuItem.Name = "battlegroundBuilderToolStripMenuItem";
+            this.battlegroundBuilderToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.battlegroundBuilderToolStripMenuItem.Text = "Battleground Builder";
+            this.battlegroundBuilderToolStripMenuItem.Click += new System.EventHandler(this.battlegroundBuilderToolStripMenuItem_Click);
             // 
             // Status
             // 
@@ -1441,6 +1450,7 @@
         private System.Windows.Forms.OpenFileDialog DBLoadDialog;
         private System.Windows.Forms.Panel PanelCards;
         private System.Windows.Forms.Button ButtonAddCard;
+        private System.Windows.Forms.ToolStripMenuItem battlegroundBuilderToolStripMenuItem;
     }
 }
 

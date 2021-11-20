@@ -32,6 +32,7 @@ namespace poxnora_search_engine
         CardRandomizer CardRandomizer_form = null;
         ChampionBuilder ChampionBuilder_form = null;
         DifferenceCalculator DifferenceCalculator_form = null;
+        BattlegroupBuilder BattlegroupBuilder_form = null;
 
         public MainForm()
         {
@@ -290,6 +291,13 @@ namespace poxnora_search_engine
             }
             SelectedCard = -1;
             SelectCard(0);
+        }
+
+        public RuneListInfo GetSelectedCard()
+        {
+            SaveCard(SelectedCard);
+            // refresh current card
+            return Cards[SelectedCard];
         }
 
         // refreshes the database elements view
@@ -912,8 +920,6 @@ namespace poxnora_search_engine
                 for (int i = 0; i < total; i++)
                     Program.image_cache.AddRunePreviewSubscriber(elems[i], ((RunePreviewControl)(PanelRunePreviews.Controls[i])));
 
-                Program.image_cache.GetRunePreviews(elems);
-
                 LastLogMessage.Text = "Items displayed: " + total.ToString();
             }
 
@@ -1178,6 +1184,32 @@ namespace poxnora_search_engine
             Log.Info(Log.LogSource.UI, "MainForm.DifferenceCalculator_form_FormClosed(): Form closed");
         }
 
+        private void battlegroundBuilderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Program.database.ready)
+                return;
+
+            if (BattlegroupBuilder_form != null)
+            {
+                BattlegroupBuilder_form.BringToFront();
+                return;
+            }
+
+            Log.Info(Log.LogSource.UI, "MainForm.battlegroundBuilderToolStripMenuItem_Click(): Creating new form");
+            BattlegroupBuilder_form = new BattlegroupBuilder();
+            BattlegroupBuilder_form.FormClosed += new FormClosedEventHandler(BattlegroupBuilder_form_FormClosed);
+
+            BattlegroupBuilder_form.Show();
+        }
+
+        private void BattlegroupBuilder_form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            BattlegroupBuilder_form.FormClosed -= new FormClosedEventHandler(BattlegroupBuilder_form_FormClosed);
+            BattlegroupBuilder_form = null;
+
+            Log.Info(Log.LogSource.UI, "MainForm.BattlegroupBuilder_form_FormClosed(): Form closed");
+        }
+
         private void MainForm_Activated(object sender, EventArgs e)
         {
             Program.image_cache.RuneImageSubscribers.Add(RuneDescription);
@@ -1263,6 +1295,10 @@ namespace poxnora_search_engine
                 DifferenceCalculator_form.Close();
             DifferenceCalculator_form = null;
 
+            if (BattlegroupBuilder_form != null)
+                BattlegroupBuilder_form.Close();
+            BattlegroupBuilder_form = null;
+
             RuneDescription.ClearDescription();
             Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
             Program.image_cache.BreakRunePreviewDownload();
@@ -1300,5 +1336,6 @@ namespace poxnora_search_engine
         {
             AddCard(new RuneListInfo() { Filter = null, ViewMode = ViewMode, ViewType = ViewType, ApplyFilter = false });
         }
+
     }
 }

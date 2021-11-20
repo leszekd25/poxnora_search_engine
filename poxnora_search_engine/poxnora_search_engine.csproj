@@ -57,6 +57,12 @@
     <Compile Include="AboutBox.Designer.cs">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="BattlegroupBuilder.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BattlegroupBuilder.Designer.cs">
+      <DependentUpon>BattlegroupBuilder.cs</DependentUpon>
+    </Compile>
     <Compile Include="CardRandomizer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -178,6 +184,9 @@
     <Compile Include="Utility.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BattlegroupBuilder.resx">
+      <DependentUpon>BattlegroupBuilder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CardRandomizer.resx">
       <DependentUpon>CardRandomizer.cs</DependentUpon>
