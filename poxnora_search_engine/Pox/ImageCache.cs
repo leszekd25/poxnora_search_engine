@@ -228,27 +228,35 @@ namespace poxnora_search_engine.Pox
             System.Net.WebClient wc = new System.Net.WebClient();
 
             Uri dw_string = new Uri(IMAGE_SERVER + "images/runes/sm/" + hash + ".png");
-            byte[] img_data = null;
+
             try
             {
-                img_data = wc.DownloadData(dw_string);
+                byte[] img_data = null;
+                try
+                {
+                    img_data = wc.DownloadData(dw_string);
+                }
+                catch (Exception e)
+                {
+
+                }
+
+                // dummy file
+                if (img_data == null)
+                    img_data = new byte[] { 0, 0, 0, 0 };
+
+                if (!Directory.Exists("images\\runes\\sm"))
+                    Directory.CreateDirectory("images\\runes\\sm");
+
+                using (FileStream fs = new FileStream("images\\runes\\sm\\" + hash + ".png", FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    fs.Write(img_data, 0, img_data.Length);
+                    fs.Flush();
+                }
             }
-            catch(Exception e)
+            catch(Exception e2)
             {
 
-            }
-
-            // dummy file
-            if (img_data == null)
-                img_data = new byte[] { 0, 0, 0, 0 };
-
-            if (!Directory.Exists("images\\runes\\sm"))
-                Directory.CreateDirectory("images\\runes\\sm");
-
-            using (FileStream fs = new FileStream("images\\runes\\sm\\" + hash + ".png", FileMode.OpenOrCreate, FileAccess.Write))
-            {
-                fs.Write(img_data, 0, img_data.Length);
-                fs.Flush();
             }
 
             int dummy;

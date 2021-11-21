@@ -54,6 +54,11 @@ namespace poxnora_search_engine
             this.ButtonPreviousPage = new System.Windows.Forms.Button();
             this.PanelRuneIcons = new System.Windows.Forms.Panel();
             this.PageBattlegroupStats = new System.Windows.Forms.TabPage();
+            this.LabelChampionCounts = new System.Windows.Forms.Label();
+            this.label13 = new System.Windows.Forms.Label();
+            this.LabelAverageChampionStats = new System.Windows.Forms.Label();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
             this.LabelNoraCostByRuneType = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.LabelBGShardCost = new System.Windows.Forms.Label();
@@ -114,20 +119,23 @@ namespace poxnora_search_engine
             // newBGToolStripMenuItem
             // 
             this.newBGToolStripMenuItem.Name = "newBGToolStripMenuItem";
-            this.newBGToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.newBGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.newBGToolStripMenuItem.Text = "New BG";
+            this.newBGToolStripMenuItem.Click += new System.EventHandler(this.newBGToolStripMenuItem_Click);
             // 
             // loadBGToolStripMenuItem
             // 
             this.loadBGToolStripMenuItem.Name = "loadBGToolStripMenuItem";
-            this.loadBGToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.loadBGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.loadBGToolStripMenuItem.Text = "Load BG";
+            this.loadBGToolStripMenuItem.Click += new System.EventHandler(this.loadBGToolStripMenuItem_Click);
             // 
             // saveBGToolStripMenuItem
             // 
             this.saveBGToolStripMenuItem.Name = "saveBGToolStripMenuItem";
-            this.saveBGToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
+            this.saveBGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveBGToolStripMenuItem.Text = "Save BG";
+            this.saveBGToolStripMenuItem.Click += new System.EventHandler(this.saveBGToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -156,6 +164,7 @@ namespace poxnora_search_engine
             this.ButtonGenerateCode.TabIndex = 6;
             this.ButtonGenerateCode.Text = "Generate code";
             this.ButtonGenerateCode.UseVisualStyleBackColor = true;
+            this.ButtonGenerateCode.Click += new System.EventHandler(this.ButtonGenerateCode_Click);
             // 
             // TextboxBGBCode
             // 
@@ -193,6 +202,7 @@ namespace poxnora_search_engine
             this.ComboFactions.Name = "ComboFactions";
             this.ComboFactions.Size = new System.Drawing.Size(72, 21);
             this.ComboFactions.TabIndex = 3;
+            this.ComboFactions.SelectedIndexChanged += new System.EventHandler(this.ComboFactions_SelectedIndexChanged);
             // 
             // label10
             // 
@@ -210,6 +220,7 @@ namespace poxnora_search_engine
             this.ComboAvatar.Name = "ComboAvatar";
             this.ComboAvatar.Size = new System.Drawing.Size(72, 21);
             this.ComboAvatar.TabIndex = 1;
+            this.ComboAvatar.SelectedIndexChanged += new System.EventHandler(this.ComboAvatar_SelectedIndexChanged);
             // 
             // label9
             // 
@@ -324,6 +335,11 @@ namespace poxnora_search_engine
             // PageBattlegroupStats
             // 
             this.PageBattlegroupStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PageBattlegroupStats.Controls.Add(this.LabelChampionCounts);
+            this.PageBattlegroupStats.Controls.Add(this.label13);
+            this.PageBattlegroupStats.Controls.Add(this.LabelAverageChampionStats);
+            this.PageBattlegroupStats.Controls.Add(this.label12);
+            this.PageBattlegroupStats.Controls.Add(this.label7);
             this.PageBattlegroupStats.Controls.Add(this.LabelNoraCostByRuneType);
             this.PageBattlegroupStats.Controls.Add(this.label8);
             this.PageBattlegroupStats.Controls.Add(this.LabelBGShardCost);
@@ -339,10 +355,50 @@ namespace poxnora_search_engine
             this.PageBattlegroupStats.Location = new System.Drawing.Point(4, 25);
             this.PageBattlegroupStats.Name = "PageBattlegroupStats";
             this.PageBattlegroupStats.Padding = new System.Windows.Forms.Padding(3);
-            this.PageBattlegroupStats.Size = new System.Drawing.Size(893, 448);
+            this.PageBattlegroupStats.Size = new System.Drawing.Size(894, 448);
             this.PageBattlegroupStats.TabIndex = 1;
             this.PageBattlegroupStats.Text = "Battlegroup Stats";
             this.PageBattlegroupStats.UseVisualStyleBackColor = true;
+            // 
+            // LabelChampionCounts
+            // 
+            this.LabelChampionCounts.Location = new System.Drawing.Point(806, 115);
+            this.LabelChampionCounts.Name = "LabelChampionCounts";
+            this.LabelChampionCounts.Size = new System.Drawing.Size(65, 82);
+            this.LabelChampionCounts.TabIndex = 16;
+            // 
+            // label13
+            // 
+            this.label13.Location = new System.Drawing.Point(663, 115);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(137, 82);
+            this.label13.TabIndex = 15;
+            this.label13.Text = "Melee champions:\r\nHybrid range champions:\r\nRanged champions:\r\n2x2 champions:\r\nNon" +
+    "-attacking champions:";
+            // 
+            // LabelAverageChampionStats
+            // 
+            this.LabelAverageChampionStats.Location = new System.Drawing.Point(806, 25);
+            this.LabelAverageChampionStats.Name = "LabelAverageChampionStats";
+            this.LabelAverageChampionStats.Size = new System.Drawing.Size(65, 82);
+            this.LabelAverageChampionStats.TabIndex = 14;
+            // 
+            // label12
+            // 
+            this.label12.Location = new System.Drawing.Point(663, 25);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(63, 82);
+            this.label12.TabIndex = 13;
+            this.label12.Text = "Damage:\r\nSpeed:\r\nMin RNG:\r\nMax RNG:\r\nDefense:\r\nHealth:";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(663, 3);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(199, 13);
+            this.label7.TabIndex = 12;
+            this.label7.Text = "Average champion stats (melee/ranged):";
             // 
             // LabelNoraCostByRuneType
             // 
@@ -405,7 +461,6 @@ namespace poxnora_search_engine
             this.ListBoxBGErrorLog.Name = "ListBoxBGErrorLog";
             this.ListBoxBGErrorLog.Size = new System.Drawing.Size(879, 238);
             this.ListBoxBGErrorLog.TabIndex = 4;
-            this.ListBoxBGErrorLog.Visible = false;
             // 
             // LabelBGStatus
             // 
@@ -692,5 +747,10 @@ namespace poxnora_search_engine
         private System.Windows.Forms.Label LabelSpells;
         private System.Windows.Forms.Label LabelChampions;
         private System.Windows.Forms.Panel PanelRuneList;
+        private System.Windows.Forms.Label LabelChampionCounts;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Label LabelAverageChampionStats;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label7;
     }
 }

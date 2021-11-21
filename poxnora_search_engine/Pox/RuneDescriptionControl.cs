@@ -12,11 +12,26 @@ namespace poxnora_search_engine.Pox
 {
     public partial class RuneDescriptionControl : UserControl, IImageCacheSubscriber
     {
+        public delegate void OnUpgradeClicked(int up_id, int up_index);
+
         struct TracerViewData
         {
             public Pox.DataElement.ElementType Type;
             public int ID;
         }
+
+        public struct UpgradeAbilitySelection
+        {
+            public int AbilityIndex1;
+            public int AbilityIndex2;
+        }
+
+        struct AbilityLinkData
+        {
+            public int UpgradeID;    // u1, u2
+            public int UpgradeIndex; // which ability from the list was selected
+        }
+
 
         static Font RegularFont = new Font("Arial", 10, FontStyle.Regular);
         static Font BoldFont = new Font("Arial", 10, FontStyle.Bold);
@@ -28,6 +43,11 @@ namespace poxnora_search_engine.Pox
         List<TracerViewData> Tracer = new List<TracerViewData>();
         int TracerPosition = -1;
         TracerViewData CurrentTracer;
+
+        UpgradeAbilitySelection AbilitySelection = new UpgradeAbilitySelection() { AbilityIndex1 = 0, AbilityIndex2 = 0 };
+        bool ShowUpgradeAbilitySelection = false;
+
+        public OnUpgradeClicked UpgradeClicked = null;
 
         public Database database_ref = null;
         public RuneDescriptionControl()
@@ -111,12 +131,9 @@ namespace poxnora_search_engine.Pox
             TextBoxDescription.SelectionFont = ItalicFont;
             TextBoxDescription.AppendText("Illustrated by  "+r.Artist + "\r\n\r\n");
 
-
             TextBoxDescription.SelectionColor = GetColorByRarity(r.Rarity);
             TextBoxDescription.SelectionFont = BoldFont;
             TextBoxDescription.AppendText(r.Name + "\r\n");
-
-            CursorY += 32;
 
             TextBoxDescription.SelectionColor = Color.LightGray;
             AddLine("Expansion: ", r.Expansion);
@@ -161,6 +178,8 @@ namespace poxnora_search_engine.Pox
             AddLine("", "");
 
             AddLine("Abilities:", "");
+
+            int ablink_pos_y = TextBoxDescription.GetPositionFromCharIndex(TextBoxDescription.Text.Length - 1).Y + 18;
             foreach (var ab in c.BaseAbilities_refs)
             {
                 if (ab.Name.Contains("Attack: "))
@@ -172,23 +191,14 @@ namespace poxnora_search_engine.Pox
                     TextBoxDescription.SelectionColor = GetColorByAttackType(ab.Name.Substring(8));
                     TextBoxDescription.SelectionFont = BoldFont;
                     TextBoxDescription.AppendText(ab.Name.Substring(8) + "\r\n");
-
-                    /*TextBoxDescription.SelectionColor = Color.LightGray;
-                    TextBoxDescription.SelectionFont = RegularFont;
-                    TextBoxDescription.AppendText("  (" + ab.NoraCost.ToString() + ")\r\n");*/
-
-                    CursorY += 16;
                 }
                 else
                 {
                     AddLine("", "(" + ab.NoraCost.ToString() + ")  " + ab.ToString());
                 }
-
-                AddLink(new Point() { X = 220, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             foreach (var ab in c.UpgradeAbilities1_refs)
             {
-                TextBoxDescription.SelectionColor = Color.PaleTurquoise;
                 if (c.UpgradeAbilities1_refs.IndexOf(ab) == c.DefaultUpgrade1Index)
                 {
                     TextBoxDescription.SelectionColor = Color.Cyan;
@@ -199,7 +209,6 @@ namespace poxnora_search_engine.Pox
                     TextBoxDescription.SelectionColor = Color.DeepSkyBlue;
                     AddLine("", "(" + ab.NoraCost.ToString() + ")  " + ab.ToString());
                 }
-                AddLink(new Point() { X = 220, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             foreach (var ab in c.UpgradeAbilities2_refs)
             {
@@ -213,13 +222,47 @@ namespace poxnora_search_engine.Pox
                     TextBoxDescription.SelectionColor = Color.LimeGreen;
                     AddLine("", "(" + ab.NoraCost.ToString() + ")  " + ab.ToString());
                 }
-                AddLink(new Point() { X = 220, Y = CursorY }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
             }
             TextBoxDescription.SelectionColor = Color.LightGray;
             TextBoxDescription.AppendText("\r\n");
 
             TextBoxDescription.SelectionFont = ItalicFont;
             TextBoxDescription.AppendText(c.Description + "\r\n");
+
+            // add abilities
+
+            TextBoxDescription.SelectionLength = 0;
+            TextBoxDescription.SelectionStart = 0;
+            TextBoxDescription.ScrollToCaret();
+
+            for(int i = 0; i < c.BaseAbilities_refs.Count; i++)
+            {
+                Ability ab = c.BaseAbilities_refs[i];
+                AddAbilityLink(new Point() { X = 238, Y = ablink_pos_y }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
+                ablink_pos_y += 16;
+            }
+            for (int i = 0; i < c.UpgradeAbilities1_refs.Count; i++)
+            {
+                Ability ab = c.UpgradeAbilities1_refs[i];
+                AddAbilityLink(new Point() { X = 238, Y = ablink_pos_y }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY });
+
+                if(ShowUpgradeAbilitySelection)
+                    AddUpgradeLink(new Point() { X = 220, Y = ablink_pos_y }, (AbilitySelection.AbilityIndex1 == i), new AbilityLinkData() { UpgradeID = 1, UpgradeIndex = i });
+
+                ablink_pos_y += 16;
+            }
+            for (int i = 0; i < c.UpgradeAbilities2_refs.Count; i++)
+            {
+                Ability ab = c.UpgradeAbilities2_refs[i];
+                AddAbilityLink(new Point() { X = 238, Y = ablink_pos_y }, new TracerViewData() { ID = ab.ID, Type = Pox.DataElement.ElementType.ABILITY }); 
+
+                if (ShowUpgradeAbilitySelection)
+                    AddUpgradeLink(new Point() { X = 220, Y = ablink_pos_y }, (AbilitySelection.AbilityIndex2 == i), new AbilityLinkData() { UpgradeID = 2, UpgradeIndex = i });
+
+                ablink_pos_y += 16;
+            }
+
+            ShowUpgradeAbilitySelection = false;
         }
 
         public void SetAbility(Ability a)
@@ -245,6 +288,8 @@ namespace poxnora_search_engine.Pox
 
             TextBoxDescription.SelectionFont = RegularFont;
             TextBoxDescription.AppendText(a.Description + "\r\n");
+
+            ShowUpgradeAbilitySelection = false;
         }
 
         public void SetSpellRune(Spell s)
@@ -260,6 +305,8 @@ namespace poxnora_search_engine.Pox
 
             TextBoxDescription.SelectionFont = ItalicFont;
             TextBoxDescription.AppendText(s.Flavor + "\r\n");
+
+            ShowUpgradeAbilitySelection = false;
         }
 
         public void SetRelicRune(Relic r)
@@ -278,6 +325,8 @@ namespace poxnora_search_engine.Pox
 
             TextBoxDescription.SelectionFont = ItalicFont;
             TextBoxDescription.AppendText(r.Flavor + "\r\n");
+
+            ShowUpgradeAbilitySelection = false;
         }
 
         public void SetEquipmentRune(Equipment e)
@@ -293,11 +342,12 @@ namespace poxnora_search_engine.Pox
 
             TextBoxDescription.SelectionFont = ItalicFont;
             TextBoxDescription.AppendText(e.Flavor + "\r\n");
+
+            ShowUpgradeAbilitySelection = false;
         }
 
         private void AddLine(string bold_text, string regular_text)
         {
-            CursorY += 16;
             TextBoxDescription.SelectionFont = BoldFont;
             TextBoxDescription.AppendText(bold_text);
             TextBoxDescription.SelectionFont = RegularFont;
@@ -313,6 +363,13 @@ namespace poxnora_search_engine.Pox
         {
             this.Height = h;
             TextBoxDescription.Height = this.Height - RuneImage.Height - 3;
+        }
+
+        // to be able to select champion abilities in bg builder
+        public void ShowAbilitySelection(int ab1_index, int ab2_index)
+        {
+            ShowUpgradeAbilitySelection = true;
+            AbilitySelection = new UpgradeAbilitySelection() { AbilityIndex1 = ab1_index, AbilityIndex2 = ab2_index };
         }
 
         // tracer stuff
@@ -373,20 +430,81 @@ namespace poxnora_search_engine.Pox
             TracerPosition = -1;
         }
 
-        private void AddLink(Point position, TracerViewData tag)
+        private void AddAbilityLink(Point position, TracerViewData tag)
         {
-            PictureBox pb = new PictureBox() { Location = position, Size = new Size(24, 14), Tag = tag };
-            pb.Image = Properties.Resources.ImageGoTo;
-            pb.Click += new EventHandler(LinkClicked);
+            PictureBox pb = new PictureBox() { Size = new Size(16, 16), Tag = tag };
+            pb.Image = Properties.Resources.ab_icon_qmark;
+            pb.Click += new EventHandler(AbilityLinkClicked);
             pb.Cursor = Cursors.Hand;
             Links.Add(pb);
             TextBoxDescription.Controls.Add(pb);
+            pb.Location = new Point(position.X, position.Y);
             pb.BringToFront();
         }
 
-        private void LinkClicked(object sender, EventArgs e)
+        private void AddUpgradeLink(Point position, bool selected, AbilityLinkData ald)
+        {
+            PictureBox pb = new PictureBox() { Size = new Size(16, 16), Tag = ald };
+            pb.Image = (selected ? Properties.Resources.ab_icon_checked : Properties.Resources.ab_icon_unchecked);
+            pb.Tag = ald;
+            pb.Click += new EventHandler(UpgradeLinkClicked);
+            pb.Cursor = Cursors.Hand;
+            Links.Add(pb);
+            TextBoxDescription.Controls.Add(pb);
+            pb.Location = new Point(position.X, position.Y);
+            pb.BringToFront();
+        }
+
+        private void AbilityLinkClicked(object sender, EventArgs e)
         {
             TracerGoTo((TracerViewData)((PictureBox)sender).Tag);
+        }
+
+        private void UpgradeLinkClicked(object sender, EventArgs e)
+        {
+            AbilityLinkData ald = (AbilityLinkData)(((PictureBox)sender).Tag);
+            bool new_upg = false;
+
+            if(ald.UpgradeID == 1)
+                new_upg = (ald.UpgradeIndex != AbilitySelection.AbilityIndex1);
+            else if(ald.UpgradeID == 2)
+                new_upg = (ald.UpgradeIndex != AbilitySelection.AbilityIndex2);
+
+            if(new_upg)
+            {
+                // shoddy
+                foreach (PictureBox pb in Links)
+                {
+                    if (pb.Tag == null)
+                        continue;
+
+                    if (pb.Tag is AbilityLinkData)
+                    {
+                        AbilityLinkData ald2 = (AbilityLinkData)(pb.Tag);
+                        if (ald2.UpgradeID == ald.UpgradeID)
+                        {
+                            pb.Image = Properties.Resources.ab_icon_unchecked;
+                        }
+                    }
+                }
+
+                if(ald.UpgradeID == 1)
+                    AbilitySelection.AbilityIndex1 = ald.UpgradeIndex;
+                else if(ald.UpgradeID == 2)
+                    AbilitySelection.AbilityIndex2 = ald.UpgradeIndex;
+
+                ((PictureBox)sender).Image = Properties.Resources.ab_icon_checked;
+                UpgradeClicked?.Invoke(ald.UpgradeID, ald.UpgradeIndex);
+            }
+        }
+
+
+
+        private void TextBoxDescription_ContentsResized(object sender, ContentsResizedEventArgs e)
+        {
+            RichTextBox rtf = (RichTextBox)sender;
+
+            CursorY = TextBoxDescription.GetPositionFromCharIndex(TextBoxDescription.Text.Length - 1).Y;//e.NewRectangle.Height;
         }
     }
 }

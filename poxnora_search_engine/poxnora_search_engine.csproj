@@ -63,6 +63,18 @@
     <Compile Include="BattlegroupBuilder.Designer.cs">
       <DependentUpon>BattlegroupBuilder.cs</DependentUpon>
     </Compile>
+    <Compile Include="BGBLoadForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BGBLoadForm.Designer.cs">
+      <DependentUpon>BGBLoadForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BGBSaveForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BGBSaveForm.Designer.cs">
+      <DependentUpon>BGBSaveForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="CardRandomizer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -188,6 +200,12 @@
     <EmbeddedResource Include="BattlegroupBuilder.resx">
       <DependentUpon>BattlegroupBuilder.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="BGBLoadForm.resx">
+      <DependentUpon>BGBLoadForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="BGBSaveForm.resx">
+      <DependentUpon>BGBSaveForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CardRandomizer.resx">
       <DependentUpon>CardRandomizer.cs</DependentUpon>
     </EmbeddedResource>
@@ -262,6 +280,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\goback.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ab_icon_checked.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ab_icon_qmark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ab_icon_unchecked.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

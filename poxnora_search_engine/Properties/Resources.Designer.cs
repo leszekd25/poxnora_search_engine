@@ -63,9 +63,9 @@ namespace poxnora_search_engine.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ImageGoBack {
+        internal static System.Drawing.Bitmap ab_icon_checked {
             get {
-                object obj = ResourceManager.GetObject("ImageGoBack", resourceCulture);
+                object obj = ResourceManager.GetObject("ab_icon_checked", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -73,9 +73,19 @@ namespace poxnora_search_engine.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap ImageGoTo {
+        internal static System.Drawing.Bitmap ab_icon_qmark {
             get {
-                object obj = ResourceManager.GetObject("ImageGoTo", resourceCulture);
+                object obj = ResourceManager.GetObject("ab_icon_qmark", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ab_icon_unchecked {
+            get {
+                object obj = ResourceManager.GetObject("ab_icon_unchecked", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

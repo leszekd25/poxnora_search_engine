@@ -30,8 +30,8 @@ namespace poxnora_search_engine
             public List<int> Spells = new List<int>();
             public List<int> Relics = new List<int>();
             public List<int> Equipments = new List<int>();
-            public int SelectedFaction1;
-            public int SelectedFaction2;
+            public int SelectedAvatar;
+            public int SelectedFactions;
 
             public int GetRuneCount()
             {
@@ -89,20 +89,94 @@ namespace poxnora_search_engine
                 return null;
             }
 
+            public byte[] ToRawMemory()
+            {
+                byte[] data = null;
+                byte[] data2 = null;
+
+                using (MemoryStream ms2 = new MemoryStream())
+                {
+                    using (MemoryStream ms = new MemoryStream())
+                    {
+                        using (BinaryWriter bw = new BinaryWriter(ms))
+                        {
+                            // version
+                            bw.Write((byte)CurrentVersion);
+
+                            // rune counts
+                            bw.Write((byte)GetRuneCount());
+                            bw.Write((byte)Champions.Count);
+                            bw.Write((byte)Spells.Count);
+                            bw.Write((byte)Relics.Count);
+                            bw.Write((byte)Equipments.Count);
+
+                            // champions
+                            foreach (var cbg in Champions)
+                            {
+                                bw.Write((ushort)cbg.ChampionID);
+                                bw.Write((ushort)cbg.Ability1);
+                                bw.Write((ushort)cbg.Ability2);
+                            }
+
+                            // spells
+                            foreach (var s in Spells)
+                                bw.Write((ushort)s);
+
+                            // relics
+                            foreach (var r in Relics)
+                                bw.Write((ushort)r);
+
+                            // equipments
+                            foreach (var e in Equipments)
+                                bw.Write((ushort)e);
+
+                            // faction data
+                            bw.Write((sbyte)SelectedAvatar);
+                            bw.Write((sbyte)SelectedFactions);
+
+                            data = ms.ToArray();
+
+                        }
+                    }
+
+                    // compress
+                    try
+                    {
+                        using (MemoryStream ms = new MemoryStream(data))
+                        {
+                            using (DeflateStream ds = new DeflateStream(ms2, CompressionMode.Compress))
+                            {
+                                ms.CopyTo(ds);
+                            }
+                        }
+
+                        data2 = ms2.ToArray();
+                    }
+                    catch (Exception e)
+                    {
+                        return null;
+                    }
+                }
+
+                return data2;
+            }
+
             public bool FromRawMemory(byte[] array)
             {
                 Champions.Clear();
                 Spells.Clear();
                 Relics.Clear();
                 Equipments.Clear();
-                SelectedFaction1 = -1;
-                SelectedFaction2 = -1;
+                SelectedAvatar = Utility.NO_INDEX;
+                SelectedFactions = Utility.NO_INDEX;
 
+                byte[] data = null;
+
+                // decompress
                 using (MemoryStream ms = new MemoryStream())
                 {
                     try
                     {
-                        // decompress
                         using (MemoryStream ms2 = new MemoryStream(array))
                         {
                             using (DeflateStream ds = new DeflateStream(ms2, CompressionMode.Decompress))
@@ -110,23 +184,27 @@ namespace poxnora_search_engine
                                 ds.CopyTo(ms);
                             }
                         }
+                        data = ms.ToArray();
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         return false;
                     }
+                }
 
-                    // read
+                // read
+                using (MemoryStream ms = new MemoryStream(data))
+                { 
                     using (BinaryReader br = new BinaryReader(ms))
                     {
                         // validation
-                        if(ms.Length - ms.Position < sizeof(byte))
+                        if (ms.Length - ms.Position < sizeof(byte))
                         {
                             return false;
                         }
 
                         byte Version = br.ReadByte();       // useful later on
-                        if(Version > CurrentVersion)
+                        if (Version > CurrentVersion)
                         {
                             return false;
                         }
@@ -204,10 +282,9 @@ namespace poxnora_search_engine
                             return false;
                         }
 
-                        SelectedFaction1 = br.ReadSByte();
-                        SelectedFaction2 = br.ReadSByte();
+                        SelectedAvatar = br.ReadSByte();
+                        SelectedFactions = br.ReadSByte();
                     }
-                    
                 }
 
                 return true;
@@ -236,6 +313,19 @@ namespace poxnora_search_engine
             return val;
         }
 
+        public struct BGStats_MeleeRangedValue<T>
+        {
+            public T Item1;
+            public T Item2;
+
+            public BGStats_MeleeRangedValue(T i1, T i2)
+            {
+                Item1 = i1;
+                Item2 = i2;
+            }
+        }
+
+
         public class BattleGroupStats
         {
             public Dictionary<string, int> RunesPerFaction = new Dictionary<string, int>();
@@ -244,6 +334,17 @@ namespace poxnora_search_engine
             public int NoraShardCostSell = 0;
             public Dictionary<DataElement.ElementType, float> AverageNoraCostPerRuneType = new Dictionary<DataElement.ElementType, float>();
             public Dictionary<DataElement.ElementType, int> TotalNoraCostPerRuneType = new Dictionary<DataElement.ElementType, int>();
+            public BGStats_MeleeRangedValue<float> AverageChampionDamage = new BGStats_MeleeRangedValue<float>(0, 0);    // melee, ranged
+            public BGStats_MeleeRangedValue<float> AverageChampionSpeed = new BGStats_MeleeRangedValue<float>(0, 0);
+            public BGStats_MeleeRangedValue<float> AverageChampionMinRNG = new BGStats_MeleeRangedValue<float>(0, 0);
+            public BGStats_MeleeRangedValue<float> AverageChampionMaxRNG = new BGStats_MeleeRangedValue<float>(0, 0);
+            public BGStats_MeleeRangedValue<float> AverageChampionDefense = new BGStats_MeleeRangedValue<float>(0, 0);
+            public BGStats_MeleeRangedValue<float> AverageChampionHealth = new BGStats_MeleeRangedValue<float>(0, 0);
+            public int RangedChampionCount = 0;
+            public int HybridRangeChampionCount = 0;
+            public int MeleeChampionCount = 0;
+            public int BigChampionCount = 0;
+            public int NoAttackChampionCount = 0;
         }
 
 
@@ -252,6 +353,7 @@ namespace poxnora_search_engine
 
         BattleGroup BG = new BattleGroup();
         BattleGroupStats BGStats = new BattleGroupStats();
+        string OpenedBattlegroup = "";
         int SelectedRuneIndex = Utility.NO_INDEX;
 
         int RunesPerRow = 0;
@@ -262,8 +364,13 @@ namespace poxnora_search_engine
         List<int> RuneList = new List<int>();
         Pox.DataElement.ElementType RunePageType = DataElement.ElementType.CHAMPION;
 
+        // static cache
         List<string> FactionToName = new List<string>();
+        Dictionary<string, string> FactionNameToFactionShortName = new Dictionary<string, string>();
         Dictionary<string, Tuple<int, int>> CostPerRarity = new Dictionary<string, Tuple<int, int>>();  // key: rarity name, value: (sell, buy)
+
+        // dynamic cache
+        Dictionary<int, bool> NoBasicAttackChampCache = new Dictionary<int, bool>();
 
         public BattlegroupBuilder()
         {
@@ -552,7 +659,7 @@ namespace poxnora_search_engine
                         {
                             FullFactionNum += 1;
                         }
-                        else if (bgs.RunesPerFaction[s] > 15)
+                        else if (bgs.RunesPerFaction[s] >= 15)
                         {
                             HalfFactionNum += 1;
                         }
@@ -571,17 +678,17 @@ namespace poxnora_search_engine
                 // if above conditions are met, selected factions will ALWAYS have enough runes of each faction - guaranteed by battlegroup builder
             }
 
-            if(messages.Count == 0)
+            ListBoxBGErrorLog.Items.Clear();
+            if (messages.Count == 0)
             {
-                ListBoxBGErrorLog.Hide();
+                LabelBGStatus.Text = "BG Status: Can use in ranked";
             }
             else
             {
-                ListBoxBGErrorLog.Items.Clear();
+                LabelBGStatus.Text = "BG Status: CAN'T use in ranked (see below)";
+
                 foreach (var s in messages)
                     ListBoxBGErrorLog.Items.Add(s);
-
-                ListBoxBGErrorLog.Show();
             }
         }
 
@@ -606,6 +713,17 @@ namespace poxnora_search_engine
             bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.SPELL, 0);
             bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.RELIC, 0);
             bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.EQUIPMENT, 0);
+            bgs.AverageChampionDamage = new BGStats_MeleeRangedValue<float>(0, 0);
+            bgs.AverageChampionDefense = new BGStats_MeleeRangedValue<float>(0, 0);
+            bgs.AverageChampionHealth = new BGStats_MeleeRangedValue<float>(0, 0);
+            bgs.AverageChampionMaxRNG = new BGStats_MeleeRangedValue<float>(0, 0);
+            bgs.AverageChampionMinRNG = new BGStats_MeleeRangedValue<float>(0, 0);
+            bgs.AverageChampionSpeed = new BGStats_MeleeRangedValue<float>(0, 0);
+            bgs.BigChampionCount = 0;
+            bgs.RangedChampionCount = 0;
+            bgs.HybridRangeChampionCount = 0;
+            bgs.MeleeChampionCount = 0;
+            bgs.NoAttackChampionCount = 0;
 
             // calculate runes per faction and per rarity
             for (int i = 0; i < bg.GetRuneCount(); i++)
@@ -697,6 +815,74 @@ namespace poxnora_search_engine
                     bgs.AverageNoraCostPerRuneType[DataElement.ElementType.EQUIPMENT] = bgs.TotalNoraCostPerRuneType[DataElement.ElementType.EQUIPMENT] / (float)bg.Equipments.Count;
             }
 
+            // calculate average champion stats
+            // only champs which exist in DB count
+            int melee_champ_count = 0;
+            int ranged_champ_count = 0;
+            foreach(var cbg in bg.Champions)
+            {
+                Champion c = null;
+                if (db.Champions.ContainsKey(cbg.ChampionID))
+                    c = db.Champions[cbg.ChampionID];
+                else
+                    continue;
+
+                bool is_melee = true;
+
+                if (c.MaxRNG <= 1)
+                    bgs.MeleeChampionCount += 1;
+                if (c.MinRNG > 1)
+                {
+                    bgs.RangedChampionCount += 1;
+                    is_melee = false;
+                }
+                if ((c.MinRNG <= 1) && (c.MaxRNG > 1))
+                    bgs.HybridRangeChampionCount += 1;
+                if (c.Size == 2)
+                    bgs.BigChampionCount += 1;
+
+                // todo: no basic attack champs
+
+                if (is_melee)
+                {
+                    melee_champ_count += 1;
+                    bgs.AverageChampionDamage.Item1 += c.Damage;
+                    bgs.AverageChampionDefense.Item1 += c.Defense;
+                    bgs.AverageChampionHealth.Item1 += c.HitPoints;
+                    bgs.AverageChampionMaxRNG.Item1 += c.MaxRNG;
+                    bgs.AverageChampionMinRNG.Item1 += c.MinRNG;
+                    bgs.AverageChampionSpeed.Item1 += c.Speed;
+                }
+                else
+                {
+                    ranged_champ_count += 1;
+                    bgs.AverageChampionDamage.Item2 += c.Damage;
+                    bgs.AverageChampionDefense.Item2 += c.Defense;
+                    bgs.AverageChampionHealth.Item2 += c.HitPoints;
+                    bgs.AverageChampionMaxRNG.Item2 += c.MaxRNG;
+                    bgs.AverageChampionMinRNG.Item2 += c.MinRNG;
+                    bgs.AverageChampionSpeed.Item2 += c.Speed;
+                }
+            }
+            if(melee_champ_count != 0)
+            {
+                bgs.AverageChampionDamage.Item1 /= melee_champ_count;
+                bgs.AverageChampionDefense.Item1 /= melee_champ_count;
+                bgs.AverageChampionHealth.Item1 /= melee_champ_count;
+                bgs.AverageChampionMaxRNG.Item1 /= melee_champ_count;
+                bgs.AverageChampionMinRNG.Item1 /= melee_champ_count;
+                bgs.AverageChampionSpeed.Item1 /= melee_champ_count;
+            }
+            if(ranged_champ_count != 0)
+            {
+                bgs.AverageChampionDamage.Item2 /= ranged_champ_count;
+                bgs.AverageChampionDefense.Item2 /= ranged_champ_count;
+                bgs.AverageChampionHealth.Item2 /= ranged_champ_count;
+                bgs.AverageChampionMaxRNG.Item2 /= ranged_champ_count;
+                bgs.AverageChampionMinRNG.Item2 /= ranged_champ_count;
+                bgs.AverageChampionSpeed.Item2 /= ranged_champ_count;
+            }
+
             // this doesnt have to be here, but it is for now
             UpdateBGStatsUI(bg, bgs);
         }
@@ -750,6 +936,21 @@ namespace poxnora_search_engine
             LabelBGShardCost.Text = string.Format("BG shard cost: {0}/{1} (buy/sell)",
                 bgs.NoraShardCostBuy,
                 bgs.NoraShardCostSell);
+
+            LabelAverageChampionStats.Text = string.Format("{0:N1}/{1:N1}\r\n{2:N1}/{3:N1}\r\n{4:N1}/{5:N1}\r\n{6:N1}/{7:N1}\r\n{8:N1}/{9:N1}\r\n{10:N1}/{11:N1}",
+                bgs.AverageChampionDamage.Item1, bgs.AverageChampionDamage.Item2,
+                bgs.AverageChampionSpeed.Item1, bgs.AverageChampionSpeed.Item2,
+                bgs.AverageChampionMinRNG.Item1, bgs.AverageChampionMinRNG.Item2,
+                bgs.AverageChampionMaxRNG.Item1, bgs.AverageChampionMaxRNG.Item2,
+                bgs.AverageChampionDefense.Item1, bgs.AverageChampionDefense.Item2,
+                bgs.AverageChampionHealth.Item1, bgs.AverageChampionHealth.Item2);
+
+            LabelChampionCounts.Text = string.Format("{0}\r\n{1}\r\n{2}\r\n{3}\r\n{4}",
+                bgs.MeleeChampionCount,
+                bgs.HybridRangeChampionCount,
+                bgs.RangedChampionCount,
+                bgs.BigChampionCount,
+                bgs.NoAttackChampionCount);
         }
 
         private void CalculateRunePreviewPageSize()
@@ -1071,6 +1272,12 @@ namespace poxnora_search_engine
             RepositionBGRunes(db, bg);
             SelectBGRune(rune_panel_index);
             ParseBattlegroupRanked(db, bg, bgs);
+
+            // 4. update factions
+            if(bg.GetRuneCount() == 30)
+            {
+                FindAvailableFactionCombos(bg, bgs);
+            }
         }
 
         private void SelectBGRune(int rune_index)
@@ -1082,6 +1289,50 @@ namespace poxnora_search_engine
             if (SelectedRuneIndex != Utility.NO_INDEX)
                 ((RunePreviewControl)PanelRuneList.Controls[rune_index]).SetBGColor(SystemColors.Highlight);
 
+            if(rune_index == Utility.NO_INDEX)
+            {
+                RuneDescription.ClearDescription();
+            }
+            else
+            {
+                Rune r = BG.GetRune(Program.database, rune_index);
+                if (r is Champion)
+                {
+                    // if the rune is a champion, then rune index is also champion index in the bg
+                    ChampionBG cbg = BG.Champions[rune_index];
+                    int u1_index = Utility.NO_INDEX;
+                    int u2_index = Utility.NO_INDEX;
+                    for (int i = 0; i < ((Champion)r).UpgradeAbilities1_refs.Count; i++)
+                    {
+                        Ability ab = ((Champion)r).UpgradeAbilities1_refs[i];
+                        if (ab.ID == cbg.Ability1)
+                        {
+                            u1_index = i;
+                            break;
+                        }
+                    }
+                    for (int i = 0; i < ((Champion)r).UpgradeAbilities2_refs.Count; i++)
+                    {
+                        Ability ab = ((Champion)r).UpgradeAbilities2_refs[i];
+                        if (ab.ID == cbg.Ability2)
+                        {
+                            u2_index = i;
+                            break;
+                        }
+                    }
+
+                    RuneDescription.ShowAbilitySelection(u1_index, u2_index);
+                    RuneDescription.SetChampionRune((Champion)r);
+                }
+                else if (r is Spell)
+                    RuneDescription.SetSpellRune((Spell)r);
+                else if (r is Relic)
+                    RuneDescription.SetRelicRune((Relic)r);
+                else if (r is Equipment)
+                    RuneDescription.SetEquipmentRune((Equipment)r);
+                else
+                    RuneDescription.ClearDescription();
+            }
         }
 
         private void RemoveBGRune(Database db, BattleGroup bg, BattleGroupStats bgs, int rune_index)
@@ -1126,6 +1377,11 @@ namespace poxnora_search_engine
             PanelRuneList.Controls.RemoveAt(PanelRuneList.Controls.Count - 1);
             RepositionBGRunes(db, bg);
             ParseBattlegroupRanked(db, bg, bgs);
+
+            if (bg.GetRuneCount() != 30)
+            {
+                ResetBGFactions(bg);
+            }
         }
 
         private void RepositionBGRunes(Database db, BattleGroup bg)
@@ -1136,52 +1392,9 @@ namespace poxnora_search_engine
             int runepreview_cur_offset_y = 0;
             int rune_cur_index = 0;
 
-            // add champions
-            for (int i = 0; i < bg.Champions.Count; i++)
+            for(int i = 0; i < bg.GetRuneCount(); i++)
             {
-                Champion c = db.Champions.ContainsKey(bg.Champions[i].ChampionID) ? db.Champions[bg.Champions[i].ChampionID] : null;
-
-                RunePreviewControl rpc = (RunePreviewControl)(PanelRuneList.Controls[rune_cur_index]);
-                rpc.ElemID = rune_cur_index;
-                rpc.LabelText.Text = c != null ? c.Name : "<missing>";
-                rpc.Location = new Point(runepreview_cur_offset_x, runepreview_cur_offset_y);
-
-                Program.image_cache.AddRunePreviewSubscriber(c != null ? c.Hash : "", rpc);
-
-                runepreview_cur_offset_x += runepreview_width;
-                rune_cur_index += 1;
-                if(rune_cur_index == 15)
-                {
-                    runepreview_cur_offset_x = 0;
-                    runepreview_cur_offset_y += runepreview_height;
-                }
-            }
-
-            // add spells
-            for (int i = 0; i < bg.Spells.Count; i++)
-            {
-                Spell s = db.Spells.ContainsKey(bg.Spells[i]) ? db.Spells[bg.Spells[i]] : null;
-
-                RunePreviewControl rpc = (RunePreviewControl)(PanelRuneList.Controls[rune_cur_index]);
-                rpc.ElemID = rune_cur_index;
-                rpc.LabelText.Text = s != null ? s.Name : "<missing>";
-                rpc.Location = new Point(runepreview_cur_offset_x, runepreview_cur_offset_y);
-
-                Program.image_cache.AddRunePreviewSubscriber(s != null ? s.Hash : "", rpc);
-
-                runepreview_cur_offset_x += runepreview_width;
-                rune_cur_index += 1;
-                if (rune_cur_index == 15)
-                {
-                    runepreview_cur_offset_x = 0;
-                    runepreview_cur_offset_y += runepreview_height;
-                }
-            }
-
-            // add relics
-            for (int i = 0; i < bg.Relics.Count; i++)
-            {
-                Relic r = db.Relics.ContainsKey(bg.Relics[i]) ? db.Relics[bg.Relics[i]] : null;
+                Rune r = bg.GetRune(db, i);
 
                 RunePreviewControl rpc = (RunePreviewControl)(PanelRuneList.Controls[rune_cur_index]);
                 rpc.ElemID = rune_cur_index;
@@ -1199,26 +1412,6 @@ namespace poxnora_search_engine
                 }
             }
 
-            // add equipments
-            for (int i = 0; i < bg.Equipments.Count; i++)
-            {
-                Equipment e = db.Equipments.ContainsKey(bg.Equipments[i]) ? db.Equipments[bg.Equipments[i]] : null;
-
-                RunePreviewControl rpc = (RunePreviewControl)(PanelRuneList.Controls[rune_cur_index]);
-                rpc.ElemID = rune_cur_index;
-                rpc.LabelText.Text = e != null ? e.Name : "<missing>";
-                rpc.Location = new Point(runepreview_cur_offset_x, runepreview_cur_offset_y);
-
-                Program.image_cache.AddRunePreviewSubscriber(e != null ? e.Hash : "", rpc);
-
-                runepreview_cur_offset_x += runepreview_width;
-                rune_cur_index += 1;
-                if (rune_cur_index == 15)
-                {
-                    runepreview_cur_offset_x = 0;
-                    runepreview_cur_offset_y += runepreview_height;
-                }
-            }
         }
 
         private void SetPanelBG(Database db, BattleGroup bg)
@@ -1236,15 +1429,122 @@ namespace poxnora_search_engine
                 rpc.RunePreviewImage.MouseDown += PreviewImage_MouseClick;
             }
 
+            SelectBGRune(Utility.NO_INDEX);
             RepositionBGRunes(db, bg);
+        }
+
+        private void FindAvailableFactionCombos(BattleGroup bg, BattleGroupStats bgs)
+        {
+            ResetBGFactions(bg);
+
+            if (bg.GetRuneCount() == 30)
+            {
+                int HalfFactionNum = 0;
+                int FullFactionNum = 0;
+                foreach (var s in FactionToName)
+                {
+                    if (bgs.RunesPerFaction.ContainsKey(s))
+                    {
+                        if (bgs.RunesPerFaction[s] == 30)
+                        {
+                            FullFactionNum += 1;
+                        }
+                        else if (bgs.RunesPerFaction[s] >= 15)
+                        {
+                            HalfFactionNum += 1;
+                        }
+                    }
+                }
+
+                if (FullFactionNum > 1)
+                {
+                    return;
+                }
+                if(FullFactionNum == 1)
+                {
+                    bg.SelectedAvatar = Utility.NO_INDEX;
+                    bg.SelectedFactions = Utility.NO_INDEX;
+                }
+                if(FullFactionNum == 0)
+                {
+                    if(HalfFactionNum < 2)
+                    {
+                        return;
+                    }
+
+                    // combo avatar
+                    foreach(var s in FactionToName)
+                    {
+                        if (bgs.RunesPerFaction.ContainsKey(s))
+                        {
+                            if (bgs.RunesPerFaction[s] >= 15)
+                                ComboAvatar.Items.Add(FactionNameToFactionShortName[s]);
+                        }
+                    }
+                    ComboAvatar.SelectedIndex = Utility.NO_INDEX;
+                    ComboAvatar.SelectedIndex = 0;
+
+                    // combo factions
+                    if(HalfFactionNum > 2)
+                    {
+                        for(int i = 0; i < FactionToName.Count; i++)
+                        {
+                            string s1 = FactionToName[i];
+                            if ((!bgs.RunesPerFaction.ContainsKey(s1)) || (bgs.RunesPerFaction[s1] < 15))
+                                continue;
+
+                            for(int j = i+1; j < FactionToName.Count; j++)
+                            {
+                                string s2 = FactionToName[j];
+                                if ((!bgs.RunesPerFaction.ContainsKey(s2)) || (bgs.RunesPerFaction[s2] < 15))
+                                    continue;
+
+                                ComboFactions.Items.Add(string.Format("{0}/{1}", FactionNameToFactionShortName[s1], FactionNameToFactionShortName[s2]));
+                            }
+                        }
+
+                        ComboFactions.SelectedIndex = Utility.NO_INDEX;
+                        ComboFactions.SelectedIndex = 0;
+                    }
+                }
+            }
+        }
+
+        private void ResetBGFactions(BattleGroup bg)
+        {
+            bg.SelectedAvatar = Utility.NO_INDEX;
+            bg.SelectedFactions = Utility.NO_INDEX;
+            ComboAvatar.Items.Clear();
+            ComboFactions.Items.Clear();
+        }
+
+        private string GetBGCode(BattleGroup bg)
+        {
+            byte[] bg_data = BG.ToRawMemory();
+            if (bg_data == null)
+            {
+                return "";
+            }
+
+            return Convert.ToBase64String(bg_data);
         }
 
         private void BattlegroupBuilder_Load(object sender, EventArgs e)
         {
-            // generate FactionToName list
+            // generate available faction names list
             FactionToName = Program.database.Factions.AllowedStrings.ToList();
             FactionToName.Sort();
+            // hardcoded short names
+            FactionNameToFactionShortName.Add("Forglar Swamp", "FS");
+            FactionNameToFactionShortName.Add("Forsaken Wastes", "FW");
+            FactionNameToFactionShortName.Add("Ironfist Stronghold", "IS");
+            FactionNameToFactionShortName.Add("K'thir Forest", "KF");
+            FactionNameToFactionShortName.Add("Sundered Lands", "SL");
+            FactionNameToFactionShortName.Add("Shattered Peaks", "SP");
+            FactionNameToFactionShortName.Add("Savage Tundra", "ST");
+            FactionNameToFactionShortName.Add("Underdepths", "UD");
 
+            // card costs per rarity
             CostPerRarity.Add("COMMON", new Tuple<int, int>(2, 4));
             CostPerRarity.Add("UNCOMMON", new Tuple<int, int>(4, 8));
             CostPerRarity.Add("RARE", new Tuple<int, int>(20, 40));
@@ -1255,6 +1555,7 @@ namespace poxnora_search_engine
             RuneDescription.database_ref = Program.database;
             RuneDescription.SetHeight(RuneDescription.Height - 1);
             RuneDescription.SetHeight(RuneDescription.Height + 1);
+            RuneDescription.UpgradeClicked = RuneDescription_AbilityClicked;
 
             CalculateRunePreviewPageSize();
             // rune list is updated via Activated event
@@ -1265,7 +1566,15 @@ namespace poxnora_search_engine
             if (TextboxBGBCode.Text == "")
                 return;
 
-            byte[] str2b64array = Convert.FromBase64String(TextboxBGBCode.Text);
+            byte[] str2b64array = null;
+            try
+            {
+                str2b64array = Convert.FromBase64String(TextboxBGBCode.Text);
+            }
+            catch(Exception ex)
+            {
+                return;
+            }
 
             BattleGroup bg = new BattleGroup();
             if(!bg.FromRawMemory(str2b64array))
@@ -1273,18 +1582,28 @@ namespace poxnora_search_engine
                 return;
             }
 
-            if(MessageBox.Show("Do you want to save the current battlegroup?", "Save battlegroup?", MessageBoxButtons.YesNo) == DialogResult.Yes)
-            {
-                // save battlegroup
-            }
-
             // update battlegroup
             BG = bg;
             SortBattlegroup(Program.database, BG);
             ParseBattlegroupRanked(Program.database, BG, BGStats);
 
+
             // update UI
             SetPanelBG(Program.database, BG);
+
+            if (BG.GetRuneCount() == 30)
+            {
+                int f1 = BG.SelectedAvatar;
+                int f2 = BG.SelectedFactions;
+                FindAvailableFactionCombos(BG, BGStats);
+                ComboAvatar.SelectedIndex = f1;
+                ComboFactions.SelectedIndex = f2;
+            }
+        }
+
+        private void ButtonGenerateCode_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(GetBGCode(BG));
         }
 
         // when BG rune is clicked
@@ -1299,18 +1618,6 @@ namespace poxnora_search_engine
             else if(e.Button == MouseButtons.Left)
             {
                 SelectBGRune(id);
-
-                Rune r = BG.GetRune(Program.database, id);
-                if (r is Champion)
-                    RuneDescription.SetChampionRune((Champion)r);
-                else if (r is Spell)
-                    RuneDescription.SetSpellRune((Spell)r);
-                else if (r is Relic)
-                    RuneDescription.SetRelicRune((Relic)r);
-                else if (r is Equipment)
-                    RuneDescription.SetEquipmentRune((Equipment)r);
-                else
-                    RuneDescription.ClearDescription();
             }
         }
 
@@ -1332,37 +1639,29 @@ namespace poxnora_search_engine
                         {
                             if (Program.database.Champions.ContainsKey(id))
                                 RuneDescription.SetChampionRune(Program.database.Champions[id]);
-                            else
-                                RuneDescription.ClearDescription();
                         }
                         break;
                     case DataElement.ElementType.SPELL:
                         {
                             if (Program.database.Spells.ContainsKey(id))
                                 RuneDescription.SetSpellRune(Program.database.Spells[id]);
-                            else
-                                RuneDescription.ClearDescription();
                         }
                         break;
                     case DataElement.ElementType.RELIC:
                         {
                             if (Program.database.Relics.ContainsKey(id))
                                 RuneDescription.SetRelicRune(Program.database.Relics[id]);
-                            else
-                                RuneDescription.ClearDescription();
                         }
                         break;
                     case DataElement.ElementType.EQUIPMENT:
                         {
                             if (Program.database.Equipments.ContainsKey(id))
                                 RuneDescription.SetEquipmentRune(Program.database.Equipments[id]);
-                            else
-                                RuneDescription.ClearDescription();
                         }
                         break;
                     default:
                         {
-                            RuneDescription.ClearDescription();
+
                         }
                         break;
                 }
@@ -1436,6 +1735,84 @@ namespace poxnora_search_engine
         {
             Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
             Program.image_cache.BreakRunePreviewDownload();
+        }
+
+        private void RuneDescription_AbilityClicked(int upgrade_id, int upgrade_index)
+        {
+            if(SelectedRuneIndex == Utility.NO_INDEX)
+            {
+                return;
+            }
+
+            // set upgrades of selected champion
+            if(upgrade_id == 1)
+            {
+                ChampionBG cbg = BG.Champions[SelectedRuneIndex];
+                cbg.Ability1 = ((Champion)BG.GetRune(Program.database, SelectedRuneIndex)).UpgradeAbilities1_refs[upgrade_index].ID;
+                BG.Champions[SelectedRuneIndex] = cbg;
+            }
+            else if (upgrade_id == 2)
+            {
+                ChampionBG cbg = BG.Champions[SelectedRuneIndex];
+                cbg.Ability2 = ((Champion)BG.GetRune(Program.database, SelectedRuneIndex)).UpgradeAbilities2_refs[upgrade_index].ID;
+                BG.Champions[SelectedRuneIndex] = cbg;
+            }
+
+            ParseBattlegroupRanked(Program.database, BG, BGStats);
+        }
+
+        private void ComboAvatar_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BG.SelectedAvatar = ComboAvatar.SelectedIndex;
+        }
+
+        private void ComboFactions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            BG.SelectedFactions = ComboFactions.SelectedIndex;
+        }
+
+        private void newBGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            TextboxBGBCode.Text = "";
+            BG = new BattleGroup();
+            BGStats = new BattleGroupStats();
+            OpenedBattlegroup = "";
+            SelectedRuneIndex = Utility.NO_INDEX;
+
+            ParseBattlegroupRanked(Program.database, BG, BGStats);
+
+            // update UI
+            SetPanelBG(Program.database, BG);
+
+            if (BG.GetRuneCount() == 30)
+            {
+                int f1 = BG.SelectedAvatar;
+                int f2 = BG.SelectedFactions;
+                FindAvailableFactionCombos(BG, BGStats);
+                ComboAvatar.SelectedIndex = f1;
+                ComboFactions.SelectedIndex = f2;
+            }
+        }
+
+        private void loadBGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BGBLoadForm load = new BGBLoadForm();
+            load.ShowDialog();
+
+            if(load.SelectedName != "")
+            {
+                OpenedBattlegroup = load.SelectedName;
+                TextboxBGBCode.Text = load.SelectedCode;
+            }
+        }
+
+        private void saveBGToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            BGBSaveForm save = new BGBSaveForm();
+            save.SelectedName = OpenedBattlegroup;
+            save.SelectedCode = GetBGCode(BG);
+
+            save.ShowDialog();
         }
     }
 }

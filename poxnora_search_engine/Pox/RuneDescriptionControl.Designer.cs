@@ -48,9 +48,11 @@
             this.TextBoxDescription.ForeColor = System.Drawing.Color.LightGray;
             this.TextBoxDescription.Location = new System.Drawing.Point(3, 320);
             this.TextBoxDescription.Name = "TextBoxDescription";
+            this.TextBoxDescription.ReadOnly = true;
             this.TextBoxDescription.Size = new System.Drawing.Size(275, 255);
             this.TextBoxDescription.TabIndex = 1;
             this.TextBoxDescription.Text = "";
+            this.TextBoxDescription.ContentsResized += new System.Windows.Forms.ContentsResizedEventHandler(this.TextBoxDescription_ContentsResized);
             // 
             // RuneDescriptionControl
             // 
