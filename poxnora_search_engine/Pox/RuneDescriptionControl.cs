@@ -346,6 +346,40 @@ namespace poxnora_search_engine.Pox
             ShowUpgradeAbilitySelection = false;
         }
 
+        public void SetCondition(FlavorElement c)
+        {
+            ClearDescription();
+
+            c.Description = database_ref.ExtractAbilitiesAndConditions(c.Description, ref c.DescriptionAbilities, ref c.DescriptionConditions);
+
+            TextBoxDescription.Clear();
+
+            TextBoxDescription.SelectionColor = Color.White;
+            AddLine(c.ToString(), "");
+
+            TextBoxDescription.SelectionFont = RegularFont;
+            TextBoxDescription.AppendText(c.Description + "\r\n");
+
+            ShowUpgradeAbilitySelection = false;
+        }
+
+        public void SetMechanic(FlavorElement m)
+        {
+            ClearDescription();
+
+            m.Description = database_ref.ExtractAbilitiesAndConditions(m.Description, ref m.DescriptionAbilities, ref m.DescriptionConditions);
+
+            TextBoxDescription.Clear();
+
+            TextBoxDescription.SelectionColor = Color.White;
+            AddLine(m.ToString(), "");
+
+            TextBoxDescription.SelectionFont = RegularFont;
+            TextBoxDescription.AppendText(m.Description + "\r\n");
+
+            ShowUpgradeAbilitySelection = false;
+        }
+
         private void AddLine(string bold_text, string regular_text)
         {
             TextBoxDescription.SelectionFont = BoldFont;

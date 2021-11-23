@@ -21,6 +21,7 @@ namespace poxnora_search_engine.Pox
         public int DeckLimit;
         public int Cooldown;
 
+
         public void LoadFromJSON(JToken runedata)
         {
             if (runedata.SelectToken("id") != null)
@@ -86,6 +87,10 @@ namespace poxnora_search_engine.Pox
                     result = DeckLimit;
                 else if (dp == DataPath.Cooldown)
                     result = Cooldown;
+                else if (dp == DataPath.ID)
+                    result = ID;
+                else if (dp == DataPath.NoraCost)
+                    result = NoraCost;
                 else
                     return false;
             }
@@ -95,7 +100,7 @@ namespace poxnora_search_engine.Pox
 
         public override bool GetStringFromDataPath(DataPath dp, out string result)
         {
-           if(!base.GetStringFromDataPath(dp, out result))
+            if(!base.GetStringFromDataPath(dp, out result))
             {
                 if (dp == DataPath.Artist)
                     result = Artist;

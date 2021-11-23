@@ -81,10 +81,11 @@ namespace poxnora_search_engine
 
         private void ButtonSave_Click(object sender, EventArgs e)
         {
+            SelectedName = TextboxBGName.Text;
+
             if (SelectedName == "")
                 return;
 
-            SelectedName = TextboxBGName.Text;
             SelectedName = SelectedName.Replace(' ', '_');
 
             BGCodeSort bge = new BGCodeSort() { BGName = SelectedName, BGCode = SelectedCode };

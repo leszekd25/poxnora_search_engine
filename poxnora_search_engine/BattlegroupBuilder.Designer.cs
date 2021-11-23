@@ -29,6 +29,9 @@ namespace poxnora_search_engine
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newBGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -46,40 +49,33 @@ namespace poxnora_search_engine
             this.label9 = new System.Windows.Forms.Label();
             this.PageContainer = new System.Windows.Forms.TabControl();
             this.PageRuneBrowser = new System.Windows.Forms.TabPage();
-            this.CheckboxApplyFilter = new System.Windows.Forms.CheckBox();
-            this.LabelPageNum = new System.Windows.Forms.Label();
+            this.ButtonToggleFilter = new System.Windows.Forms.Button();
+            this.ButtonQuickFilter = new System.Windows.Forms.Button();
+            this.PanelRuneBrowserSettings = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
             this.ComboRuneType = new System.Windows.Forms.ComboBox();
+            this.LabelPageNum = new System.Windows.Forms.Label();
             this.ButtonNextPage = new System.Windows.Forms.Button();
             this.ButtonPreviousPage = new System.Windows.Forms.Button();
             this.PanelRuneIcons = new System.Windows.Forms.Panel();
             this.PageBattlegroupStats = new System.Windows.Forms.TabPage();
+            this.ChartStatHistogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.label4 = new System.Windows.Forms.Label();
+            this.ComboChartMode = new System.Windows.Forms.ComboBox();
+            this.LabelRuneCountByFaction = new System.Windows.Forms.Label();
             this.LabelChampionCounts = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
-            this.LabelAverageChampionStats = new System.Windows.Forms.Label();
-            this.label12 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.LabelNoraCostByRuneType = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.LabelBGShardCost = new System.Windows.Forms.Label();
             this.LabelRuneCountByRarity = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.LabelRuneCountByFaction = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.ListBoxBGErrorLog = new System.Windows.Forms.ListBox();
-            this.LabelBGStatus = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
+            this.LabelRuneFactions = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
+            this.PageBGLog = new System.Windows.Forms.TabPage();
+            this.ListBoxBGErrorLog = new System.Windows.Forms.ListBox();
+            this.LabelBGStatus = new System.Windows.Forms.Label();
             this.PanelBaseStats = new System.Windows.Forms.Panel();
-            this.LabelRuneUD = new System.Windows.Forms.Label();
-            this.LabelRuneST = new System.Windows.Forms.Label();
-            this.LabelRuneSP = new System.Windows.Forms.Label();
-            this.LabelRuneSL = new System.Windows.Forms.Label();
-            this.LabelRuneKF = new System.Windows.Forms.Label();
-            this.LabelRuneIS = new System.Windows.Forms.Label();
-            this.LabelRuneFW = new System.Windows.Forms.Label();
-            this.LabelRuneFS = new System.Windows.Forms.Label();
+            this.LabelFactionCounts = new System.Windows.Forms.Label();
             this.LabelTotalRunes = new System.Windows.Forms.Label();
             this.LabelEquipments = new System.Windows.Forms.Label();
             this.LabelRelics = new System.Windows.Forms.Label();
@@ -87,12 +83,16 @@ namespace poxnora_search_engine
             this.LabelChampions = new System.Windows.Forms.Label();
             this.PanelRuneList = new System.Windows.Forms.Panel();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
+            this.SlideIn_DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
             this.menuStrip1.SuspendLayout();
             this.PanelBGShare.SuspendLayout();
             this.PanelBGFaction.SuspendLayout();
             this.PageContainer.SuspendLayout();
             this.PageRuneBrowser.SuspendLayout();
+            this.PanelRuneBrowserSettings.SuspendLayout();
             this.PageBattlegroupStats.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ChartStatHistogram)).BeginInit();
+            this.PageBGLog.SuspendLayout();
             this.PanelBaseStats.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -119,21 +119,21 @@ namespace poxnora_search_engine
             // newBGToolStripMenuItem
             // 
             this.newBGToolStripMenuItem.Name = "newBGToolStripMenuItem";
-            this.newBGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.newBGToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.newBGToolStripMenuItem.Text = "New BG";
             this.newBGToolStripMenuItem.Click += new System.EventHandler(this.newBGToolStripMenuItem_Click);
             // 
             // loadBGToolStripMenuItem
             // 
             this.loadBGToolStripMenuItem.Name = "loadBGToolStripMenuItem";
-            this.loadBGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.loadBGToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.loadBGToolStripMenuItem.Text = "Load BG";
             this.loadBGToolStripMenuItem.Click += new System.EventHandler(this.loadBGToolStripMenuItem_Click);
             // 
             // saveBGToolStripMenuItem
             // 
             this.saveBGToolStripMenuItem.Name = "saveBGToolStripMenuItem";
-            this.saveBGToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.saveBGToolStripMenuItem.Size = new System.Drawing.Size(118, 22);
             this.saveBGToolStripMenuItem.Text = "Save BG";
             this.saveBGToolStripMenuItem.Click += new System.EventHandler(this.saveBGToolStripMenuItem_Click);
             // 
@@ -236,6 +236,7 @@ namespace poxnora_search_engine
             this.PageContainer.Appearance = System.Windows.Forms.TabAppearance.FlatButtons;
             this.PageContainer.Controls.Add(this.PageRuneBrowser);
             this.PageContainer.Controls.Add(this.PageBattlegroupStats);
+            this.PageContainer.Controls.Add(this.PageBGLog);
             this.PageContainer.Location = new System.Drawing.Point(0, 337);
             this.PageContainer.Name = "PageContainer";
             this.PageContainer.SelectedIndex = 0;
@@ -245,10 +246,11 @@ namespace poxnora_search_engine
             // PageRuneBrowser
             // 
             this.PageRuneBrowser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PageRuneBrowser.Controls.Add(this.CheckboxApplyFilter);
+            this.PageRuneBrowser.Controls.Add(this.ButtonToggleFilter);
+            this.PageRuneBrowser.Controls.Add(this.ButtonQuickFilter);
+            this.PageRuneBrowser.Controls.Add(this.PanelRuneBrowserSettings);
+            this.PageRuneBrowser.Controls.Add(this.SlideIn_DatabaseFilter);
             this.PageRuneBrowser.Controls.Add(this.LabelPageNum);
-            this.PageRuneBrowser.Controls.Add(this.label11);
-            this.PageRuneBrowser.Controls.Add(this.ComboRuneType);
             this.PageRuneBrowser.Controls.Add(this.ButtonNextPage);
             this.PageRuneBrowser.Controls.Add(this.ButtonPreviousPage);
             this.PageRuneBrowser.Controls.Add(this.PanelRuneIcons);
@@ -260,30 +262,40 @@ namespace poxnora_search_engine
             this.PageRuneBrowser.Text = "Rune Browser";
             this.PageRuneBrowser.UseVisualStyleBackColor = true;
             // 
-            // CheckboxApplyFilter
+            // ButtonToggleFilter
             // 
-            this.CheckboxApplyFilter.AutoSize = true;
-            this.CheckboxApplyFilter.Location = new System.Drawing.Point(199, 421);
-            this.CheckboxApplyFilter.Name = "CheckboxApplyFilter";
-            this.CheckboxApplyFilter.Size = new System.Drawing.Size(74, 17);
-            this.CheckboxApplyFilter.TabIndex = 4;
-            this.CheckboxApplyFilter.Text = "Apply filter";
-            this.CheckboxApplyFilter.UseVisualStyleBackColor = true;
-            this.CheckboxApplyFilter.CheckedChanged += new System.EventHandler(this.CheckboxApplyFilter_CheckedChanged);
+            this.ButtonToggleFilter.Font = new System.Drawing.Font("Consolas", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ButtonToggleFilter.Location = new System.Drawing.Point(341, 6);
+            this.ButtonToggleFilter.Name = "ButtonToggleFilter";
+            this.ButtonToggleFilter.Size = new System.Drawing.Size(15, 407);
+            this.ButtonToggleFilter.TabIndex = 0;
+            this.ButtonToggleFilter.Text = "filter";
+            this.ButtonToggleFilter.UseVisualStyleBackColor = true;
+            this.ButtonToggleFilter.Click += new System.EventHandler(this.ButtonToggleFilter_Click);
             // 
-            // LabelPageNum
+            // ButtonQuickFilter
             // 
-            this.LabelPageNum.Location = new System.Drawing.Point(665, 419);
-            this.LabelPageNum.Name = "LabelPageNum";
-            this.LabelPageNum.Size = new System.Drawing.Size(94, 23);
-            this.LabelPageNum.TabIndex = 4;
-            this.LabelPageNum.Text = "Page 0/0";
-            this.LabelPageNum.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.ButtonQuickFilter.Location = new System.Drawing.Point(7, 417);
+            this.ButtonQuickFilter.Name = "ButtonQuickFilter";
+            this.ButtonQuickFilter.Size = new System.Drawing.Size(117, 23);
+            this.ButtonQuickFilter.TabIndex = 6;
+            this.ButtonQuickFilter.Text = "Quick filter";
+            this.ButtonQuickFilter.UseVisualStyleBackColor = true;
+            this.ButtonQuickFilter.Click += new System.EventHandler(this.ButtonQuickFilter_Click);
+            // 
+            // PanelRuneBrowserSettings
+            // 
+            this.PanelRuneBrowserSettings.Controls.Add(this.label11);
+            this.PanelRuneBrowserSettings.Controls.Add(this.ComboRuneType);
+            this.PanelRuneBrowserSettings.Location = new System.Drawing.Point(130, 413);
+            this.PanelRuneBrowserSettings.Name = "PanelRuneBrowserSettings";
+            this.PanelRuneBrowserSettings.Size = new System.Drawing.Size(198, 31);
+            this.PanelRuneBrowserSettings.TabIndex = 5;
             // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(7, 422);
+            this.label11.Location = new System.Drawing.Point(3, 8);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(56, 13);
             this.label11.TabIndex = 3;
@@ -297,12 +309,21 @@ namespace poxnora_search_engine
             "Spells",
             "Relics",
             "Equipments"});
-            this.ComboRuneType.Location = new System.Drawing.Point(72, 419);
+            this.ComboRuneType.Location = new System.Drawing.Point(68, 5);
             this.ComboRuneType.Name = "ComboRuneType";
             this.ComboRuneType.Size = new System.Drawing.Size(121, 21);
             this.ComboRuneType.TabIndex = 2;
             this.ComboRuneType.Text = "Champions";
             this.ComboRuneType.SelectedIndexChanged += new System.EventHandler(this.ComboRuneType_SelectedIndexChanged);
+            // 
+            // LabelPageNum
+            // 
+            this.LabelPageNum.Location = new System.Drawing.Point(665, 419);
+            this.LabelPageNum.Name = "LabelPageNum";
+            this.LabelPageNum.Size = new System.Drawing.Size(94, 23);
+            this.LabelPageNum.TabIndex = 4;
+            this.LabelPageNum.Text = "Page 0/0";
+            this.LabelPageNum.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // ButtonNextPage
             // 
@@ -327,29 +348,24 @@ namespace poxnora_search_engine
             // PanelRuneIcons
             // 
             this.PanelRuneIcons.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PanelRuneIcons.Location = new System.Drawing.Point(8, 6);
+            this.PanelRuneIcons.Location = new System.Drawing.Point(362, 6);
             this.PanelRuneIcons.Name = "PanelRuneIcons";
-            this.PanelRuneIcons.Size = new System.Drawing.Size(877, 407);
+            this.PanelRuneIcons.Size = new System.Drawing.Size(523, 407);
             this.PanelRuneIcons.TabIndex = 0;
             // 
             // PageBattlegroupStats
             // 
             this.PageBattlegroupStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PageBattlegroupStats.Controls.Add(this.ChartStatHistogram);
+            this.PageBattlegroupStats.Controls.Add(this.label4);
+            this.PageBattlegroupStats.Controls.Add(this.ComboChartMode);
+            this.PageBattlegroupStats.Controls.Add(this.LabelRuneCountByFaction);
             this.PageBattlegroupStats.Controls.Add(this.LabelChampionCounts);
             this.PageBattlegroupStats.Controls.Add(this.label13);
-            this.PageBattlegroupStats.Controls.Add(this.LabelAverageChampionStats);
-            this.PageBattlegroupStats.Controls.Add(this.label12);
-            this.PageBattlegroupStats.Controls.Add(this.label7);
-            this.PageBattlegroupStats.Controls.Add(this.LabelNoraCostByRuneType);
-            this.PageBattlegroupStats.Controls.Add(this.label8);
             this.PageBattlegroupStats.Controls.Add(this.LabelBGShardCost);
             this.PageBattlegroupStats.Controls.Add(this.LabelRuneCountByRarity);
             this.PageBattlegroupStats.Controls.Add(this.label6);
-            this.PageBattlegroupStats.Controls.Add(this.LabelRuneCountByFaction);
-            this.PageBattlegroupStats.Controls.Add(this.label5);
-            this.PageBattlegroupStats.Controls.Add(this.ListBoxBGErrorLog);
-            this.PageBattlegroupStats.Controls.Add(this.LabelBGStatus);
-            this.PageBattlegroupStats.Controls.Add(this.label4);
+            this.PageBattlegroupStats.Controls.Add(this.LabelRuneFactions);
             this.PageBattlegroupStats.Controls.Add(this.label3);
             this.PageBattlegroupStats.Controls.Add(this.label2);
             this.PageBattlegroupStats.Location = new System.Drawing.Point(4, 25);
@@ -360,60 +376,86 @@ namespace poxnora_search_engine
             this.PageBattlegroupStats.Text = "Battlegroup Stats";
             this.PageBattlegroupStats.UseVisualStyleBackColor = true;
             // 
+            // ChartStatHistogram
+            // 
+            chartArea1.AxisX.MajorGrid.Enabled = false;
+            chartArea1.AxisX.MajorTickMark.Enabled = false;
+            chartArea1.AxisX2.MajorGrid.Enabled = false;
+            chartArea1.AxisX2.MajorTickMark.Enabled = false;
+            chartArea1.AxisY.MajorGrid.Enabled = false;
+            chartArea1.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chartArea1.Name = "ChartArea1";
+            this.ChartStatHistogram.ChartAreas.Add(chartArea1);
+            legend1.Name = "Legend1";
+            this.ChartStatHistogram.Legends.Add(legend1);
+            this.ChartStatHistogram.Location = new System.Drawing.Point(6, 197);
+            this.ChartStatHistogram.Name = "ChartStatHistogram";
+            series1.ChartArea = "ChartArea1";
+            series1.IsValueShownAsLabel = true;
+            series1.Legend = "Legend1";
+            series1.LegendText = " Values";
+            series1.Name = "Values";
+            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
+            series1.YValuesPerPoint = 2;
+            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.ChartStatHistogram.Series.Add(series1);
+            this.ChartStatHistogram.Size = new System.Drawing.Size(501, 243);
+            this.ChartStatHistogram.TabIndex = 19;
+            this.ChartStatHistogram.Text = "chart1";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(4, 154);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(61, 13);
+            this.label4.TabIndex = 18;
+            this.label4.Text = "Chart mode";
+            // 
+            // ComboChartMode
+            // 
+            this.ComboChartMode.FormattingEnabled = true;
+            this.ComboChartMode.Items.AddRange(new object[] {
+            "Damage",
+            "Speed",
+            "Min RNG",
+            "Max RNG",
+            "Compound RNG",
+            "Defense",
+            "Hitpoints",
+            "Nora cost",
+            "Abilities",
+            "Factions",
+            "Races"});
+            this.ComboChartMode.Location = new System.Drawing.Point(7, 170);
+            this.ComboChartMode.Name = "ComboChartMode";
+            this.ComboChartMode.Size = new System.Drawing.Size(121, 21);
+            this.ComboChartMode.TabIndex = 8;
+            this.ComboChartMode.Text = "Damage";
+            this.ComboChartMode.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
+            // 
+            // LabelRuneCountByFaction
+            // 
+            this.LabelRuneCountByFaction.Location = new System.Drawing.Point(64, 25);
+            this.LabelRuneCountByFaction.Name = "LabelRuneCountByFaction";
+            this.LabelRuneCountByFaction.Size = new System.Drawing.Size(55, 114);
+            this.LabelRuneCountByFaction.TabIndex = 17;
+            // 
             // LabelChampionCounts
             // 
-            this.LabelChampionCounts.Location = new System.Drawing.Point(806, 115);
+            this.LabelChampionCounts.Location = new System.Drawing.Point(548, 3);
             this.LabelChampionCounts.Name = "LabelChampionCounts";
             this.LabelChampionCounts.Size = new System.Drawing.Size(65, 82);
             this.LabelChampionCounts.TabIndex = 16;
             // 
             // label13
             // 
-            this.label13.Location = new System.Drawing.Point(663, 115);
+            this.label13.Location = new System.Drawing.Point(405, 3);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(137, 82);
             this.label13.TabIndex = 15;
             this.label13.Text = "Melee champions:\r\nHybrid range champions:\r\nRanged champions:\r\n2x2 champions:\r\nNon" +
     "-attacking champions:";
-            // 
-            // LabelAverageChampionStats
-            // 
-            this.LabelAverageChampionStats.Location = new System.Drawing.Point(806, 25);
-            this.LabelAverageChampionStats.Name = "LabelAverageChampionStats";
-            this.LabelAverageChampionStats.Size = new System.Drawing.Size(65, 82);
-            this.LabelAverageChampionStats.TabIndex = 14;
-            // 
-            // label12
-            // 
-            this.label12.Location = new System.Drawing.Point(663, 25);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(63, 82);
-            this.label12.TabIndex = 13;
-            this.label12.Text = "Damage:\r\nSpeed:\r\nMin RNG:\r\nMax RNG:\r\nDefense:\r\nHealth:";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(663, 3);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(199, 13);
-            this.label7.TabIndex = 12;
-            this.label7.Text = "Average champion stats (melee/ranged):";
-            // 
-            // LabelNoraCostByRuneType
-            // 
-            this.LabelNoraCostByRuneType.Location = new System.Drawing.Point(509, 25);
-            this.LabelNoraCostByRuneType.Name = "LabelNoraCostByRuneType";
-            this.LabelNoraCostByRuneType.Size = new System.Drawing.Size(56, 70);
-            this.LabelNoraCostByRuneType.TabIndex = 11;
-            // 
-            // label8
-            // 
-            this.label8.Location = new System.Drawing.Point(422, 25);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(63, 138);
-            this.label8.TabIndex = 10;
-            this.label8.Text = "Champion:\r\nSpell:\r\nRelic:\r\nEquipment:\r\nAll:";
             // 
             // LabelBGShardCost
             // 
@@ -439,46 +481,12 @@ namespace poxnora_search_engine
             this.label6.TabIndex = 7;
             this.label6.Text = "Common:\r\nUncommon:\r\nRare:\r\nExotic:\r\nLegendary:\r\nLimited:";
             // 
-            // LabelRuneCountByFaction
+            // LabelRuneFactions
             // 
-            this.LabelRuneCountByFaction.Location = new System.Drawing.Point(129, 25);
-            this.LabelRuneCountByFaction.Name = "LabelRuneCountByFaction";
-            this.LabelRuneCountByFaction.Size = new System.Drawing.Size(56, 138);
-            this.LabelRuneCountByFaction.TabIndex = 6;
-            // 
-            // label5
-            // 
-            this.label5.Location = new System.Drawing.Point(3, 25);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 138);
-            this.label5.TabIndex = 5;
-            this.label5.Text = "FS:\r\nFW:\r\nIS:\r\nKF:\r\nSL:\r\nSP:\r\nST:\r\nUD:";
-            // 
-            // ListBoxBGErrorLog
-            // 
-            this.ListBoxBGErrorLog.FormattingEnabled = true;
-            this.ListBoxBGErrorLog.Location = new System.Drawing.Point(6, 203);
-            this.ListBoxBGErrorLog.Name = "ListBoxBGErrorLog";
-            this.ListBoxBGErrorLog.Size = new System.Drawing.Size(879, 238);
-            this.ListBoxBGErrorLog.TabIndex = 4;
-            // 
-            // LabelBGStatus
-            // 
-            this.LabelBGStatus.AutoSize = true;
-            this.LabelBGStatus.Location = new System.Drawing.Point(3, 187);
-            this.LabelBGStatus.Name = "LabelBGStatus";
-            this.LabelBGStatus.Size = new System.Drawing.Size(56, 13);
-            this.LabelBGStatus.TabIndex = 3;
-            this.LabelBGStatus.Text = "BG status:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(422, 3);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(158, 13);
-            this.label4.TabIndex = 2;
-            this.label4.Text = "Average nora cost by rune type:";
+            this.LabelRuneFactions.Location = new System.Drawing.Point(3, 25);
+            this.LabelRuneFactions.Name = "LabelRuneFactions";
+            this.LabelRuneFactions.Size = new System.Drawing.Size(55, 114);
+            this.LabelRuneFactions.TabIndex = 5;
             // 
             // label3
             // 
@@ -498,17 +506,39 @@ namespace poxnora_search_engine
             this.label2.TabIndex = 0;
             this.label2.Text = "Rune count by faction:";
             // 
+            // PageBGLog
+            // 
+            this.PageBGLog.Controls.Add(this.ListBoxBGErrorLog);
+            this.PageBGLog.Controls.Add(this.LabelBGStatus);
+            this.PageBGLog.Location = new System.Drawing.Point(4, 25);
+            this.PageBGLog.Name = "PageBGLog";
+            this.PageBGLog.Padding = new System.Windows.Forms.Padding(3);
+            this.PageBGLog.Size = new System.Drawing.Size(894, 448);
+            this.PageBGLog.TabIndex = 2;
+            this.PageBGLog.Text = "Battlegroup Log";
+            this.PageBGLog.UseVisualStyleBackColor = true;
+            // 
+            // ListBoxBGErrorLog
+            // 
+            this.ListBoxBGErrorLog.FormattingEnabled = true;
+            this.ListBoxBGErrorLog.Location = new System.Drawing.Point(3, 43);
+            this.ListBoxBGErrorLog.Name = "ListBoxBGErrorLog";
+            this.ListBoxBGErrorLog.Size = new System.Drawing.Size(888, 394);
+            this.ListBoxBGErrorLog.TabIndex = 4;
+            // 
+            // LabelBGStatus
+            // 
+            this.LabelBGStatus.AutoSize = true;
+            this.LabelBGStatus.Location = new System.Drawing.Point(6, 3);
+            this.LabelBGStatus.Name = "LabelBGStatus";
+            this.LabelBGStatus.Size = new System.Drawing.Size(56, 13);
+            this.LabelBGStatus.TabIndex = 3;
+            this.LabelBGStatus.Text = "BG status:";
+            // 
             // PanelBaseStats
             // 
             this.PanelBaseStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.PanelBaseStats.Controls.Add(this.LabelRuneUD);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneST);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneSP);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneSL);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneKF);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneIS);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneFW);
-            this.PanelBaseStats.Controls.Add(this.LabelRuneFS);
+            this.PanelBaseStats.Controls.Add(this.LabelFactionCounts);
             this.PanelBaseStats.Controls.Add(this.LabelTotalRunes);
             this.PanelBaseStats.Controls.Add(this.LabelEquipments);
             this.PanelBaseStats.Controls.Add(this.LabelRelics);
@@ -520,77 +550,13 @@ namespace poxnora_search_engine
             this.PanelBaseStats.Size = new System.Drawing.Size(901, 100);
             this.PanelBaseStats.TabIndex = 5;
             // 
-            // LabelRuneUD
+            // LabelFactionCounts
             // 
-            this.LabelRuneUD.AutoSize = true;
-            this.LabelRuneUD.Location = new System.Drawing.Point(487, 82);
-            this.LabelRuneUD.Name = "LabelRuneUD";
-            this.LabelRuneUD.Size = new System.Drawing.Size(35, 13);
-            this.LabelRuneUD.TabIndex = 15;
-            this.LabelRuneUD.Text = "UD: 0";
-            // 
-            // LabelRuneST
-            // 
-            this.LabelRuneST.AutoSize = true;
-            this.LabelRuneST.Location = new System.Drawing.Point(418, 82);
-            this.LabelRuneST.Name = "LabelRuneST";
-            this.LabelRuneST.Size = new System.Drawing.Size(33, 13);
-            this.LabelRuneST.TabIndex = 14;
-            this.LabelRuneST.Text = "ST: 0";
-            // 
-            // LabelRuneSP
-            // 
-            this.LabelRuneSP.AutoSize = true;
-            this.LabelRuneSP.Location = new System.Drawing.Point(352, 82);
-            this.LabelRuneSP.Name = "LabelRuneSP";
-            this.LabelRuneSP.Size = new System.Drawing.Size(33, 13);
-            this.LabelRuneSP.TabIndex = 13;
-            this.LabelRuneSP.Text = "SP: 0";
-            // 
-            // LabelRuneSL
-            // 
-            this.LabelRuneSL.AutoSize = true;
-            this.LabelRuneSL.Location = new System.Drawing.Point(275, 82);
-            this.LabelRuneSL.Name = "LabelRuneSL";
-            this.LabelRuneSL.Size = new System.Drawing.Size(32, 13);
-            this.LabelRuneSL.TabIndex = 12;
-            this.LabelRuneSL.Text = "SL: 0";
-            // 
-            // LabelRuneKF
-            // 
-            this.LabelRuneKF.AutoSize = true;
-            this.LabelRuneKF.Location = new System.Drawing.Point(200, 82);
-            this.LabelRuneKF.Name = "LabelRuneKF";
-            this.LabelRuneKF.Size = new System.Drawing.Size(32, 13);
-            this.LabelRuneKF.TabIndex = 11;
-            this.LabelRuneKF.Text = "KF: 0";
-            // 
-            // LabelRuneIS
-            // 
-            this.LabelRuneIS.AutoSize = true;
-            this.LabelRuneIS.Location = new System.Drawing.Point(139, 82);
-            this.LabelRuneIS.Name = "LabelRuneIS";
-            this.LabelRuneIS.Size = new System.Drawing.Size(29, 13);
-            this.LabelRuneIS.TabIndex = 10;
-            this.LabelRuneIS.Text = "IS: 0";
-            // 
-            // LabelRuneFW
-            // 
-            this.LabelRuneFW.AutoSize = true;
-            this.LabelRuneFW.Location = new System.Drawing.Point(65, 82);
-            this.LabelRuneFW.Name = "LabelRuneFW";
-            this.LabelRuneFW.Size = new System.Drawing.Size(36, 13);
-            this.LabelRuneFW.TabIndex = 9;
-            this.LabelRuneFW.Text = "FW: 0";
-            // 
-            // LabelRuneFS
-            // 
-            this.LabelRuneFS.AutoSize = true;
-            this.LabelRuneFS.Location = new System.Drawing.Point(3, 82);
-            this.LabelRuneFS.Name = "LabelRuneFS";
-            this.LabelRuneFS.Size = new System.Drawing.Size(32, 13);
-            this.LabelRuneFS.TabIndex = 8;
-            this.LabelRuneFS.Text = "FS: 0";
+            this.LabelFactionCounts.AutoSize = true;
+            this.LabelFactionCounts.Location = new System.Drawing.Point(6, 82);
+            this.LabelFactionCounts.Name = "LabelFactionCounts";
+            this.LabelFactionCounts.Size = new System.Drawing.Size(0, 13);
+            this.LabelFactionCounts.TabIndex = 5;
             // 
             // LabelTotalRunes
             // 
@@ -653,6 +619,13 @@ namespace poxnora_search_engine
             this.RuneDescription.Size = new System.Drawing.Size(281, 749);
             this.RuneDescription.TabIndex = 0;
             // 
+            // SlideIn_DatabaseFilter
+            // 
+            this.SlideIn_DatabaseFilter.Location = new System.Drawing.Point(3, 6);
+            this.SlideIn_DatabaseFilter.Name = "SlideIn_DatabaseFilter";
+            this.SlideIn_DatabaseFilter.Size = new System.Drawing.Size(334, 404);
+            this.SlideIn_DatabaseFilter.TabIndex = 0;
+            // 
             // BattlegroupBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -671,7 +644,6 @@ namespace poxnora_search_engine
             this.MinimizeBox = false;
             this.Name = "BattlegroupBuilder";
             this.Text = "BG Builder";
-            this.Activated += new System.EventHandler(this.BattlegroupBuilder_Activated);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.BattlegroupBuilder_FormClosed);
             this.Load += new System.EventHandler(this.BattlegroupBuilder_Load);
             this.menuStrip1.ResumeLayout(false);
@@ -682,9 +654,13 @@ namespace poxnora_search_engine
             this.PanelBGFaction.PerformLayout();
             this.PageContainer.ResumeLayout(false);
             this.PageRuneBrowser.ResumeLayout(false);
-            this.PageRuneBrowser.PerformLayout();
+            this.PanelRuneBrowserSettings.ResumeLayout(false);
+            this.PanelRuneBrowserSettings.PerformLayout();
             this.PageBattlegroupStats.ResumeLayout(false);
             this.PageBattlegroupStats.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ChartStatHistogram)).EndInit();
+            this.PageBGLog.ResumeLayout(false);
+            this.PageBGLog.PerformLayout();
             this.PanelBaseStats.ResumeLayout(false);
             this.PanelBaseStats.PerformLayout();
             this.ResumeLayout(false);
@@ -707,18 +683,8 @@ namespace poxnora_search_engine
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadBGToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveBGToolStripMenuItem;
-        private System.Windows.Forms.Label LabelNoraCostByRuneType;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.Label LabelBGShardCost;
-        private System.Windows.Forms.Label LabelRuneCountByRarity;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label LabelRuneCountByFaction;
-        private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ListBox ListBoxBGErrorLog;
         private System.Windows.Forms.Label LabelBGStatus;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Panel PanelBGFaction;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox ComboFactions;
@@ -731,26 +697,30 @@ namespace poxnora_search_engine
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.ComboBox ComboRuneType;
         private System.Windows.Forms.Label LabelPageNum;
-        private System.Windows.Forms.CheckBox CheckboxApplyFilter;
         private System.Windows.Forms.Panel PanelBaseStats;
-        private System.Windows.Forms.Label LabelRuneUD;
-        private System.Windows.Forms.Label LabelRuneST;
-        private System.Windows.Forms.Label LabelRuneSP;
-        private System.Windows.Forms.Label LabelRuneSL;
-        private System.Windows.Forms.Label LabelRuneKF;
-        private System.Windows.Forms.Label LabelRuneIS;
-        private System.Windows.Forms.Label LabelRuneFW;
-        private System.Windows.Forms.Label LabelRuneFS;
         private System.Windows.Forms.Label LabelTotalRunes;
         private System.Windows.Forms.Label LabelEquipments;
         private System.Windows.Forms.Label LabelRelics;
         private System.Windows.Forms.Label LabelSpells;
         private System.Windows.Forms.Label LabelChampions;
         private System.Windows.Forms.Panel PanelRuneList;
+        private System.Windows.Forms.Button ButtonQuickFilter;
+        private System.Windows.Forms.Panel PanelRuneBrowserSettings;
+        private Pox.DatabaseFilterControl SlideIn_DatabaseFilter;
+        private System.Windows.Forms.Button ButtonToggleFilter;
+        private System.Windows.Forms.TabPage PageBGLog;
         private System.Windows.Forms.Label LabelChampionCounts;
         private System.Windows.Forms.Label label13;
-        private System.Windows.Forms.Label LabelAverageChampionStats;
-        private System.Windows.Forms.Label label12;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label LabelBGShardCost;
+        private System.Windows.Forms.Label LabelRuneCountByRarity;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label LabelRuneFactions;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label LabelFactionCounts;
+        private System.Windows.Forms.Label LabelRuneCountByFaction;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.ComboBox ComboChartMode;
+        private System.Windows.Forms.DataVisualization.Charting.Chart ChartStatHistogram;
     }
 }

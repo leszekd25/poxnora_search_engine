@@ -40,6 +40,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -101,6 +102,8 @@
     </Compile>
     <Compile Include="Log.cs" />
     <Compile Include="Pox\Ability.cs" />
+    <Compile Include="Pox\BattleGroup.cs" />
+    <Compile Include="Pox\BattleGroupHistogram.cs" />
     <Compile Include="Pox\Champion.cs" />
     <Compile Include="Pox\Database.cs" />
     <Compile Include="Pox\DatabaseFilterControl.cs">
@@ -166,6 +169,7 @@
     <Compile Include="Pox\Filters\IntFilter.cs" />
     <Compile Include="Pox\Filters\OrFilter.cs" />
     <Compile Include="Pox\Filters\StringFilter.cs" />
+    <Compile Include="Pox\FlavorElement.cs" />
     <Compile Include="Pox\ImageCache.cs" />
     <Compile Include="Pox\QuickFilterForm.cs">
       <SubType>Form</SubType>

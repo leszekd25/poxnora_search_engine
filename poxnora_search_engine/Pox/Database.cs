@@ -38,6 +38,7 @@ namespace poxnora_search_engine.Pox
         Description = 101,
         Artist = 102,
         FlavorText = 103,
+        Key = 104,
 
         // ENUMS
         Rarity = 200,
@@ -67,13 +68,27 @@ namespace poxnora_search_engine.Pox
 
     public class Database
     {
+        public enum DatabaseType { MAIN, CONDITIONS, MECHANICS };
+        public class DatabaseDownloadElement
+        {
+            public DatabaseType Type;
+            public string FileName;
+            public string Location;
+        }
 
-        public const string POXNORA_JSON_SITE = "https://www.poxnora.com/api/feed.do?t=json";
+        public struct DatabaseLoadInfo
+        {
+            public bool NoDownload;
+        }
+
+
+        public const string POXNORA_JSON_MAIN = "https://www.poxnora.com/api/feed.do?t=json";
+        public const string POXNORA_JSON_CONDITIONS_PLUG = "&r=conditions";
+        public const string POXNORA_JSON_MECHANICS_PLUG = "&r=mechanics";
 
         System.Net.WebClient wc;
         public OnDatabaseReady ready_trigger;
         public OnDatabaseDownloadProgressChanged progress_trigger;
-        int bytes_received = 0;
 
         JObject json_main = null;
         public Dictionary<int, Champion> Champions { get; } = new Dictionary<int, Champion>();
@@ -82,6 +97,9 @@ namespace poxnora_search_engine.Pox
         public Dictionary<int, Spell> Spells { get; } = new Dictionary<int, Spell>();
         public Dictionary<int, Relic> Relics { get; } = new Dictionary<int, Relic>();
         public Dictionary<int, Equipment> Equipments { get; } = new Dictionary<int, Equipment>();
+
+        public Dictionary<string, FlavorElement> Conditions { get; } = new Dictionary<string, FlavorElement>();
+        public Dictionary<string, FlavorElement> Mechanics { get; } = new Dictionary<string, FlavorElement>();
 
         public StringLibrary Factions { get; } = new StringLibrary();
         public StringLibrary Races { get; } = new StringLibrary();
@@ -92,37 +110,105 @@ namespace poxnora_search_engine.Pox
 
         public bool loading { get; private set; } = false;
         public bool ready { get; private set; } = false;
+        public bool main_only { get; private set; } = false;
+        public Queue<DatabaseDownloadElement> DatabaseQueue { get; } = new Queue<DatabaseDownloadElement>();
 
         // returns if the DB needs to be downloaded
-        public bool LoadJSON(string local_db, string online_backup)
+        public DatabaseLoadInfo Load(string local_db, string online_backup, bool main_only)
         {
-            if (!File.Exists(local_db))//"database.json"))
+            DatabaseQueue.Enqueue(new DatabaseDownloadElement() { FileName = local_db, Location = online_backup, Type = DatabaseType.MAIN });
+            if (!main_only)
             {
-                if (online_backup == "")
-                    return true;
+                DatabaseQueue.Enqueue(new DatabaseDownloadElement()
+                {
+                    FileName = local_db.Replace(".", "_mechanics."),
+                    Location = online_backup + POXNORA_JSON_MECHANICS_PLUG,
+                    Type = DatabaseType.MECHANICS
+                });
 
-                Log.Warning(Log.LogSource.PoxDB, "Database.LoadJSON(): database.json not found, retrieving from server...");
+                DatabaseQueue.Enqueue(new DatabaseDownloadElement()
+                {
+                    FileName = local_db.Replace(".", "_conditions."),
+                    Location = online_backup + POXNORA_JSON_CONDITIONS_PLUG,
+                    Type = DatabaseType.CONDITIONS
+                });
+            }
+
+            return LoadNextDatabase();
+        }
+
+        private DatabaseLoadInfo LoadNextDatabase()
+        {
+            loading = true;
+            ready = false;
+
+            DatabaseLoadInfo dli = new DatabaseLoadInfo();
+
+            if(DatabaseQueue.Count == 0)
+            {
+                loading = false;
+                ready = false;
+                dli.NoDownload = true;
+                return dli;
+            }
+
+            DatabaseDownloadElement dde = DatabaseQueue.Dequeue();
+
+            if (!File.Exists(dde.FileName))
+            {
+                if (dde.Location == "")
+                {
+                    loading = false;
+                    ready = false;
+                    Unload();
+                    dli.NoDownload = true;
+                    return dli;
+                }
+
+                Log.Warning(Log.LogSource.PoxDB, "Database.LoadNextDatabase(): " + dde.FileName + " not found, retrieving from server...");
 
                 wc = new System.Net.WebClient();
                 wc.DownloadStringCompleted += new System.Net.DownloadStringCompletedEventHandler(RetrieveJSON_completed);
                 wc.DownloadProgressChanged += DownloadProgress_changed;
 
-                loading = true;
-                Uri dw_string = new Uri(online_backup);//POXNORA_JSON_SITE);
-                wc.DownloadStringAsync(dw_string);
+                Uri dw_string = new Uri(dde.Location);
+                wc.DownloadStringAsync(dw_string, dde.FileName);
 
-                return false;
+                dli.NoDownload = false;
+                return dli;
             }
             else
             {
-                if(online_backup != "")    // first load
-                    Log.Info(Log.LogSource.PoxDB, "Database.LoadJSON(): database.json found, loading...");
+                if (dde.Location != "")    // first load
+                    Log.Info(Log.LogSource.PoxDB, "Database.LoadNextDatabase(): database found, loading...");
 
-                string json = File.ReadAllText(local_db);//"database.json");
+                string json = File.ReadAllText(dde.FileName);//"database.json");
 
-                ParseFromJSON(json);
+                if(!ParseFromJSON(json))
+                {
+                    loading = false;
+                    ready = false;
+                    Unload();
+                    dli.NoDownload = true;
+                    return dli;
+                }
 
-                return true;
+                if (DatabaseQueue.Count != 0)
+                {
+                    loading = true;
+                    ready = false;
+                    return LoadNextDatabase();
+                }
+                else
+                {
+                    LoadingPostProcess();
+                    loading = false;
+                    ready = true;
+                    if (ready_trigger != null)
+                        ready_trigger();
+                    dli.NoDownload = true;
+                    return dli;
+                }
             }
         }
 
@@ -133,31 +219,55 @@ namespace poxnora_search_engine.Pox
 
         void RetrieveJSON_completed(object sender, System.Net.DownloadStringCompletedEventArgs e)
         {
-
             wc.DownloadStringCompleted -= new System.Net.DownloadStringCompletedEventHandler(RetrieveJSON_completed);
             wc = null;
 
             if (e.Cancelled)
             {
                 loading = false;
+                ready = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Could not retrieve JSON");
                 return;
             }
             if (e.Error != null)
             {
                 loading = false;
+                ready = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Error while retrieving JSON");
                 return;
             }
 
-            File.WriteAllText(System.Windows.Forms.Application.StartupPath+"\\database.json", e.Result);
+            string fname = (string)(e.UserState);
+            File.WriteAllText(fname, e.Result);
 
-            Log.Info(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): database.json created, loading...");
+            Log.Info(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): " + fname + " created, loading...");
 
-            ParseFromJSON(e.Result);
+            if(!ParseFromJSON(e.Result))
+            {
+                loading = false;
+                ready = false;
+                Unload();
+                return;
+            }
+
+            if(DatabaseQueue.Count != 0)
+            {
+                loading = true;
+                ready = false;
+                LoadNextDatabase();
+            }
+            else
+            {
+                LoadingPostProcess();
+
+                loading = false;
+                ready = true;
+                if (ready_trigger != null)
+                    ready_trigger();
+            }
         }
 
-        void ParseFromJSON(string json)
+        bool ParseFromJSON(string json)
         {
             try
             {
@@ -167,54 +277,64 @@ namespace poxnora_search_engine.Pox
             {
                 loading = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.ParseFromJSON(): Input JSON is invalid!");
-                return;
+                return false;
             }
-
-            ready = true;
 
             try
             {
                 JToken champs = json_main.SelectToken("champs");
-                foreach (JToken champ in champs.Children())
-                    AddChampionFromJSON(champ);
+                if (champs != null)
+                {
+                    foreach (JToken champ in champs.Children())
+                        AddChampionFromJSON(champ);
+                }
 
                 JToken spells = json_main.SelectToken("spells");
-                foreach (JToken spell in spells.Children())
-                    AddSpellFromJSON(spell);
+                if (spells != null)
+                {
+                    foreach (JToken spell in spells.Children())
+                        AddSpellFromJSON(spell);
+                }
 
                 JToken relics = json_main.SelectToken("relics");
-                foreach (JToken relic in relics.Children())
-                    AddRelicFromJSON(relic);
+                if (relics != null)
+                {
+                    foreach (JToken relic in relics.Children())
+                        AddRelicFromJSON(relic);
+                }
 
                 JToken equips = json_main.SelectToken("equips");
-                foreach (JToken equip in equips.Children())
-                    AddEquipmentFromJSON(equip);
+                if (equips != null)
+                {
+                    foreach (JToken equip in equips.Children())
+                        AddEquipmentFromJSON(equip);
+                }
 
-                foreach (Champion c in Champions.Values)
-                    SetupChampionAbilities(c);
+                JToken mechanics = json_main.SelectToken("mechanics");
+                if (mechanics != null)
+                {
+                    foreach (JToken mechanic in mechanics.Children())
+                        AddMechanicFromJSON(mechanic);
+                }
 
-                Abilities.Add(0, new Ability() { Name = "<INVALID_ABILITY>" });
-
-                ResolveSimilarAbilities();
-
-                Log.Info(Log.LogSource.PoxDB, "Champs loaded: " + Champions.Count + ", Abilities loaded: " + Abilities.Count + ", Spells loaded: " + Spells.Count + ", Relics loaded: " + Relics.Count + ", Equipments loaded: " + Equipments.Count);
+                JToken conditions = json_main.SelectToken("conditions");
+                if (conditions != null)
+                {
+                    foreach (JToken condition in conditions.Children())
+                        AddConditionFromJSON(condition);
+                }
             }
             catch (Exception e)
             {
                 Log.Error(Log.LogSource.PoxDB, "Database.RetrieveJSON_completed(): Error while parsing the JSON");
-                Unload();
-                ready = false;     // for posterity
-                return;
+                return false;
             }
             finally
             {
-                loading = false;
                 json_main = null;
             }
 
-            ready = true;
-            if(ready_trigger != null)
-                ready_trigger();
+            return true;
         }
 
         void AddChampionFromJSON(JToken champ)
@@ -449,6 +569,22 @@ namespace poxnora_search_engine.Pox
             Equipments.Add(e.ID, e);
         }
 
+        void AddMechanicFromJSON(JToken mechanic)
+        {
+            FlavorElement m = new FlavorElement();
+            m.LoadFromJSON(mechanic);
+
+            Mechanics.Add(m.Key, m);
+        }
+
+        void AddConditionFromJSON(JToken condition)
+        {
+            FlavorElement m = new FlavorElement();
+            m.LoadFromJSON(condition);
+
+            Conditions.Add(m.Key, m);
+        }
+
         void SetupChampionAbilities(Champion c)
         {
             foreach(int a in c.Abilities)
@@ -641,6 +777,21 @@ namespace poxnora_search_engine.Pox
             return 0;
         }
 
+        public void LoadingPostProcess()
+        {
+            // post-process
+            foreach (Champion c in Champions.Values)
+                SetupChampionAbilities(c);
+
+            Abilities.Add(0, new Ability() { Name = "<INVALID_ABILITY>" });
+
+            ResolveSimilarAbilities();
+
+            Log.Info(Log.LogSource.PoxDB,
+                "Champs loaded: " + Champions.Count + ", Abilities loaded: " + Abilities.Count + ", Spells loaded: " + Spells.Count
+                + ", Relics loaded: " + Relics.Count + ", Equipments loaded: " + Equipments.Count);
+        }
+
         public void Unload()
         {
             Log.Info(Log.LogSource.PoxDB, "Database.Unload() called");
@@ -654,6 +805,9 @@ namespace poxnora_search_engine.Pox
             Spells.Clear();
             Relics.Clear();
             Equipments.Clear();
+            Conditions.Clear();
+            Mechanics.Clear();
+            DatabaseQueue.Clear();
 
             Factions.Clear();
             Races.Clear();
@@ -663,6 +817,7 @@ namespace poxnora_search_engine.Pox
             AbilityNames.Clear();
 
             ready = false;
+            loading = false;
         }
     }
 }

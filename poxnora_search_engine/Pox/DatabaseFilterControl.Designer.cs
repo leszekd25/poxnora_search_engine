@@ -80,6 +80,7 @@
             this.wrapIntoAnySubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wrapIntoAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.popOutOfAnyAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterTreeContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -324,7 +325,8 @@
             this.nameToolStripMenuItem5,
             this.descriptionToolStripMenuItem5,
             this.artistToolStripMenuItem4,
-            this.flavorTextToolStripMenuItem1});
+            this.flavorTextToolStripMenuItem1,
+            this.keyToolStripMenuItem});
             this.textFilterToolStripMenuItem.Name = "textFilterToolStripMenuItem";
             this.textFilterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.textFilterToolStripMenuItem.Text = "Text filter";
@@ -494,6 +496,13 @@
             this.popOutOfAnyAllSubfiltersToolStripMenuItem.Text = "Pop out of Any/All subfilters";
             this.popOutOfAnyAllSubfiltersToolStripMenuItem.Click += new System.EventHandler(this.popOutOfAnyAllSubfiltersToolStripMenuItem_Click);
             // 
+            // keyToolStripMenuItem
+            // 
+            this.keyToolStripMenuItem.Name = "keyToolStripMenuItem";
+            this.keyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.keyToolStripMenuItem.Text = "Key";
+            this.keyToolStripMenuItem.Click += new System.EventHandler(this.keyToolStripMenuItem_Click);
+            // 
             // DatabaseFilterControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -562,5 +571,6 @@
         private System.Windows.Forms.ToolStripMenuItem wrapIntoAllSubfiltersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem popOutOfAnyAllSubfiltersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quickFilterToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keyToolStripMenuItem;
     }
 }

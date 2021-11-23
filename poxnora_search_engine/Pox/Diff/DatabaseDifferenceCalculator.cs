@@ -24,7 +24,7 @@ namespace poxnora_search_engine.Pox.Diff
             CurrentDatabase_ref = Program.database;
 
             PreviousDatabase = new Database();
-            PreviousDatabase.LoadJSON(previous_database, "");
+            PreviousDatabase.Load(previous_database, "", true);
 
             ready = (CurrentDatabase_ref.ready && PreviousDatabase.ready);
             if (!ready)

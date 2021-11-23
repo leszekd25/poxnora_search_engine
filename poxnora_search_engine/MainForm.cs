@@ -100,8 +100,8 @@ namespace poxnora_search_engine
             Program.database.ready_trigger = OnDatabaseReady;
             Program.database.progress_trigger = OnDBDownloadProgressChanged;
 
-            bool dbload_result = Program.database.LoadJSON("database.json", Pox.Database.POXNORA_JSON_SITE);
-            DBDownloadProgress.Visible = !dbload_result;
+            Database.DatabaseLoadInfo dli = Program.database.Load("database.json", Pox.Database.POXNORA_JSON_MAIN, false);
+            DBDownloadProgress.Visible = !(dli.NoDownload);
 
             foreach (ToolStripMenuItem column_vis in championsToolStripMenuItem.DropDownItems)
                 column_vis.Click += new EventHandler(OnChampionColumnVisibilityClick);
@@ -113,6 +113,10 @@ namespace poxnora_search_engine
                 column_vis.Click += new EventHandler(OnRelicColumnVisibilityClick);
             foreach (ToolStripMenuItem column_vis in equipmentsToolStripMenuItem.DropDownItems)
                 column_vis.Click += new EventHandler(OnEquipmentColumnVisibilityClick);
+            foreach (ToolStripMenuItem column_vis in conditionsToolStripMenuItem.DropDownItems)
+                column_vis.Click += new EventHandler(OnConditionColumnVisibilityClick);
+            foreach (ToolStripMenuItem column_vis in mechanicsToolStripMenuItem.DropDownItems)
+                column_vis.Click += new EventHandler(OnMechanicColumnVisibilityClick);
 
             PanelRunePreviews.MouseWheel += PanelRunePreviews_MouseWheel;
 
@@ -444,6 +448,20 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Flavor text", Name = "FlavorText", ValueType = typeof(string), Visible = flavorTextToolStripMenuItem.Checked });
                         break;
                     }
+                case Pox.DataElement.ElementType.CONDITION:
+                    {
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Key", Name = "Key", ValueType = typeof(string), Visible = keyToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem5.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Description", Name = "Description", ValueType = typeof(string), Visible = descriptionToolStripMenuItem5.Checked });
+                        break;
+                    }
+                case Pox.DataElement.ElementType.MECHANIC:
+                    {
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Key", Name = "Key", ValueType = typeof(string), Visible = keyToolStripMenuItem1.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Name", Name = "Name", ValueType = typeof(string), Visible = nameToolStripMenuItem6.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Description", Name = "Description", ValueType = typeof(string), Visible = descriptionToolStripMenuItem6.Checked });
+                        break;
+                    }
                 default:
                     break;
             }
@@ -521,6 +539,28 @@ namespace poxnora_search_engine
 
                         foreach (var e in eqs)
                             GridAddEquipment(e);
+
+                        break;
+                    }
+                case Pox.DataElement.ElementType.CONDITION:
+                    {
+                        List<FlavorElement> cons = new List<FlavorElement>();
+                        foreach (var kv in Program.database.Conditions)
+                            cons.Add(kv.Value);
+
+                        foreach (var c in cons)
+                            GridAddCondition(c);
+
+                        break;
+                    }
+                case Pox.DataElement.ElementType.MECHANIC:
+                    {
+                        List<FlavorElement> mecs = new List<FlavorElement>();
+                        foreach (var kv in Program.database.Mechanics)
+                            mecs.Add(kv.Value);
+
+                        foreach (var m in mecs)
+                            GridAddMechanic(m);
 
                         break;
                     }
@@ -717,6 +757,26 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["FlavorText"].Value = e.Flavor;
         }
 
+        public void GridAddCondition(Pox.FlavorElement c)
+        {
+            int row = GridDataElements.Rows.Add();
+            GridDataElements.Rows[row].Tag = c;
+
+            GridDataElements.Rows[row].Cells["Key"].Value = c.Key;
+            GridDataElements.Rows[row].Cells["Name"].Value = c.Name;
+            GridDataElements.Rows[row].Cells["Description"].Value = c.Description;
+        }
+
+        public void GridAddMechanic(Pox.FlavorElement m)
+        {
+            int row = GridDataElements.Rows.Add();
+            GridDataElements.Rows[row].Tag = m;
+
+            GridDataElements.Rows[row].Cells["Key"].Value = m.Key;
+            GridDataElements.Rows[row].Cells["Name"].Value = m.Name;
+            GridDataElements.Rows[row].Cells["Description"].Value = m.Description;
+        }
+
         // refreshes image view
         private void PrepareImageView()
         {
@@ -822,6 +882,32 @@ namespace poxnora_search_engine
                             }
                         }
                         break;
+                    case DataElement.ElementType.ABILITY:
+
+                        foreach (var ability in Program.database.Abilities.Keys)
+                        {
+                            if (((DatabaseFilter.SearchFilter == null) || (!DatabaseFilter.ApplyFilters)) || (DatabaseFilter.SearchFilter.Satisfies(Program.database.Abilities[ability])))
+                            {
+                                if (PanelRunePreviews.Controls.Count > total)
+                                {
+                                    rpc = (RunePreviewControl)(PanelRunePreviews.Controls[total]);
+                                    rpc.LabelText.Text = "";
+                                    rpc.RunePreviewImage.Image = null;
+                                    rpc.Show();
+                                }
+                                else
+                                {
+                                    rpc = new RunePreviewControl();
+                                    rpc.RunePreviewImage.MouseClick += PreviewImage_MouseClick;
+                                    PanelRunePreviews.Controls.Add(rpc);
+                                }
+                                rpc.ElemID = Program.database.Abilities[ability].ID;
+                                rpc.LabelText.Text = Program.database.Abilities[ability].Name;
+                                elems.Add(Program.database.Abilities[ability].IconName);
+                                total += 1;
+                            }
+                        }
+                        break;
                     case DataElement.ElementType.SPELL:
 
                         foreach (var champ in Program.database.Spells.Keys)
@@ -917,15 +1003,22 @@ namespace poxnora_search_engine
 
                 PanelRunePreviews.Show();
 
-                for (int i = 0; i < total; i++)
-                    Program.image_cache.AddRunePreviewSubscriber(elems[i], ((RunePreviewControl)(PanelRunePreviews.Controls[i])));
+                if (ViewType == DataElement.ElementType.ABILITY)
+                {
+                    for (int i = 0; i < total; i++)
+                        Program.image_cache.AddAbilityImageSubscriber(elems[i], ((RunePreviewControl)(PanelRunePreviews.Controls[i])));
+                }
+                else
+                {
+                    for (int i = 0; i < total; i++)
+                        Program.image_cache.AddRunePreviewSubscriber(elems[i], ((RunePreviewControl)(PanelRunePreviews.Controls[i])));
+                }
 
                 LastLogMessage.Text = "Items displayed: " + total.ToString();
             }
 
             Log.Info(Log.LogSource.UI, "MainForm.ApplyFilter() finished");
         }
-
         
 
         private void RadioChampions_CheckedChanged(object sender, EventArgs e)
@@ -963,38 +1056,77 @@ namespace poxnora_search_engine
             PrepareView();
         }
 
+        private void RadioConditions_CheckedChanged(object sender, EventArgs e)
+        {
+            ViewType = Pox.DataElement.ElementType.CONDITION;
+            Cards[SelectedCard].ViewType = ViewType;
+            PrepareView();
+        }
+
+        private void RadioMechanics_CheckedChanged(object sender, EventArgs e)
+        {
+            ViewType = Pox.DataElement.ElementType.MECHANIC;
+            Cards[SelectedCard].ViewType = ViewType;
+            PrepareView();
+        }
 
         private void GridDataElements_CellEnter(object sender, DataGridViewCellEventArgs e)
         {
             int row = e.RowIndex;
-            if (GridDataElements.Rows[row].Cells["ID"].Value == null)
-                return;
 
-            int id = (int)GridDataElements.Rows[row].Cells["ID"].Value;
-
-            RuneDescription.TracerClear();
-            switch (ViewType)
+            // text keys
+            if ((ViewType == DataElement.ElementType.CONDITION) || (ViewType == DataElement.ElementType.MECHANIC))
             {
-                case Pox.DataElement.ElementType.CHAMPION:
-                    RuneDescription.SetChampionRune(Program.database.Champions[id]);
-                    if (ChampionBuilder_form != null)
-                        ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
-                    break;
-                case Pox.DataElement.ElementType.ABILITY:
-                    RuneDescription.SetAbility(Program.database.Abilities[id]);
-                    break;
-                case Pox.DataElement.ElementType.SPELL:
-                    RuneDescription.SetSpellRune(Program.database.Spells[id]);
-                    break;
-                case Pox.DataElement.ElementType.RELIC:
-                    RuneDescription.SetRelicRune(Program.database.Relics[id]);
-                    break;
-                case Pox.DataElement.ElementType.EQUIPMENT:
-                    RuneDescription.SetEquipmentRune(Program.database.Equipments[id]);
-                    break;
-                default:
-                    RuneDescription.ClearDescription();
-                    break;
+                if (GridDataElements.Rows[row].Cells["Key"].Value == null)
+                    return;
+
+                string id = (string)GridDataElements.Rows[row].Cells["Key"].Value;
+
+                RuneDescription.TracerClear();
+                switch (ViewType)
+                {
+                    case DataElement.ElementType.CONDITION:
+                        RuneDescription.SetCondition(Program.database.Conditions[id]);
+                        break;
+                    case DataElement.ElementType.MECHANIC:
+                        RuneDescription.SetMechanic(Program.database.Mechanics[id]);
+                        break;
+                    default:
+                        RuneDescription.ClearDescription();
+                        break;
+                }
+            }
+            else  // number keys
+            {
+                if (GridDataElements.Rows[row].Cells["ID"].Value == null)
+                    return;
+
+                int id = (int)GridDataElements.Rows[row].Cells["ID"].Value;
+
+                RuneDescription.TracerClear();
+                switch (ViewType)
+                {
+                    case Pox.DataElement.ElementType.CHAMPION:
+                        RuneDescription.SetChampionRune(Program.database.Champions[id]);
+                        if (ChampionBuilder_form != null)
+                            ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
+                        break;
+                    case Pox.DataElement.ElementType.ABILITY:
+                        RuneDescription.SetAbility(Program.database.Abilities[id]);
+                        break;
+                    case Pox.DataElement.ElementType.SPELL:
+                        RuneDescription.SetSpellRune(Program.database.Spells[id]);
+                        break;
+                    case Pox.DataElement.ElementType.RELIC:
+                        RuneDescription.SetRelicRune(Program.database.Relics[id]);
+                        break;
+                    case Pox.DataElement.ElementType.EQUIPMENT:
+                        RuneDescription.SetEquipmentRune(Program.database.Equipments[id]);
+                        break;
+                    default:
+                        RuneDescription.ClearDescription();
+                        break;
+                }
             }
         }
 
@@ -1040,7 +1172,7 @@ namespace poxnora_search_engine
             GridDataElements.Width = this.Width - 1410 + 764;
             GridDataElements.Height = this.Height - 682 + 534;
 
-            RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, DatabaseFilter.Location.Y);
+            RuneDescription.Location = new Point(GridDataElements.Location.X + GridDataElements.Width + 3, PanelCards.Location.Y);
             RuneDescription.SetHeight(GridDataElements.Height + 53);
             PanelRunePreviews.Location = new Point(GridDataElements.Location.X, PreviewScrollBar.Value);
             PanelRunePreviews.Size = GridDataElements.Size;
@@ -1097,6 +1229,24 @@ namespace poxnora_search_engine
         private void OnEquipmentColumnVisibilityClick(object sender, EventArgs e)
         {
             if (ViewType != Pox.DataElement.ElementType.EQUIPMENT)
+                return;
+
+            if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
+                GridDataElements.Columns[((ToolStripMenuItem)sender).Tag.ToString()].Visible = ((ToolStripMenuItem)sender).Checked;
+        }
+
+        private void OnConditionColumnVisibilityClick(object sender, EventArgs e)
+        {
+            if (ViewType != Pox.DataElement.ElementType.CONDITION)
+                return;
+
+            if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
+                GridDataElements.Columns[((ToolStripMenuItem)sender).Tag.ToString()].Visible = ((ToolStripMenuItem)sender).Checked;
+        }
+
+        private void OnMechanicColumnVisibilityClick(object sender, EventArgs e)
+        {
+            if (ViewType != Pox.DataElement.ElementType.MECHANIC)
                 return;
 
             if (GridDataElements.Columns.Contains(((ToolStripMenuItem)sender).Tag.ToString()))
@@ -1313,7 +1463,7 @@ namespace poxnora_search_engine
             Program.database.Unload();
 
             // load new database from file
-            Program.database.LoadJSON(DBLoadDialog.FileName, "");
+            Program.database.Load(DBLoadDialog.FileName, "", true);
             if (!Program.database.ready)
                 return;
 
@@ -1337,5 +1487,9 @@ namespace poxnora_search_engine
             AddCard(new RuneListInfo() { Filter = null, ViewMode = ViewMode, ViewType = ViewType, ApplyFilter = false });
         }
 
+        private void ButtonQuickFilter_Click(object sender, EventArgs e)
+        {
+            DatabaseFilter.InvokeQuickFilter();
+        }
     }
 }

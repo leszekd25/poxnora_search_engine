@@ -8,12 +8,12 @@ namespace poxnora_search_engine.Pox
 {
     public class DataElement
     {
-        public enum ElementType { NONE = -1, CHAMPION = 0, ABILITY, SPELL, RELIC, EQUIPMENT }
+        public enum ElementType { NONE = -1, CHAMPION = 0, ABILITY, SPELL, RELIC, EQUIPMENT, CONDITION, MECHANIC }
 
-        public int ID;
         public string Name = "";
         public string Description = "";
-        public int NoraCost;         // base nora cost for the champion, without upgrades
+        public int ID;
+        public int NoraCost;
 
         public override string ToString()
         {
@@ -78,11 +78,11 @@ namespace poxnora_search_engine.Pox
                 return false;
 
             DataElement d = (DataElement)o;
-            if (ID != d.ID)
-                return false;
             if (Name != d.Name)
                 return false;
             if (Description != d.Description)
+                return false;
+            if (ID != d.ID)
                 return false;
             if (NoraCost != d.NoraCost)
                 return false;

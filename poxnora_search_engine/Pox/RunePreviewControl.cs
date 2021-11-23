@@ -65,5 +65,10 @@ namespace poxnora_search_engine.Pox
         {
             BackColor = bg_color;
         }
+
+        public void SetTXTColor(Color txt_color)
+        {
+            ForeColor = txt_color;
+        }
     }
 }

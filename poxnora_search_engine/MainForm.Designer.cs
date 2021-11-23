@@ -119,6 +119,14 @@
             this.deckLimitToolStripMenuItem3 = new System.Windows.Forms.ToolStripMenuItem();
             this.cooldownToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.flavorTextToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.conditionsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nameToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.descriptionToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mechanicsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keyToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.nameToolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
+            this.descriptionToolStripMenuItem6 = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.manualToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -135,6 +143,8 @@
             this.ArchiveDownloadProgress = new System.Windows.Forms.ToolStripProgressBar();
             this.GridDataElements = new System.Windows.Forms.DataGridView();
             this.PanelDataMode = new System.Windows.Forms.Panel();
+            this.RadioMechanics = new System.Windows.Forms.RadioButton();
+            this.RadioConditions = new System.Windows.Forms.RadioButton();
             this.RadioEquips = new System.Windows.Forms.RadioButton();
             this.ButtonSetViewMode = new System.Windows.Forms.Button();
             this.RadioRelics = new System.Windows.Forms.RadioButton();
@@ -143,11 +153,12 @@
             this.RadioChampions = new System.Windows.Forms.RadioButton();
             this.PanelRunePreviews = new System.Windows.Forms.Panel();
             this.PreviewScrollBar = new System.Windows.Forms.VScrollBar();
-            this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
-            this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
             this.DBLoadDialog = new System.Windows.Forms.OpenFileDialog();
             this.PanelCards = new System.Windows.Forms.Panel();
             this.ButtonAddCard = new System.Windows.Forms.Button();
+            this.ButtonQuickFilter = new System.Windows.Forms.Button();
+            this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
+            this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
             this.MainMenu.SuspendLayout();
             this.Status.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.GridDataElements)).BeginInit();
@@ -182,7 +193,9 @@
             this.abilitiesToolStripMenuItem,
             this.spellsToolStripMenuItem,
             this.relicsToolStripMenuItem,
-            this.equipmentsToolStripMenuItem});
+            this.equipmentsToolStripMenuItem,
+            this.conditionsToolStripMenuItem,
+            this.mechanicsToolStripMenuItem});
             this.displayColumnsToolStripMenuItem.Name = "displayColumnsToolStripMenuItem";
             this.displayColumnsToolStripMenuItem.Size = new System.Drawing.Size(161, 22);
             this.displayColumnsToolStripMenuItem.Text = "Display columns";
@@ -1033,6 +1046,76 @@
             this.flavorTextToolStripMenuItem.Tag = "FlavorText";
             this.flavorTextToolStripMenuItem.Text = "Flavor text";
             // 
+            // conditionsToolStripMenuItem
+            // 
+            this.conditionsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.keyToolStripMenuItem,
+            this.nameToolStripMenuItem5,
+            this.descriptionToolStripMenuItem5});
+            this.conditionsToolStripMenuItem.Name = "conditionsToolStripMenuItem";
+            this.conditionsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.conditionsToolStripMenuItem.Text = "Conditions";
+            // 
+            // keyToolStripMenuItem
+            // 
+            this.keyToolStripMenuItem.Name = "keyToolStripMenuItem";
+            this.keyToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.keyToolStripMenuItem.Tag = "Key";
+            this.keyToolStripMenuItem.Text = "Key";
+            // 
+            // nameToolStripMenuItem5
+            // 
+            this.nameToolStripMenuItem5.Checked = true;
+            this.nameToolStripMenuItem5.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.nameToolStripMenuItem5.Name = "nameToolStripMenuItem5";
+            this.nameToolStripMenuItem5.Size = new System.Drawing.Size(134, 22);
+            this.nameToolStripMenuItem5.Tag = "Name";
+            this.nameToolStripMenuItem5.Text = "Name";
+            // 
+            // descriptionToolStripMenuItem5
+            // 
+            this.descriptionToolStripMenuItem5.Checked = true;
+            this.descriptionToolStripMenuItem5.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.descriptionToolStripMenuItem5.Name = "descriptionToolStripMenuItem5";
+            this.descriptionToolStripMenuItem5.Size = new System.Drawing.Size(134, 22);
+            this.descriptionToolStripMenuItem5.Tag = "Description";
+            this.descriptionToolStripMenuItem5.Text = "Description";
+            // 
+            // mechanicsToolStripMenuItem
+            // 
+            this.mechanicsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.keyToolStripMenuItem1,
+            this.nameToolStripMenuItem6,
+            this.descriptionToolStripMenuItem6});
+            this.mechanicsToolStripMenuItem.Name = "mechanicsToolStripMenuItem";
+            this.mechanicsToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
+            this.mechanicsToolStripMenuItem.Text = "Mechanics";
+            // 
+            // keyToolStripMenuItem1
+            // 
+            this.keyToolStripMenuItem1.Name = "keyToolStripMenuItem1";
+            this.keyToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.keyToolStripMenuItem1.Tag = "Key";
+            this.keyToolStripMenuItem1.Text = "Key";
+            // 
+            // nameToolStripMenuItem6
+            // 
+            this.nameToolStripMenuItem6.Checked = true;
+            this.nameToolStripMenuItem6.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.nameToolStripMenuItem6.Name = "nameToolStripMenuItem6";
+            this.nameToolStripMenuItem6.Size = new System.Drawing.Size(134, 22);
+            this.nameToolStripMenuItem6.Tag = "Name";
+            this.nameToolStripMenuItem6.Text = "Name";
+            // 
+            // descriptionToolStripMenuItem6
+            // 
+            this.descriptionToolStripMenuItem6.Checked = true;
+            this.descriptionToolStripMenuItem6.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.descriptionToolStripMenuItem6.Name = "descriptionToolStripMenuItem6";
+            this.descriptionToolStripMenuItem6.Size = new System.Drawing.Size(134, 22);
+            this.descriptionToolStripMenuItem6.Tag = "Description";
+            this.descriptionToolStripMenuItem6.Text = "Description";
+            // 
             // helpToolStripMenuItem
             // 
             this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -1160,6 +1243,8 @@
             // 
             // PanelDataMode
             // 
+            this.PanelDataMode.Controls.Add(this.RadioMechanics);
+            this.PanelDataMode.Controls.Add(this.RadioConditions);
             this.PanelDataMode.Controls.Add(this.RadioEquips);
             this.PanelDataMode.Controls.Add(this.ButtonSetViewMode);
             this.PanelDataMode.Controls.Add(this.RadioRelics);
@@ -1170,6 +1255,28 @@
             this.PanelDataMode.Name = "PanelDataMode";
             this.PanelDataMode.Size = new System.Drawing.Size(764, 30);
             this.PanelDataMode.TabIndex = 6;
+            // 
+            // RadioMechanics
+            // 
+            this.RadioMechanics.AutoSize = true;
+            this.RadioMechanics.Location = new System.Drawing.Point(492, 3);
+            this.RadioMechanics.Name = "RadioMechanics";
+            this.RadioMechanics.Size = new System.Drawing.Size(77, 17);
+            this.RadioMechanics.TabIndex = 6;
+            this.RadioMechanics.Text = "Mechanics";
+            this.RadioMechanics.UseVisualStyleBackColor = true;
+            this.RadioMechanics.CheckedChanged += new System.EventHandler(this.RadioMechanics_CheckedChanged);
+            // 
+            // RadioConditions
+            // 
+            this.RadioConditions.AutoSize = true;
+            this.RadioConditions.Location = new System.Drawing.Point(406, 3);
+            this.RadioConditions.Name = "RadioConditions";
+            this.RadioConditions.Size = new System.Drawing.Size(74, 17);
+            this.RadioConditions.TabIndex = 5;
+            this.RadioConditions.Text = "Conditions";
+            this.RadioConditions.UseVisualStyleBackColor = true;
+            this.RadioConditions.CheckedChanged += new System.EventHandler(this.RadioConditions_CheckedChanged);
             // 
             // RadioEquips
             // 
@@ -1255,21 +1362,6 @@
             this.PreviewScrollBar.Visible = false;
             this.PreviewScrollBar.ValueChanged += new System.EventHandler(this.PreviewScrollBar_ValueChanged);
             // 
-            // DatabaseFilter
-            // 
-            this.DatabaseFilter.Location = new System.Drawing.Point(-2, 21);
-            this.DatabaseFilter.Name = "DatabaseFilter";
-            this.DatabaseFilter.Size = new System.Drawing.Size(334, 400);
-            this.DatabaseFilter.TabIndex = 11;
-            // 
-            // RuneDescription
-            // 
-            this.RuneDescription.BackColor = System.Drawing.Color.Black;
-            this.RuneDescription.Location = new System.Drawing.Point(1105, 27);
-            this.RuneDescription.Name = "RuneDescription";
-            this.RuneDescription.Size = new System.Drawing.Size(281, 578);
-            this.RuneDescription.TabIndex = 0;
-            // 
             // DBLoadDialog
             // 
             this.DBLoadDialog.FileName = "database.json";
@@ -1277,6 +1369,7 @@
             // 
             // PanelCards
             // 
+            this.PanelCards.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.PanelCards.Controls.Add(this.ButtonAddCard);
             this.PanelCards.Location = new System.Drawing.Point(335, 27);
             this.PanelCards.Name = "PanelCards";
@@ -1293,11 +1386,37 @@
             this.ButtonAddCard.UseVisualStyleBackColor = true;
             this.ButtonAddCard.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ButtonAddCard_MouseDown);
             // 
+            // ButtonQuickFilter
+            // 
+            this.ButtonQuickFilter.Location = new System.Drawing.Point(12, 28);
+            this.ButtonQuickFilter.Name = "ButtonQuickFilter";
+            this.ButtonQuickFilter.Size = new System.Drawing.Size(307, 23);
+            this.ButtonQuickFilter.TabIndex = 13;
+            this.ButtonQuickFilter.Text = "Quick filter";
+            this.ButtonQuickFilter.UseVisualStyleBackColor = true;
+            this.ButtonQuickFilter.Click += new System.EventHandler(this.ButtonQuickFilter_Click);
+            // 
+            // DatabaseFilter
+            // 
+            this.DatabaseFilter.Location = new System.Drawing.Point(-2, 54);
+            this.DatabaseFilter.Name = "DatabaseFilter";
+            this.DatabaseFilter.Size = new System.Drawing.Size(334, 400);
+            this.DatabaseFilter.TabIndex = 11;
+            // 
+            // RuneDescription
+            // 
+            this.RuneDescription.BackColor = System.Drawing.Color.Black;
+            this.RuneDescription.Location = new System.Drawing.Point(1105, 27);
+            this.RuneDescription.Name = "RuneDescription";
+            this.RuneDescription.Size = new System.Drawing.Size(281, 578);
+            this.RuneDescription.TabIndex = 0;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1394, 643);
+            this.Controls.Add(this.ButtonQuickFilter);
             this.Controls.Add(this.PanelCards);
             this.Controls.Add(this.DatabaseFilter);
             this.Controls.Add(this.PreviewScrollBar);
@@ -1451,6 +1570,17 @@
         private System.Windows.Forms.Panel PanelCards;
         private System.Windows.Forms.Button ButtonAddCard;
         private System.Windows.Forms.ToolStripMenuItem battlegroundBuilderToolStripMenuItem;
+        private System.Windows.Forms.RadioButton RadioMechanics;
+        private System.Windows.Forms.RadioButton RadioConditions;
+        private System.Windows.Forms.ToolStripMenuItem conditionsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nameToolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem descriptionToolStripMenuItem5;
+        private System.Windows.Forms.ToolStripMenuItem mechanicsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keyToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem nameToolStripMenuItem6;
+        private System.Windows.Forms.ToolStripMenuItem descriptionToolStripMenuItem6;
+        private System.Windows.Forms.Button ButtonQuickFilter;
     }
 }
 
