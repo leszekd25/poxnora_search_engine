@@ -1405,6 +1405,7 @@
             // 
             // RuneDescription
             // 
+            this.RuneDescription.AutoScroll = true;
             this.RuneDescription.BackColor = System.Drawing.Color.Black;
             this.RuneDescription.Location = new System.Drawing.Point(1105, 27);
             this.RuneDescription.Name = "RuneDescription";

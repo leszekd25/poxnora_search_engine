@@ -29,16 +29,18 @@ namespace poxnora_search_engine
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea3 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend3 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series3 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.newBGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadBGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveBGToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.StatusText = new System.Windows.Forms.ToolStripStatusLabel();
             this.PanelBGShare = new System.Windows.Forms.Panel();
+            this.ButtonGenerateBGText = new System.Windows.Forms.Button();
             this.ButtonGenerateCode = new System.Windows.Forms.Button();
             this.TextboxBGBCode = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -51,7 +53,6 @@ namespace poxnora_search_engine
             this.PageRuneBrowser = new System.Windows.Forms.TabPage();
             this.ButtonToggleFilter = new System.Windows.Forms.Button();
             this.ButtonQuickFilter = new System.Windows.Forms.Button();
-            this.PanelRuneBrowserSettings = new System.Windows.Forms.Panel();
             this.label11 = new System.Windows.Forms.Label();
             this.ComboRuneType = new System.Windows.Forms.ComboBox();
             this.LabelPageNum = new System.Windows.Forms.Label();
@@ -59,6 +60,10 @@ namespace poxnora_search_engine
             this.ButtonPreviousPage = new System.Windows.Forms.Button();
             this.PanelRuneIcons = new System.Windows.Forms.Panel();
             this.PageBattlegroupStats = new System.Windows.Forms.TabPage();
+            this.PanelChartMode = new System.Windows.Forms.Panel();
+            this.RadioList = new System.Windows.Forms.RadioButton();
+            this.RadioHistogram = new System.Windows.Forms.RadioButton();
+            this.PanelHistogramElements = new System.Windows.Forms.Panel();
             this.ChartStatHistogram = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.label4 = new System.Windows.Forms.Label();
             this.ComboChartMode = new System.Windows.Forms.ComboBox();
@@ -73,7 +78,6 @@ namespace poxnora_search_engine
             this.label2 = new System.Windows.Forms.Label();
             this.PageBGLog = new System.Windows.Forms.TabPage();
             this.ListBoxBGErrorLog = new System.Windows.Forms.ListBox();
-            this.LabelBGStatus = new System.Windows.Forms.Label();
             this.PanelBaseStats = new System.Windows.Forms.Panel();
             this.LabelFactionCounts = new System.Windows.Forms.Label();
             this.LabelTotalRunes = new System.Windows.Forms.Label();
@@ -84,16 +88,21 @@ namespace poxnora_search_engine
             this.PanelRuneList = new System.Windows.Forms.Panel();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
             this.SlideIn_DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
+            this.PanelRunePageSettings = new System.Windows.Forms.Panel();
+            this.PanelRunePageSelection = new System.Windows.Forms.Panel();
             this.menuStrip1.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.PanelBGShare.SuspendLayout();
             this.PanelBGFaction.SuspendLayout();
             this.PageContainer.SuspendLayout();
             this.PageRuneBrowser.SuspendLayout();
-            this.PanelRuneBrowserSettings.SuspendLayout();
             this.PageBattlegroupStats.SuspendLayout();
+            this.PanelChartMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ChartStatHistogram)).BeginInit();
             this.PageBGLog.SuspendLayout();
             this.PanelBaseStats.SuspendLayout();
+            this.PanelRunePageSettings.SuspendLayout();
+            this.PanelRunePageSelection.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -139,15 +148,24 @@ namespace poxnora_search_engine
             // 
             // statusStrip1
             // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.StatusText});
             this.statusStrip1.Location = new System.Drawing.Point(0, 815);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(1193, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // StatusText
+            // 
+            this.StatusText.Name = "StatusText";
+            this.StatusText.Size = new System.Drawing.Size(39, 17);
+            this.StatusText.Text = "Ready";
+            // 
             // PanelBGShare
             // 
             this.PanelBGShare.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PanelBGShare.Controls.Add(this.ButtonGenerateBGText);
             this.PanelBGShare.Controls.Add(this.ButtonGenerateCode);
             this.PanelBGShare.Controls.Add(this.TextboxBGBCode);
             this.PanelBGShare.Controls.Add(this.label1);
@@ -156,11 +174,21 @@ namespace poxnora_search_engine
             this.PanelBGShare.Size = new System.Drawing.Size(1193, 30);
             this.PanelBGShare.TabIndex = 2;
             // 
+            // ButtonGenerateBGText
+            // 
+            this.ButtonGenerateBGText.Location = new System.Drawing.Point(906, 3);
+            this.ButtonGenerateBGText.Name = "ButtonGenerateBGText";
+            this.ButtonGenerateBGText.Size = new System.Drawing.Size(135, 23);
+            this.ButtonGenerateBGText.TabIndex = 7;
+            this.ButtonGenerateBGText.Text = "Generate text";
+            this.ButtonGenerateBGText.UseVisualStyleBackColor = true;
+            this.ButtonGenerateBGText.Click += new System.EventHandler(this.ButtonGenerateBGText_Click);
+            // 
             // ButtonGenerateCode
             // 
-            this.ButtonGenerateCode.Location = new System.Drawing.Point(1047, 3);
+            this.ButtonGenerateCode.Location = new System.Drawing.Point(1057, 3);
             this.ButtonGenerateCode.Name = "ButtonGenerateCode";
-            this.ButtonGenerateCode.Size = new System.Drawing.Size(141, 23);
+            this.ButtonGenerateCode.Size = new System.Drawing.Size(131, 23);
             this.ButtonGenerateCode.TabIndex = 6;
             this.ButtonGenerateCode.Text = "Generate code";
             this.ButtonGenerateCode.UseVisualStyleBackColor = true;
@@ -240,24 +268,20 @@ namespace poxnora_search_engine
             this.PageContainer.Location = new System.Drawing.Point(0, 337);
             this.PageContainer.Name = "PageContainer";
             this.PageContainer.SelectedIndex = 0;
-            this.PageContainer.Size = new System.Drawing.Size(902, 477);
+            this.PageContainer.Size = new System.Drawing.Size(900, 477);
             this.PageContainer.TabIndex = 0;
             // 
             // PageRuneBrowser
             // 
             this.PageRuneBrowser.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PageRuneBrowser.Controls.Add(this.PanelRunePageSettings);
             this.PageRuneBrowser.Controls.Add(this.ButtonToggleFilter);
-            this.PageRuneBrowser.Controls.Add(this.ButtonQuickFilter);
-            this.PageRuneBrowser.Controls.Add(this.PanelRuneBrowserSettings);
             this.PageRuneBrowser.Controls.Add(this.SlideIn_DatabaseFilter);
-            this.PageRuneBrowser.Controls.Add(this.LabelPageNum);
-            this.PageRuneBrowser.Controls.Add(this.ButtonNextPage);
-            this.PageRuneBrowser.Controls.Add(this.ButtonPreviousPage);
             this.PageRuneBrowser.Controls.Add(this.PanelRuneIcons);
             this.PageRuneBrowser.Location = new System.Drawing.Point(4, 25);
             this.PageRuneBrowser.Name = "PageRuneBrowser";
             this.PageRuneBrowser.Padding = new System.Windows.Forms.Padding(3);
-            this.PageRuneBrowser.Size = new System.Drawing.Size(894, 448);
+            this.PageRuneBrowser.Size = new System.Drawing.Size(892, 448);
             this.PageRuneBrowser.TabIndex = 0;
             this.PageRuneBrowser.Text = "Rune Browser";
             this.PageRuneBrowser.UseVisualStyleBackColor = true;
@@ -275,7 +299,7 @@ namespace poxnora_search_engine
             // 
             // ButtonQuickFilter
             // 
-            this.ButtonQuickFilter.Location = new System.Drawing.Point(7, 417);
+            this.ButtonQuickFilter.Location = new System.Drawing.Point(0, 3);
             this.ButtonQuickFilter.Name = "ButtonQuickFilter";
             this.ButtonQuickFilter.Size = new System.Drawing.Size(117, 23);
             this.ButtonQuickFilter.TabIndex = 6;
@@ -283,19 +307,10 @@ namespace poxnora_search_engine
             this.ButtonQuickFilter.UseVisualStyleBackColor = true;
             this.ButtonQuickFilter.Click += new System.EventHandler(this.ButtonQuickFilter_Click);
             // 
-            // PanelRuneBrowserSettings
-            // 
-            this.PanelRuneBrowserSettings.Controls.Add(this.label11);
-            this.PanelRuneBrowserSettings.Controls.Add(this.ComboRuneType);
-            this.PanelRuneBrowserSettings.Location = new System.Drawing.Point(130, 413);
-            this.PanelRuneBrowserSettings.Name = "PanelRuneBrowserSettings";
-            this.PanelRuneBrowserSettings.Size = new System.Drawing.Size(198, 31);
-            this.PanelRuneBrowserSettings.TabIndex = 5;
-            // 
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(3, 8);
+            this.label11.Location = new System.Drawing.Point(119, 8);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(56, 13);
             this.label11.TabIndex = 3;
@@ -309,7 +324,7 @@ namespace poxnora_search_engine
             "Spells",
             "Relics",
             "Equipments"});
-            this.ComboRuneType.Location = new System.Drawing.Point(68, 5);
+            this.ComboRuneType.Location = new System.Drawing.Point(184, 5);
             this.ComboRuneType.Name = "ComboRuneType";
             this.ComboRuneType.Size = new System.Drawing.Size(121, 21);
             this.ComboRuneType.TabIndex = 2;
@@ -318,7 +333,7 @@ namespace poxnora_search_engine
             // 
             // LabelPageNum
             // 
-            this.LabelPageNum.Location = new System.Drawing.Point(665, 419);
+            this.LabelPageNum.Location = new System.Drawing.Point(126, 3);
             this.LabelPageNum.Name = "LabelPageNum";
             this.LabelPageNum.Size = new System.Drawing.Size(94, 23);
             this.LabelPageNum.TabIndex = 4;
@@ -327,7 +342,7 @@ namespace poxnora_search_engine
             // 
             // ButtonNextPage
             // 
-            this.ButtonNextPage.Location = new System.Drawing.Point(765, 419);
+            this.ButtonNextPage.Location = new System.Drawing.Point(226, 3);
             this.ButtonNextPage.Name = "ButtonNextPage";
             this.ButtonNextPage.Size = new System.Drawing.Size(120, 23);
             this.ButtonNextPage.TabIndex = 1;
@@ -337,7 +352,7 @@ namespace poxnora_search_engine
             // 
             // ButtonPreviousPage
             // 
-            this.ButtonPreviousPage.Location = new System.Drawing.Point(539, 419);
+            this.ButtonPreviousPage.Location = new System.Drawing.Point(0, 3);
             this.ButtonPreviousPage.Name = "ButtonPreviousPage";
             this.ButtonPreviousPage.Size = new System.Drawing.Size(120, 23);
             this.ButtonPreviousPage.TabIndex = 0;
@@ -356,6 +371,8 @@ namespace poxnora_search_engine
             // PageBattlegroupStats
             // 
             this.PageBattlegroupStats.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.PageBattlegroupStats.Controls.Add(this.PanelChartMode);
+            this.PageBattlegroupStats.Controls.Add(this.PanelHistogramElements);
             this.PageBattlegroupStats.Controls.Add(this.ChartStatHistogram);
             this.PageBattlegroupStats.Controls.Add(this.label4);
             this.PageBattlegroupStats.Controls.Add(this.ComboChartMode);
@@ -371,34 +388,76 @@ namespace poxnora_search_engine
             this.PageBattlegroupStats.Location = new System.Drawing.Point(4, 25);
             this.PageBattlegroupStats.Name = "PageBattlegroupStats";
             this.PageBattlegroupStats.Padding = new System.Windows.Forms.Padding(3);
-            this.PageBattlegroupStats.Size = new System.Drawing.Size(894, 448);
+            this.PageBattlegroupStats.Size = new System.Drawing.Size(892, 448);
             this.PageBattlegroupStats.TabIndex = 1;
             this.PageBattlegroupStats.Text = "Battlegroup Stats";
             this.PageBattlegroupStats.UseVisualStyleBackColor = true;
             // 
+            // PanelChartMode
+            // 
+            this.PanelChartMode.Controls.Add(this.RadioList);
+            this.PanelChartMode.Controls.Add(this.RadioHistogram);
+            this.PanelChartMode.Location = new System.Drawing.Point(134, 166);
+            this.PanelChartMode.Name = "PanelChartMode";
+            this.PanelChartMode.Size = new System.Drawing.Size(373, 29);
+            this.PanelChartMode.TabIndex = 21;
+            // 
+            // RadioList
+            // 
+            this.RadioList.AutoSize = true;
+            this.RadioList.Location = new System.Drawing.Point(101, 5);
+            this.RadioList.Name = "RadioList";
+            this.RadioList.Size = new System.Drawing.Size(41, 17);
+            this.RadioList.TabIndex = 1;
+            this.RadioList.Text = "List";
+            this.RadioList.UseVisualStyleBackColor = true;
+            this.RadioList.CheckedChanged += new System.EventHandler(this.radioButton2_CheckedChanged);
+            // 
+            // RadioHistogram
+            // 
+            this.RadioHistogram.AutoSize = true;
+            this.RadioHistogram.Checked = true;
+            this.RadioHistogram.Location = new System.Drawing.Point(5, 5);
+            this.RadioHistogram.Name = "RadioHistogram";
+            this.RadioHistogram.Size = new System.Drawing.Size(72, 17);
+            this.RadioHistogram.TabIndex = 0;
+            this.RadioHistogram.TabStop = true;
+            this.RadioHistogram.Text = "Histogram";
+            this.RadioHistogram.UseVisualStyleBackColor = true;
+            this.RadioHistogram.CheckedChanged += new System.EventHandler(this.RadioHistogram_CheckedChanged);
+            // 
+            // PanelHistogramElements
+            // 
+            this.PanelHistogramElements.AutoScroll = true;
+            this.PanelHistogramElements.Location = new System.Drawing.Point(513, 197);
+            this.PanelHistogramElements.Name = "PanelHistogramElements";
+            this.PanelHistogramElements.Size = new System.Drawing.Size(373, 243);
+            this.PanelHistogramElements.TabIndex = 20;
+            // 
             // ChartStatHistogram
             // 
-            chartArea1.AxisX.MajorGrid.Enabled = false;
-            chartArea1.AxisX.MajorTickMark.Enabled = false;
-            chartArea1.AxisX2.MajorGrid.Enabled = false;
-            chartArea1.AxisX2.MajorTickMark.Enabled = false;
-            chartArea1.AxisY.MajorGrid.Enabled = false;
-            chartArea1.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
-            chartArea1.Name = "ChartArea1";
-            this.ChartStatHistogram.ChartAreas.Add(chartArea1);
-            legend1.Name = "Legend1";
-            this.ChartStatHistogram.Legends.Add(legend1);
+            chartArea3.AxisX.MajorGrid.Enabled = false;
+            chartArea3.AxisX.MajorTickMark.Enabled = false;
+            chartArea3.AxisX2.MajorGrid.Enabled = false;
+            chartArea3.AxisX2.MajorTickMark.Enabled = false;
+            chartArea3.AxisY.MajorGrid.Enabled = false;
+            chartArea3.BorderDashStyle = System.Windows.Forms.DataVisualization.Charting.ChartDashStyle.Dash;
+            chartArea3.Name = "ChartArea1";
+            this.ChartStatHistogram.ChartAreas.Add(chartArea3);
+            legend3.Enabled = false;
+            legend3.Name = "Legend1";
+            this.ChartStatHistogram.Legends.Add(legend3);
             this.ChartStatHistogram.Location = new System.Drawing.Point(6, 197);
             this.ChartStatHistogram.Name = "ChartStatHistogram";
-            series1.ChartArea = "ChartArea1";
-            series1.IsValueShownAsLabel = true;
-            series1.Legend = "Legend1";
-            series1.LegendText = " Values";
-            series1.Name = "Values";
-            series1.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
-            series1.YValuesPerPoint = 2;
-            series1.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
-            this.ChartStatHistogram.Series.Add(series1);
+            series3.ChartArea = "ChartArea1";
+            series3.IsValueShownAsLabel = true;
+            series3.Legend = "Legend1";
+            series3.LegendText = " Values";
+            series3.Name = "Values";
+            series3.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.String;
+            series3.YValuesPerPoint = 2;
+            series3.YValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.Int32;
+            this.ChartStatHistogram.Series.Add(series3);
             this.ChartStatHistogram.Size = new System.Drawing.Size(501, 243);
             this.ChartStatHistogram.TabIndex = 19;
             this.ChartStatHistogram.Text = "chart1";
@@ -425,7 +484,7 @@ namespace poxnora_search_engine
             "Hitpoints",
             "Nora cost",
             "Abilities",
-            "Factions",
+            "Classes",
             "Races"});
             this.ComboChartMode.Location = new System.Drawing.Point(7, 170);
             this.ComboChartMode.Name = "ComboChartMode";
@@ -509,11 +568,10 @@ namespace poxnora_search_engine
             // PageBGLog
             // 
             this.PageBGLog.Controls.Add(this.ListBoxBGErrorLog);
-            this.PageBGLog.Controls.Add(this.LabelBGStatus);
             this.PageBGLog.Location = new System.Drawing.Point(4, 25);
             this.PageBGLog.Name = "PageBGLog";
             this.PageBGLog.Padding = new System.Windows.Forms.Padding(3);
-            this.PageBGLog.Size = new System.Drawing.Size(894, 448);
+            this.PageBGLog.Size = new System.Drawing.Size(892, 448);
             this.PageBGLog.TabIndex = 2;
             this.PageBGLog.Text = "Battlegroup Log";
             this.PageBGLog.UseVisualStyleBackColor = true;
@@ -521,19 +579,10 @@ namespace poxnora_search_engine
             // ListBoxBGErrorLog
             // 
             this.ListBoxBGErrorLog.FormattingEnabled = true;
-            this.ListBoxBGErrorLog.Location = new System.Drawing.Point(3, 43);
+            this.ListBoxBGErrorLog.Location = new System.Drawing.Point(6, 4);
             this.ListBoxBGErrorLog.Name = "ListBoxBGErrorLog";
-            this.ListBoxBGErrorLog.Size = new System.Drawing.Size(888, 394);
+            this.ListBoxBGErrorLog.Size = new System.Drawing.Size(880, 433);
             this.ListBoxBGErrorLog.TabIndex = 4;
-            // 
-            // LabelBGStatus
-            // 
-            this.LabelBGStatus.AutoSize = true;
-            this.LabelBGStatus.Location = new System.Drawing.Point(6, 3);
-            this.LabelBGStatus.Name = "LabelBGStatus";
-            this.LabelBGStatus.Size = new System.Drawing.Size(56, 13);
-            this.LabelBGStatus.TabIndex = 3;
-            this.LabelBGStatus.Text = "BG status:";
             // 
             // PanelBaseStats
             // 
@@ -613,6 +662,7 @@ namespace poxnora_search_engine
             // 
             // RuneDescription
             // 
+            this.RuneDescription.AutoScroll = true;
             this.RuneDescription.BackColor = System.Drawing.Color.Black;
             this.RuneDescription.Location = new System.Drawing.Point(907, 61);
             this.RuneDescription.Name = "RuneDescription";
@@ -626,6 +676,27 @@ namespace poxnora_search_engine
             this.SlideIn_DatabaseFilter.Size = new System.Drawing.Size(334, 404);
             this.SlideIn_DatabaseFilter.TabIndex = 0;
             // 
+            // PanelRunePageSettings
+            // 
+            this.PanelRunePageSettings.Controls.Add(this.PanelRunePageSelection);
+            this.PanelRunePageSettings.Controls.Add(this.label11);
+            this.PanelRunePageSettings.Controls.Add(this.ComboRuneType);
+            this.PanelRunePageSettings.Controls.Add(this.ButtonQuickFilter);
+            this.PanelRunePageSettings.Location = new System.Drawing.Point(6, 416);
+            this.PanelRunePageSettings.Name = "PanelRunePageSettings";
+            this.PanelRunePageSettings.Size = new System.Drawing.Size(879, 28);
+            this.PanelRunePageSettings.TabIndex = 7;
+            // 
+            // PanelRunePageSelection
+            // 
+            this.PanelRunePageSelection.Controls.Add(this.ButtonPreviousPage);
+            this.PanelRunePageSelection.Controls.Add(this.LabelPageNum);
+            this.PanelRunePageSelection.Controls.Add(this.ButtonNextPage);
+            this.PanelRunePageSelection.Location = new System.Drawing.Point(533, 0);
+            this.PanelRunePageSelection.Name = "PanelRunePageSelection";
+            this.PanelRunePageSelection.Size = new System.Drawing.Size(346, 28);
+            this.PanelRunePageSelection.TabIndex = 7;
+            // 
             // BattlegroupBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -638,31 +709,34 @@ namespace poxnora_search_engine
             this.Controls.Add(this.PanelBGShare);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.MainMenuStrip = this.menuStrip1;
-            this.MaximizeBox = false;
-            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(1209, 876);
             this.Name = "BattlegroupBuilder";
             this.Text = "BG Builder";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.BattlegroupBuilder_FormClosed);
             this.Load += new System.EventHandler(this.BattlegroupBuilder_Load);
+            this.Resize += new System.EventHandler(this.BattlegroupBuilder_Resize);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.PanelBGShare.ResumeLayout(false);
             this.PanelBGShare.PerformLayout();
             this.PanelBGFaction.ResumeLayout(false);
             this.PanelBGFaction.PerformLayout();
             this.PageContainer.ResumeLayout(false);
             this.PageRuneBrowser.ResumeLayout(false);
-            this.PanelRuneBrowserSettings.ResumeLayout(false);
-            this.PanelRuneBrowserSettings.PerformLayout();
             this.PageBattlegroupStats.ResumeLayout(false);
             this.PageBattlegroupStats.PerformLayout();
+            this.PanelChartMode.ResumeLayout(false);
+            this.PanelChartMode.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ChartStatHistogram)).EndInit();
             this.PageBGLog.ResumeLayout(false);
-            this.PageBGLog.PerformLayout();
             this.PanelBaseStats.ResumeLayout(false);
             this.PanelBaseStats.PerformLayout();
+            this.PanelRunePageSettings.ResumeLayout(false);
+            this.PanelRunePageSettings.PerformLayout();
+            this.PanelRunePageSelection.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -684,7 +758,6 @@ namespace poxnora_search_engine
         private System.Windows.Forms.ToolStripMenuItem loadBGToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveBGToolStripMenuItem;
         private System.Windows.Forms.ListBox ListBoxBGErrorLog;
-        private System.Windows.Forms.Label LabelBGStatus;
         private System.Windows.Forms.Panel PanelBGFaction;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ComboBox ComboFactions;
@@ -705,7 +778,6 @@ namespace poxnora_search_engine
         private System.Windows.Forms.Label LabelChampions;
         private System.Windows.Forms.Panel PanelRuneList;
         private System.Windows.Forms.Button ButtonQuickFilter;
-        private System.Windows.Forms.Panel PanelRuneBrowserSettings;
         private Pox.DatabaseFilterControl SlideIn_DatabaseFilter;
         private System.Windows.Forms.Button ButtonToggleFilter;
         private System.Windows.Forms.TabPage PageBGLog;
@@ -722,5 +794,13 @@ namespace poxnora_search_engine
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ComboBox ComboChartMode;
         private System.Windows.Forms.DataVisualization.Charting.Chart ChartStatHistogram;
+        private System.Windows.Forms.Panel PanelHistogramElements;
+        private System.Windows.Forms.Button ButtonGenerateBGText;
+        private System.Windows.Forms.Panel PanelChartMode;
+        private System.Windows.Forms.RadioButton RadioList;
+        private System.Windows.Forms.RadioButton RadioHistogram;
+        private System.Windows.Forms.ToolStripStatusLabel StatusText;
+        private System.Windows.Forms.Panel PanelRunePageSettings;
+        private System.Windows.Forms.Panel PanelRunePageSelection;
     }
 }

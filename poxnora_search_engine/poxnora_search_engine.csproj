@@ -52,6 +52,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Pox\AbilityControl_Histogram.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pox\AbilityControl_Histogram.Designer.cs">
+      <DependentUpon>AbilityControl_Histogram.cs</DependentUpon>
+    </Compile>
     <Compile Include="AboutBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -102,6 +108,18 @@
     </Compile>
     <Compile Include="Log.cs" />
     <Compile Include="Pox\Ability.cs" />
+    <Compile Include="Pox\AbilityControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pox\AbilityControl.Designer.cs">
+      <DependentUpon>AbilityControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Pox\AbilitySelectionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Pox\AbilitySelectionControl.Designer.cs">
+      <DependentUpon>AbilitySelectionControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="Pox\BattleGroup.cs" />
     <Compile Include="Pox\BattleGroupHistogram.cs" />
     <Compile Include="Pox\Champion.cs" />
@@ -113,6 +131,7 @@
       <DependentUpon>DatabaseFilterControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Pox\DataElement.cs" />
+    <Compile Include="Pox\DBPlugin_RuneGroups.cs" />
     <Compile Include="Pox\Diff\DatabaseDifferenceCalculator.cs" />
     <Compile Include="Pox\Diff\DifferenceElement.cs" />
     <Compile Include="Pox\Diff\DifferenceLink.cs" />
@@ -198,6 +217,9 @@
     <Compile Include="StringLibrary.cs" />
     <Compile Include="Updater.cs" />
     <Compile Include="Utility.cs" />
+    <EmbeddedResource Include="Pox\AbilityControl_Histogram.resx">
+      <DependentUpon>AbilityControl_Histogram.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>
@@ -221,6 +243,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pox\AbilityControl.resx">
+      <DependentUpon>AbilityControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Pox\AbilitySelectionControl.resx">
+      <DependentUpon>AbilitySelectionControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Pox\DatabaseFilterControl.resx">
       <DependentUpon>DatabaseFilterControl.cs</DependentUpon>

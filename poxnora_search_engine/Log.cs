@@ -15,7 +15,7 @@ namespace poxnora_search_engine
         public enum LogOption { NONE = 0, ERROR = 1, WARNING = 2, INFO = 4, ALL = 7 }
 
         // sources of messages
-        public enum LogSource { PoxDB, Net, UI, Utility, Main, _UNK }
+        public enum LogSource { PoxDB, Net, UI, Utility, BGBuilder, Main, _UNK }
 
         // a single log entry type
         struct LogData

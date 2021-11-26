@@ -52,10 +52,13 @@ namespace poxnora_search_engine
 
         public class BattleGroupStats
         {
-            public BattleGroupHistogramString RunesPerRarity = new BattleGroupHistogramString();
-            public BattleGroupHistogramString RunesPerFaction = new BattleGroupHistogramString();
+            public BattleGroupHistogram<string> RunesPerRarity = new BattleGroupHistogram<string>();
+            public BattleGroupHistogram<string> RunesPerFaction = new BattleGroupHistogram<string>();
             public BattleGroupHistogramInt ChampionStatDataInt = new BattleGroupHistogramInt();
-            public BattleGroupHistogramString ChampionStatDataString = new BattleGroupHistogramString();
+            public BattleGroupHistogram<string> ChampionStatDataString = new BattleGroupHistogram<string>();
+            public BattleGroupHistogram<Ability> ChampionStatDataAbility = new BattleGroupHistogram<Ability>();
+
+            public BattleGroupHistogramInt RuneGroupsPerRune = new BattleGroupHistogramInt();   // used for rune groups
 
 
             public int NoraShardCostBuy = 0;
@@ -67,7 +70,7 @@ namespace poxnora_search_engine
             public int NoAttackChampionCount = 0;
         }
 
-        public enum BGStatsChartType { DAMAGE = 0, SPEED, MINRANGE, MAXRANGE, COMPOUNDRANGE, DEFENSE, HEALTH, NORACOST, ABILITIES, FACTIONS, RACES }
+        public enum BGStatsChartType { DAMAGE = 0, SPEED, MINRANGE, MAXRANGE, COMPOUNDRANGE, DEFENSE, HEALTH, NORACOST, ABILITIES, CLASSES, RACES }
 
 
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -100,8 +103,8 @@ namespace poxnora_search_engine
         public BattlegroupBuilder()
         {
             InitializeComponent();
+            PageRuneBrowser.MouseWheel += BattlegroupBuilder_MouseWheel;
         }
-
         public struct RuneBGSort: IEquatable<RuneBGSort>, IComparable<RuneBGSort>
         {
             public int RuneIndex;
@@ -364,8 +367,8 @@ namespace poxnora_search_engine
                     messages.Add(string.Format("Exceeded limit of {0} equipments of type {1} (found {2})", db.Equipments[kv.Key].DeckLimit, db.Equipments[kv.Key].Name, kv.Value));
             }
 
-            // 5. hardcoded rune group check, todo
-            ParseBattlegroupSpecialCheck(db, bg, messages);
+            // 5. hardcoded rune group check
+            ParseBattlegroupRuneGroups(db, bg, bgs, messages);
 
             // 6. calculate stats
             CalculateBattlegroupStats(db, bg, bgs, calculate_cost_stats, calculate_distribution_stats);
@@ -403,11 +406,11 @@ namespace poxnora_search_engine
             ListBoxBGErrorLog.Items.Clear();
             if (messages.Count == 0)
             {
-                LabelBGStatus.Text = "BG Status: Can use in ranked";
+                StatusText.Text = "BG can be used in ranked";
             }
             else
             {
-                LabelBGStatus.Text = "BG Status: CAN'T use in ranked (see below)";
+                StatusText.Text = "BG can't be used in ranked - see Battlegroup Log page";
 
                 foreach (var s in messages)
                     ListBoxBGErrorLog.Items.Add(s);
@@ -416,9 +419,99 @@ namespace poxnora_search_engine
             SetChartMode(ChartType);
         }
 
-        private void ParseBattlegroupSpecialCheck(Database db, BattleGroup bg, List<string> messages)
+        private void ParseBattlegroupRuneGroups(Database db, BattleGroup bg, BattleGroupStats bgs, List<string> messages)
         {
-            
+            if(!db.Plugin_RuneGroups.Ready)
+            {
+                messages.Add("DATABASE WARNING: Rune groups are not loaded, can't check for rune group errors");
+                return;
+            }
+
+            int offset = 0;
+
+            // champions
+            bgs.RuneGroupsPerRune.Clear();
+            for (int i = 0; i < bg.Champions.Count; i++)
+            {
+                int id = bg.Champions[i].ChampionID;
+                RuneGroup rg = db.Plugin_RuneGroups.Champions.GetGroup(id);
+                if (rg == null)
+                    continue;
+
+                bgs.RuneGroupsPerRune.Add(rg.ID);
+            }
+            foreach (var rg_id in bgs.RuneGroupsPerRune.DataCount.Keys)
+            {
+                RuneGroup rg = db.Plugin_RuneGroups.Champions.RuneGroups[rg_id];
+                if (rg.RuneLimit < bgs.RuneGroupsPerRune.GetKeyValue(rg_id))
+                {
+                    messages.Add(string.Format("Too many champions of group {0}: maximum allowed {1}, found {2}",
+                        rg.Name, rg.RuneLimit, bgs.RuneGroupsPerRune.GetKeyValue(rg_id)));
+                }
+            }
+
+            // spells
+            bgs.RuneGroupsPerRune.Clear();
+            for (int i = 0; i < bg.Spells.Count; i++)
+            {
+                int id = bg.Spells[i];
+                RuneGroup rg = db.Plugin_RuneGroups.Spells.GetGroup(id);
+                if (rg == null)
+                    continue;
+
+                bgs.RuneGroupsPerRune.Add(rg.ID);
+            }
+            foreach (var rg_id in bgs.RuneGroupsPerRune.DataCount.Keys)
+            {
+                RuneGroup rg = db.Plugin_RuneGroups.Spells.RuneGroups[rg_id];
+                if (rg.RuneLimit < bgs.RuneGroupsPerRune.GetKeyValue(rg_id))
+                {
+                    messages.Add(string.Format("Too many spells of group {0}: maximum allowed {1}, found {2}",
+                        rg.Name, rg.RuneLimit, bgs.RuneGroupsPerRune.GetKeyValue(rg_id)));
+                }
+            }
+
+            // relics
+            bgs.RuneGroupsPerRune.Clear();
+            for (int i = 0; i < bg.Relics.Count; i++)
+            {
+                int id = bg.Relics[i];
+                RuneGroup rg = db.Plugin_RuneGroups.Relics.GetGroup(id);
+                if (rg == null)
+                    continue;
+
+                bgs.RuneGroupsPerRune.Add(rg.ID);
+            }
+            foreach (var rg_id in bgs.RuneGroupsPerRune.DataCount.Keys)
+            {
+                RuneGroup rg = db.Plugin_RuneGroups.Relics.RuneGroups[rg_id];
+                if (rg.RuneLimit < bgs.RuneGroupsPerRune.GetKeyValue(rg_id))
+                {
+                    messages.Add(string.Format("Too many relics of group {0}: maximum allowed {1}, found {2}",
+                        rg.Name, rg.RuneLimit, bgs.RuneGroupsPerRune.GetKeyValue(rg_id)));
+                }
+            }
+
+            // equipments
+            bgs.RuneGroupsPerRune.Clear();
+            for (int i = 0; i < bg.Equipments.Count; i++)
+            {
+                int id = bg.Equipments[i];
+                RuneGroup rg = db.Plugin_RuneGroups.Equipments.GetGroup(id);
+                if (rg == null)
+                    continue;
+
+                bgs.RuneGroupsPerRune.Add(rg.ID);
+            }
+            foreach (var rg_id in bgs.RuneGroupsPerRune.DataCount.Keys)
+            {
+                RuneGroup rg = db.Plugin_RuneGroups.Equipments.RuneGroups[rg_id];
+                if (rg.RuneLimit < bgs.RuneGroupsPerRune.GetKeyValue(rg_id))
+                {
+                    messages.Add(string.Format("Too many equipments of group {0}: maximum allowed {1}, found {2}",
+                        rg.Name, rg.RuneLimit, bgs.RuneGroupsPerRune.GetKeyValue(rg_id)));
+                }
+            }
         }
 
         private void CalculateBattlegroupStats(Database db, BattleGroup bg, BattleGroupStats bgs, bool calc_cost, bool calc_distribution)
@@ -426,24 +519,10 @@ namespace poxnora_search_engine
             bgs.RunesPerFaction.Clear();
             bgs.RunesPerRarity.Clear();
             bgs.ChampionStatDataInt.Clear();
+            bgs.ChampionStatDataString.Clear();
+            bgs.ChampionStatDataAbility.Clear();
             bgs.NoraShardCostBuy = 0;
             bgs.NoraShardCostSell = 0;
-            /*bgs.AverageNoraCostPerRuneType.Clear();
-            bgs.AverageNoraCostPerRuneType.Add(DataElement.ElementType.CHAMPION, 0);
-            bgs.AverageNoraCostPerRuneType.Add(DataElement.ElementType.SPELL, 0);
-            bgs.AverageNoraCostPerRuneType.Add(DataElement.ElementType.RELIC, 0);
-            bgs.AverageNoraCostPerRuneType.Add(DataElement.ElementType.EQUIPMENT, 0);
-            bgs.TotalNoraCostPerRuneType.Clear();
-            bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.CHAMPION, 0);
-            bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.SPELL, 0);
-            bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.RELIC, 0);
-            bgs.TotalNoraCostPerRuneType.Add(DataElement.ElementType.EQUIPMENT, 0);
-            bgs.AverageChampionDamage = new BGStats_MeleeRangedValue<float>(0, 0);
-            bgs.AverageChampionDefense = new BGStats_MeleeRangedValue<float>(0, 0);
-            bgs.AverageChampionHealth = new BGStats_MeleeRangedValue<float>(0, 0);
-            bgs.AverageChampionMaxRNG = new BGStats_MeleeRangedValue<float>(0, 0);
-            bgs.AverageChampionMinRNG = new BGStats_MeleeRangedValue<float>(0, 0);
-            bgs.AverageChampionSpeed = new BGStats_MeleeRangedValue<float>(0, 0);*/
             bgs.BigChampionCount = 0;
             bgs.RangedChampionCount = 0;
             bgs.HybridRangeChampionCount = 0;
@@ -472,67 +551,6 @@ namespace poxnora_search_engine
                 Tuple<int, int> rune_price = GetRuneShardCost(r);
                 bgs.NoraShardCostBuy += rune_price.Item2;
                 bgs.NoraShardCostSell += rune_price.Item1;
-            }
-            
-            if(calc_cost)
-            {
-               /* // calc champ cost
-                foreach(var cbg in bg.Champions)
-                {
-                    if (!db.Champions.ContainsKey(cbg.ChampionID))
-                        continue;
-
-                    Champion c = db.Champions[cbg.ChampionID];
-                    int champ_cost = c.BaseNoraCost;
-                    foreach (var ab in c.BaseAbilities_refs)
-                        champ_cost += ab.NoraCost;
-
-                    if (db.Abilities.ContainsKey(cbg.Ability1))
-                        champ_cost += db.Abilities[cbg.Ability1].NoraCost;
-                    if (db.Abilities.ContainsKey(cbg.Ability2))
-                        champ_cost += db.Abilities[cbg.Ability2].NoraCost;
-
-                    bgs.TotalNoraCostPerRuneType[DataElement.ElementType.CHAMPION] += champ_cost;
-                }
-
-                if(bg.Champions.Count != 0)
-                    bgs.AverageNoraCostPerRuneType[DataElement.ElementType.CHAMPION] = bgs.TotalNoraCostPerRuneType[DataElement.ElementType.CHAMPION] / (float)bg.Champions.Count;
-
-                // calc spell cost
-                foreach (var s in bg.Spells)
-                {
-                    if (!db.Spells.ContainsKey(s))
-                        continue;
-
-                    bgs.TotalNoraCostPerRuneType[DataElement.ElementType.SPELL] += db.Spells[s].NoraCost;
-                }
-
-                if(bg.Spells.Count != 0)
-                    bgs.AverageNoraCostPerRuneType[DataElement.ElementType.SPELL] = bgs.TotalNoraCostPerRuneType[DataElement.ElementType.SPELL] / (float)bg.Spells.Count;
-
-                // calc relic cost
-                foreach (var r in bg.Relics)
-                {
-                    if (!db.Relics.ContainsKey(r))
-                        continue;
-
-                    bgs.TotalNoraCostPerRuneType[DataElement.ElementType.RELIC] += db.Relics[r].NoraCost;
-                }
-
-                if(bg.Relics.Count != 0)
-                    bgs.AverageNoraCostPerRuneType[DataElement.ElementType.RELIC] = bgs.TotalNoraCostPerRuneType[DataElement.ElementType.RELIC] / (float)bg.Relics.Count;
-
-                // calc equipment cost
-                foreach (var e in bg.Equipments)
-                {
-                    if (!db.Equipments.ContainsKey(e))
-                        continue;
-
-                    bgs.TotalNoraCostPerRuneType[DataElement.ElementType.EQUIPMENT] += db.Equipments[e].NoraCost;
-                }
-
-                if(bg.Equipments.Count != 0)
-                    bgs.AverageNoraCostPerRuneType[DataElement.ElementType.EQUIPMENT] = bgs.TotalNoraCostPerRuneType[DataElement.ElementType.EQUIPMENT] / (float)bg.Equipments.Count;*/
             }
 
             // calculate average champion stats
@@ -607,6 +625,13 @@ namespace poxnora_search_engine
         void SetChartMode(BGStatsChartType type)
         {
             ChartType = type;
+            bool is_histogram = (RadioHistogram.Checked);
+
+            PanelHistogramElements.Hide();
+            PanelChartMode.Hide();
+            ChartStatHistogram.Hide();
+            RadioHistogram.Text = "Histogram";
+            RadioList.Text = "List";
 
             switch (type)
             {
@@ -615,7 +640,10 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
                             BGStats.ChampionStatDataInt.Add(c.Damage);
                         }
@@ -626,13 +654,24 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
                         ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Damage";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                        }
+                        else
+                        {
+                            foreach(int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
                         }
                     }
                     break;
@@ -641,7 +680,10 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
                             BGStats.ChampionStatDataInt.Add(c.Speed);
                         }
@@ -652,13 +694,24 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
                         ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Speed";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                        }
+                        else
+                        {
+                            foreach (int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
                         }
                     }
                     break;
@@ -667,7 +720,10 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
                             BGStats.ChampionStatDataInt.Add(c.MinRNG);
                         }
@@ -678,16 +734,27 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
                         ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Min RNG";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                            // fix for range 1
+                            ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "1";
                         }
-                        // fix for range 1
-                        ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "1";
+                        else
+                        {
+                            foreach (int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
+                        }
                     }
                     break;
                 case BGStatsChartType.MAXRANGE:
@@ -695,7 +762,10 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
                             BGStats.ChampionStatDataInt.Add(c.MaxRNG);
                         }
@@ -706,16 +776,28 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
                         ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Max RNG";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                            // fix for range 1
+                            ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "1";
                         }
-                        // fix for range 1
-                        ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "1";
+                        else
+                        {
+                            foreach (int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
+                        }
                     }
                     break;
                 case BGStatsChartType.COMPOUNDRANGE:
@@ -723,9 +805,12 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
-                            for(int j = c.MinRNG; j <= c.MaxRNG; j++)
+                            for (int j = c.MinRNG; j <= c.MaxRNG; j++)
                                 BGStats.ChampionStatDataInt.Add(j);
                         }
 
@@ -745,6 +830,7 @@ namespace poxnora_search_engine
                         }
                         // fix for range 1
                         ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "1";
+
                     }
                     break;
                 case BGStatsChartType.DEFENSE:
@@ -752,7 +838,10 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
                             BGStats.ChampionStatDataInt.Add(c.Defense);
                         }
@@ -763,16 +852,28 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
                         ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Defense";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                            // fix for range 1
+                            ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "0";
                         }
-                        // fix for DEF 0
-                        ChartStatHistogram.Series["Values"].Points[0].AxisLabel = "0";
+                        else
+                        {
+                            foreach (int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
+                        }
                     }
                     break;
                 case BGStatsChartType.HEALTH:
@@ -780,7 +881,10 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
 
                             BGStats.ChampionStatDataInt.Add(c.HitPoints);
                         }
@@ -791,13 +895,24 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
                         ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Hit points";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                        }
+                        else
+                        {
+                            foreach (int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
                         }
                     }
                     break;
@@ -806,7 +921,11 @@ namespace poxnora_search_engine
                         BGStats.ChampionStatDataInt.Clear();
                         for (int i = 0; i < BG.Champions.Count; i++)
                         {
-                            Champion c = (Champion)(BG.GetRune(Program.database, i));
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
+
                             int nora_cost = c.BaseNoraCost;
                             foreach (var ab in c.BaseAbilities_refs)
                                 nora_cost += ab.NoraCost;
@@ -825,12 +944,173 @@ namespace poxnora_search_engine
 
                         BGStats.ChampionStatDataInt.Update();
 
+                        PanelChartMode.Show();
+                        ChartStatHistogram.Show();
                         ChartStatHistogram.Series["Values"].Points.Clear();
                         ChartStatHistogram.Series["Values"].LegendText = "Nora cost";
 
-                        for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                        if (is_histogram)
                         {
-                            ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            for (int i = 0; i < BGStats.ChampionStatDataInt.GetColumnCount(); i++)
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddXY(BGStats.ChampionStatDataInt.GetColumnLabel(i), BGStats.ChampionStatDataInt.GetColumnValue(i));
+                            }
+                        }
+                        else
+                        {
+                            foreach (int val in BGStats.ChampionStatDataInt.GetValues())
+                            {
+                                ChartStatHistogram.Series["Values"].Points.AddY(val);
+                            }
+                        }
+                    }
+                    break;
+                case BGStatsChartType.ABILITIES:
+                {
+                    BGStats.ChampionStatDataAbility.Clear();
+                    for (int i = 0; i < BG.Champions.Count; i++)
+                    {
+                        Rune r = BG.GetRune(Program.database, i);
+                        if (r == null)
+                            continue;
+                        Champion c = (Champion)r;
+                        ChampionBG cbg = BG.Champions[i];
+
+                        foreach (var ab in c.BaseAbilities_refs)
+                            BGStats.ChampionStatDataAbility.Add(ab);
+                        BGStats.ChampionStatDataAbility.Add(Program.database.Abilities[cbg.Ability1]);
+                        BGStats.ChampionStatDataAbility.Add(Program.database.Abilities[cbg.Ability2]);
+                    }
+
+                    PanelChartMode.Show();
+                    RadioHistogram.Text = "Sort by name";
+                    RadioList.Text = "Sort by count";
+
+                    PanelHistogramElements.Show();
+                    PanelHistogramElements.Location = ChartStatHistogram.Location;
+                    foreach (var control in PanelHistogramElements.Controls)
+                    {
+                        if (control is AbilityControl_Histogram)
+                            Program.image_cache.RemoveAbilityImageSubscriber((AbilityControl_Histogram)control);
+                    }
+                    PanelHistogramElements.Controls.Clear();
+
+                    int label_width = 200;
+                    int label_height = 38;
+                    int label_row_count = PanelHistogramElements.Height / label_height;
+                    int label_row = 0;
+                    int label_col = 0;
+                    foreach (var ab in BGStats.ChampionStatDataAbility.GetKeyList(RadioList.Checked))
+                    {
+                        AbilityControl_Histogram ach = new AbilityControl_Histogram();
+                        PanelHistogramElements.Controls.Add(ach);
+                        ach.LabelAbilityNum.Text = BGStats.ChampionStatDataAbility.GetKeyValue(ab).ToString() + "x";
+                        ach.LabelAbilityName.Text = ab.ToString();
+                        Program.image_cache.AddAbilityImageSubscriber(ab.IconName, ach);
+                        ach.Location = new Point(label_col * label_width, label_row * label_height);
+
+                        label_row++;
+                        if (label_row == label_row_count)
+                        {
+                            label_row = 0;
+                            label_col += 1;
+                        }
+                    }
+                }
+                break;
+                case BGStatsChartType.CLASSES:
+                    {
+                        BGStats.ChampionStatDataString.Clear();
+                        for (int i = 0; i < BG.Champions.Count; i++)
+                        {
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
+
+                            foreach (var cl in c.Class)
+                                BGStats.ChampionStatDataString.Add(cl);
+                        }
+
+                        PanelHistogramElements.Show();
+                        PanelHistogramElements.Location = ChartStatHistogram.Location;
+                        foreach (var control in PanelHistogramElements.Controls)
+                        {
+                            if (control is AbilityControl)
+                                Program.image_cache.RemoveAbilityImageSubscriber((AbilityControl)control);
+                        }
+                        PanelHistogramElements.Controls.Clear();
+
+                        int label_width = 150;
+                        int label_height = 16;
+                        int label_row_count = PanelHistogramElements.Height / label_height;
+                        int label_row = 0;
+                        int label_col = 0;
+                        foreach (var cl in BGStats.ChampionStatDataString.GetKeyList())
+                        {
+                            Label lb_class = new Label();
+                            PanelHistogramElements.Controls.Add(lb_class);
+                            lb_class.AutoSize = false;
+                            lb_class.Width = label_width;
+                            lb_class.Height = label_height;
+                            lb_class.Font = new Font("Arial", 10);
+                            lb_class.Location = new Point(label_col * label_width, label_row * label_height);
+                            lb_class.Text = string.Format("{0}x {1}", BGStats.ChampionStatDataString.GetKeyValue(cl), cl);
+
+                            label_row++;
+                            if (label_row == label_row_count)
+                            {
+                                label_row = 0;
+                                label_col += 1;
+                            }
+                        }
+                    }
+                    break;
+                case BGStatsChartType.RACES:
+                    {
+                        BGStats.ChampionStatDataString.Clear();
+                        for(int i = 0; i < BG.Champions.Count; i++)
+                        {
+                            Rune r = BG.GetRune(Program.database, i);
+                            if (r == null)
+                                continue;
+                            Champion c = (Champion)r;
+
+                            foreach (var race in c.Race)
+                                BGStats.ChampionStatDataString.Add(race);
+                        }
+
+                        PanelHistogramElements.Show();
+                        PanelHistogramElements.Location = ChartStatHistogram.Location;
+                        foreach(var control in PanelHistogramElements.Controls)
+                        {
+                            if (control is AbilityControl)
+                                Program.image_cache.RemoveAbilityImageSubscriber((AbilityControl)control);
+                        }
+                        PanelHistogramElements.Controls.Clear();
+
+                        int label_width = 150;
+                        int label_height = 16;
+                        int label_row_count = PanelHistogramElements.Height / label_height;
+                        int label_row = 0;
+                        int label_col = 0;
+                        foreach(var race in BGStats.ChampionStatDataString.GetKeyList())
+                        {
+                            Label lb_race = new Label();
+                            PanelHistogramElements.Controls.Add(lb_race);
+                            lb_race.AutoSize = false;
+                            lb_race.Width = label_width;
+                            lb_race.Height = label_height;
+                            lb_race.Font = new Font("Arial", 10);
+                            lb_race.Location = new Point(label_col * label_width, label_row * label_height);
+                            lb_race.Text = string.Format("{0}x {1}", BGStats.ChampionStatDataString.GetKeyValue(race), race);
+
+                            label_row++;
+                            if(label_row == label_row_count)
+                            {
+                                label_row = 0;
+                                label_col += 1;
+                            }
                         }
                     }
                     break;
@@ -901,7 +1181,7 @@ namespace poxnora_search_engine
                     {
                         foreach (var kv in db.Champions)
                         {
-                            if ((filter == null) || (filter.Satisfies(kv.Value))) 
+                            if ((filter == null) || (!SlideIn_DatabaseFilter.ApplyFilters) || (filter.Satisfies(kv.Value)))
                             {
                                 RuneList.Add(kv.Key);
                             }
@@ -912,7 +1192,7 @@ namespace poxnora_search_engine
                     {
                         foreach (var kv in db.Spells)
                         {
-                            if ((filter == null) || (filter.Satisfies(kv.Value)))
+                            if ((filter == null) || (!SlideIn_DatabaseFilter.ApplyFilters) || (filter.Satisfies(kv.Value)))
                             {
                                 RuneList.Add(kv.Key);
                             }
@@ -923,7 +1203,7 @@ namespace poxnora_search_engine
                     {
                         foreach (var kv in db.Relics)
                         {
-                            if ((filter == null) || (filter.Satisfies(kv.Value)))
+                            if ((filter == null) || (!SlideIn_DatabaseFilter.ApplyFilters) || (filter.Satisfies(kv.Value)))
                             {
                                 RuneList.Add(kv.Key);
                             }
@@ -934,7 +1214,7 @@ namespace poxnora_search_engine
                     {
                         foreach (var kv in db.Equipments)
                         {
-                            if ((filter == null) || (filter.Satisfies(kv.Value)))
+                            if ((filter == null) || (!SlideIn_DatabaseFilter.ApplyFilters) || (filter.Satisfies(kv.Value)))
                             {
                                 RuneList.Add(kv.Key);
                             }
@@ -1079,7 +1359,6 @@ namespace poxnora_search_engine
 
             SlideIn_DatabaseFilter.Hide();
             ButtonToggleFilter.Location = new Point(SlideIn_DatabaseFilter.Location.X, ButtonToggleFilter.Location.Y);
-            PanelRuneBrowserSettings.Location = new Point(ButtonQuickFilter.Location.X + ButtonQuickFilter.Width + 6, PanelRuneBrowserSettings.Location.Y);
             PanelRuneIcons.Location = new Point(ButtonToggleFilter.Location.X + ButtonToggleFilter.Width + 3, PanelRuneIcons.Location.Y);
             PanelRuneIcons.Width = PageRuneBrowser.Width - ButtonToggleFilter.Width - 12;
             CalculateRunePreviewPageSize();
@@ -1097,7 +1376,6 @@ namespace poxnora_search_engine
 
             SlideIn_DatabaseFilter.Show();
             ButtonToggleFilter.Location = new Point(SlideIn_DatabaseFilter.Location.X + SlideIn_DatabaseFilter.Width + 3, ButtonToggleFilter.Location.Y);
-            PanelRuneBrowserSettings.Location = new Point(ButtonQuickFilter.Location.X + ButtonQuickFilter.Width + 6, PanelRuneBrowserSettings.Location.Y);
             PanelRuneIcons.Location = new Point(ButtonToggleFilter.Location.X + ButtonToggleFilter.Width + 3, PanelRuneIcons.Location.Y);
             PanelRuneIcons.Width = PageRuneBrowser.Width - 15 - SlideIn_DatabaseFilter.Width - ButtonToggleFilter.Width;
             CalculateRunePreviewPageSize();
@@ -1148,6 +1426,7 @@ namespace poxnora_search_engine
                 return;
             }
 
+            Log.Info(Log.LogSource.BGBuilder, "Adding rune " + r.ToString());
             // 2. place the rune in the BG and determine where to place it in BG panel
             int rune_panel_index = 0;
             bool placed_rune = false;
@@ -1304,8 +1583,7 @@ namespace poxnora_search_engine
                         }
                     }
 
-                    RuneDescription.ShowAbilitySelection(u1_index, u2_index);
-                    RuneDescription.SetChampionRune((Champion)r);
+                    RuneDescription.SetChampionRune((Champion)r, u1_index, u2_index);
                 }
                 else if (r is Spell)
                     RuneDescription.SetSpellRune((Spell)r);
@@ -1506,8 +1784,63 @@ namespace poxnora_search_engine
             return Convert.ToBase64String(bg_data);
         }
 
+        private string GetBGText(BattleGroup bg)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            Dictionary<string, int> ChampionNames = new Dictionary<string, int>();
+            Dictionary<string, int> SpellNames = new Dictionary<string, int>();
+            Dictionary<string, int> RelicNames = new Dictionary<string, int>();
+            Dictionary<string, int> EquipmentNames = new Dictionary<string, int>();
+
+            int rune_index = 0;
+            string cur_name = "";
+            for (int i = 0; i < BG.GetRuneCount(); i++)
+            {
+                Rune r = BG.GetRune(Program.database, i + rune_index);
+                if (r == null)
+                    cur_name = "<missing>";
+                else
+                    cur_name = r.Name;
+
+                Dictionary<string, int> cur_dict = ChampionNames;
+                if (i >= BG.Champions.Count)
+                    cur_dict = SpellNames;
+                if (i >= BG.Champions.Count + BG.Spells.Count)
+                    cur_dict = RelicNames;
+                if (i >= BG.Champions.Count + BG.Spells.Count + BG.Relics.Count)
+                    cur_dict = EquipmentNames;
+
+                if (!cur_dict.ContainsKey(cur_name))
+                    cur_dict.Add(cur_name, 0);
+
+                cur_dict[cur_name] += 1;
+            }
+
+            List<string> lines = new List<string>();
+
+            foreach (var dict in new Dictionary<string, int>[] { ChampionNames, SpellNames, RelicNames, EquipmentNames })
+            {
+                lines.Clear();
+                foreach (var kv in dict)
+                    lines.Add(string.Format("{0}x {1}", kv.Value, kv.Key));
+                lines.Sort();
+                foreach (var l in lines)
+                    sb.AppendLine(l);
+
+                if(dict != EquipmentNames)
+                    sb.AppendLine("");
+            }
+
+            return sb.ToString();
+        }
+
         private void BattlegroupBuilder_Load(object sender, EventArgs e)
         {
+            Log.Info(Log.LogSource.BGBuilder, "BattlegroupBuilder_Load called");
+
+            Program.database.Plugin_RuneGroups.Load();
+
             // generate available faction names list
             FactionToName = Program.database.Factions.AllowedStrings.ToList();
             FactionToName.Sort();
@@ -1562,11 +1895,12 @@ namespace poxnora_search_engine
                 return;
             }
 
+            Log.Info(Log.LogSource.BGBuilder, "Loading BG [code: " + TextboxBGBCode.Text + "]");
+
             // update battlegroup
             BG = bg;
             SortBattlegroup(Program.database, BG);
             ParseBattlegroupRanked(Program.database, BG, BGStats);
-
 
             // update UI
             SetPanelBG(Program.database, BG);
@@ -1583,7 +1917,9 @@ namespace poxnora_search_engine
 
         private void ButtonGenerateCode_Click(object sender, EventArgs e)
         {
+            Log.Info(Log.LogSource.BGBuilder, "Generating BG code");
             Clipboard.SetText(GetBGCode(BG));
+            StatusText.Text = "BG code copied to clipboard";
         }
 
         // when BG rune is clicked
@@ -1593,6 +1929,8 @@ namespace poxnora_search_engine
 
             if (e.Button == MouseButtons.Right)
             {
+
+                Log.Info(Log.LogSource.BGBuilder, "Removing rune " + ((RunePreviewControl)(((PictureBox)sender).Parent)).LabelText.Text);
                 RemoveBGRune(Program.database, BG, BGStats, id);
             }
             else if(e.Button == MouseButtons.Left)
@@ -1618,7 +1956,9 @@ namespace poxnora_search_engine
                     case DataElement.ElementType.CHAMPION:
                         {
                             if (Program.database.Champions.ContainsKey(id))
-                                RuneDescription.SetChampionRune(Program.database.Champions[id]);
+                                RuneDescription.SetChampionRune(Program.database.Champions[id],
+                                    Program.database.Champions[id].DefaultUpgrade1Index,
+                                    Program.database.Champions[id].DefaultUpgrade2Index);
                         }
                         break;
                     case DataElement.ElementType.SPELL:
@@ -1703,6 +2043,8 @@ namespace poxnora_search_engine
 
         private void BattlegroupBuilder_FormClosed(object sender, FormClosedEventArgs e)
         {
+            Log.Info(Log.LogSource.BGBuilder, "BattlegroupBuilder_FormClosed called");
+
             Program.image_cache.RuneImageSubscribers.Remove(RuneDescription);
             Program.image_cache.BreakRunePreviewDownload();
         }
@@ -1743,6 +2085,8 @@ namespace poxnora_search_engine
 
         private void newBGToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Log.Info(Log.LogSource.BGBuilder, "Clearing BG");
+
             TextboxBGBCode.Text = "";
             BG = new BattleGroup();
             BGStats = new BattleGroupStats();
@@ -1771,6 +2115,7 @@ namespace poxnora_search_engine
 
             if(load.SelectedName != "")
             {
+                Log.Info(Log.LogSource.BGBuilder, "Loading BG from file [code: " + load.SelectedCode + "]");
                 OpenedBattlegroup = load.SelectedName;
                 TextboxBGBCode.Text = load.SelectedCode;
             }
@@ -1782,6 +2127,7 @@ namespace poxnora_search_engine
             save.SelectedName = OpenedBattlegroup;
             save.SelectedCode = GetBGCode(BG);
 
+            Log.Info(Log.LogSource.BGBuilder, "Saving BG to file");
             save.ShowDialog();
         }
 
@@ -1807,6 +2153,77 @@ namespace poxnora_search_engine
                 return;
 
             SetChartMode((BGStatsChartType)(ComboChartMode.SelectedIndex));
+        }
+
+
+        private void BattlegroupBuilder_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (RunePageCount == 0)
+                return;
+
+            if(e.Delta > 0)
+            {
+                RuneCurrentPage -= 1;
+                if (RuneCurrentPage < 0)
+                    RuneCurrentPage += RunePageCount;
+            }
+            else if(e.Delta < 0)
+            {
+                RuneCurrentPage += 1;
+                if (RuneCurrentPage >= RunePageCount)
+                    RuneCurrentPage -= RunePageCount;
+            }
+
+            DisplayRunePage(Program.database, RuneCurrentPage);
+        }
+
+        private void ButtonGenerateBGText_Click(object sender, EventArgs e)
+        {
+            Clipboard.SetText(GetBGText(BG));
+            StatusText.Text = "BG text copied to clipboard";
+        }
+
+        private void RadioHistogram_CheckedChanged(object sender, EventArgs e)
+        {
+            if(RadioHistogram.Checked)
+                SetChartMode(ChartType);
+        }
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if(RadioList.Checked)
+                SetChartMode(ChartType);
+        }
+
+        private void BattlegroupBuilder_Resize(object sender, EventArgs e)
+        {
+            PanelBGShare.Width = this.Width - 14;
+            ButtonGenerateCode.Location = new Point(PanelBGShare.Width - ButtonGenerateCode.Width - 3, ButtonGenerateCode.Location.Y);
+            ButtonGenerateBGText.Location = new Point(ButtonGenerateCode.Location.X - ButtonGenerateBGText.Width - 16, ButtonGenerateCode.Location.Y);
+            TextboxBGBCode.Width = this.Width - 377;
+
+            RuneDescription.Location = new Point(PanelBGShare.Width - RuneDescription.Width - 5, RuneDescription.Location.Y);
+            RuneDescription.SetHeight(this.Height - 127);
+
+            PanelRuneList.Location = new Point((PanelBGShare.Width - PanelRuneList.Width - 293) / 2, PanelRuneList.Location.Y);
+            PanelBaseStats.Location = new Point(PanelRuneList.Location.X, PanelBaseStats.Location.Y);
+
+            PageContainer.Size = new Size(this.Width - 309, this.Height - 399);
+
+            ButtonToggleFilter.Height = PageContainer.Height - 41 - 29;
+            PanelRuneIcons.Size = new Size(PageContainer.Width - 8 - ButtonToggleFilter.Location.X - ButtonToggleFilter.Width - 6, ButtonToggleFilter.Height);
+            PanelRunePageSettings.Width = PageContainer.Width - 8 - 15;
+            PanelRunePageSettings.Location = new Point(6, PageContainer.Height - PanelRunePageSettings.Height - 4 - 29);
+            PanelRunePageSelection.Location = new Point(PanelRunePageSettings.Width - PanelRunePageSelection.Width, 0);
+            CalculateRunePreviewPageSize();
+            DisplayRunePage(Program.database, 0);
+
+            PanelHistogramElements.Width = PageContainer.Width - 8 - 9;
+            PanelHistogramElements.Height = PageContainer.Height - PanelHistogramElements.Location.Y - 6 - 29; ;  // 29   // 8
+            SetChartMode(ChartType);
+
+            ListBoxBGErrorLog.Size = new Size(PageContainer.Width - 8 - 6, PageContainer.Height - 29 - 6);
+            ListBoxBGErrorLog.Location = new Point(3, 3);
         }
     }
 }

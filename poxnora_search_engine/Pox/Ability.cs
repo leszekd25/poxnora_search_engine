@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace poxnora_search_engine.Pox
 {
-    public class Ability: DataElement
+    public class Ability: DataElement, IEquatable<Ability>, IComparable<Ability>
     {
         public int APCost;
         public int ActivationType;
@@ -62,6 +62,28 @@ namespace poxnora_search_engine.Pox
                 return false;
 
             return base.Equals((DataElement)o);
+        }
+
+        public bool Equals(Ability other)
+        {
+            if (APCost != other.APCost)
+                return false;
+            if (ActivationType != other.ActivationType)
+                return false;
+            if (Level != other.Level)
+                return false;
+            if (Cooldown != other.Cooldown)
+                return false;
+            if (IconName != other.IconName)
+                return false;
+
+            return base.Equals((DataElement)other);
+        }
+
+        // for sorting
+        public int CompareTo(Ability comparePart)
+        {
+            return ToString().CompareTo(comparePart.ToString());
         }
     }
 }

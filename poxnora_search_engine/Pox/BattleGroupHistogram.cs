@@ -185,16 +185,27 @@ namespace poxnora_search_engine.Pox
         }
     }
 
-    public class BattleGroupHistogramString
+    public struct HistogramSortValue<T>: IComparable<HistogramSortValue<T>>
     {
-        public Dictionary<string, int> DataCount = new Dictionary<string, int>();
+        public T key;
+        public int value;
+
+        public int CompareTo(HistogramSortValue<T> other)
+        {
+            return value.CompareTo(other.value);
+        }
+    }
+
+    public class BattleGroupHistogram<T> where T: IComparable<T>, IEquatable<T>
+    {
+        public Dictionary<T, int> DataCount = new Dictionary<T, int>();
 
         public void Clear()
         {
             DataCount.Clear();
         }
 
-        public void Add(string key)
+        public void Add(T key)
         {
             if (!DataCount.ContainsKey(key))
                 DataCount.Add(key, 0);
@@ -202,7 +213,7 @@ namespace poxnora_search_engine.Pox
             DataCount[key] += 1;
         }
 
-        public void Remove(string key)
+        public void Remove(T key)
         {
             if (DataCount.ContainsKey(key))
             {
@@ -214,15 +225,35 @@ namespace poxnora_search_engine.Pox
             }
         }
 
-        public List<string> GetKeyList()
+        public List<T> GetKeyList(bool sort_by_value = false)
         {
-            List<string> keys = DataCount.Keys.ToList();
-            keys.Sort();
+            if (!sort_by_value)
+            {
+                List<T> keys = DataCount.Keys.ToList();
+                keys.Sort();
 
-            return keys;
+                return keys;
+            }
+            else
+            {
+                List<HistogramSortValue<T>> hsv_list = new List<HistogramSortValue<T>>();
+                foreach(var kv in DataCount)
+                {
+                    hsv_list.Add(new HistogramSortValue<T>() { key = kv.Key, value = kv.Value });
+                }
+                hsv_list.Sort();
+
+                List<T> ret = new List<T>();
+                for(int i = hsv_list.Count-1; i>= 0; i--)
+                {
+                    ret.Add(hsv_list[i].key);
+                }
+
+                return ret;
+            }
         }
 
-        public int GetKeyValue(string key)
+        public int GetKeyValue(T key)
         {
             if (!DataCount.ContainsKey(key))
                 return 0;

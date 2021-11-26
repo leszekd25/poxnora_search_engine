@@ -902,7 +902,7 @@ namespace poxnora_search_engine
                                     PanelRunePreviews.Controls.Add(rpc);
                                 }
                                 rpc.ElemID = Program.database.Abilities[ability].ID;
-                                rpc.LabelText.Text = Program.database.Abilities[ability].Name;
+                                rpc.LabelText.Text = Program.database.Abilities[ability].ToString();
                                 elems.Add(Program.database.Abilities[ability].IconName);
                                 total += 1;
                             }
@@ -1107,7 +1107,9 @@ namespace poxnora_search_engine
                 switch (ViewType)
                 {
                     case Pox.DataElement.ElementType.CHAMPION:
-                        RuneDescription.SetChampionRune(Program.database.Champions[id]);
+                        RuneDescription.SetChampionRune(Program.database.Champions[id],
+                                    Program.database.Champions[id].DefaultUpgrade1Index,
+                                    Program.database.Champions[id].DefaultUpgrade2Index);
                         if (ChampionBuilder_form != null)
                             ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
                         break;
@@ -1138,7 +1140,9 @@ namespace poxnora_search_engine
             switch (ViewType)
             {
                 case Pox.DataElement.ElementType.CHAMPION:
-                    RuneDescription.SetChampionRune(Program.database.Champions[id]);
+                    RuneDescription.SetChampionRune(Program.database.Champions[id],
+                                    Program.database.Champions[id].DefaultUpgrade1Index,
+                                    Program.database.Champions[id].DefaultUpgrade2Index);
                     if (ChampionBuilder_form != null)
                         ChampionBuilder_form.external_SetChampionTemplate(Program.database.Champions[id].Name);
                     break;

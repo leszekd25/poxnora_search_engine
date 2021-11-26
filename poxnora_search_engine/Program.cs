@@ -23,14 +23,14 @@ namespace poxnora_search_engine
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            //try
-            //{
+            try
+            {
                 main_form = new MainForm();
                 Log.Info(Log.LogSource.Main, "Program.Main(): form created");
                 Application.Run(main_form);
 
                 main_form = null;
-            /*}
+            }
             catch(Exception e)
             {
                 Log.Error(Log.LogSource.Main, "Program.Main(): Uncaught exception! Exception info:\r\n" + e.Message);
@@ -39,7 +39,7 @@ namespace poxnora_search_engine
             {
                 Log.Info(Log.LogSource.Main, "Program.Main(): Saving log");
                 Log.SaveLog("UserLog.txt");
-            }*/
+            }
         }
     }
 }

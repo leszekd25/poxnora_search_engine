@@ -89,5 +89,27 @@ namespace poxnora_search_engine.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #CHAMPIONS
+        ///313, 1427, 1872 - Angel of Chaos (2x)
+        ///482, 1462, 1870 - Angel of Death (2x)
+        ///485, 1464, 1866 - Angel of Nourishment (2x)
+        ///480, 1459, 1871 - Angel of Pain (2x)
+        ///486, 1465, 1867 - Angel of Perseverance (2x)
+        ///484, 1463, 1868 - Angel of Protection (2x)
+        ///483, 1462, 1869 - Angel of Restoration (2x)
+        ///481, 1460, 1873 - Angel of War (2x)
+        ///295, 1025 - Spirit Singer (2x)
+        ///861, 894 - Ash the Bandit Prince (1x)
+        ///2, 143 - Avenging Angel (2x)
+        ///841, 1552 - Barbarian Huntress (2x)
+        ///975, 1859 - Azaren the Shephe [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string RuneGroups {
+            get {
+                return ResourceManager.GetString("RuneGroups", resourceCulture);
+            }
+        }
     }
 }

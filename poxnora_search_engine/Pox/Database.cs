@@ -108,6 +108,8 @@ namespace poxnora_search_engine.Pox
         public StringLibrary Expansions { get; } = new StringLibrary();
         public StringLibrary AbilityNames { get; } = new StringLibrary();
 
+        public DBPlugin_RuneGroups Plugin_RuneGroups { get; } = new DBPlugin_RuneGroups();      // loaded separately by BG builder
+
         public bool loading { get; private set; } = false;
         public bool ready { get; private set; } = false;
         public bool main_only { get; private set; } = false;
@@ -815,6 +817,8 @@ namespace poxnora_search_engine.Pox
             Rarities.Clear();
             Expansions.Clear();
             AbilityNames.Clear();
+
+            Plugin_RuneGroups.Unload();
 
             ready = false;
             loading = false;

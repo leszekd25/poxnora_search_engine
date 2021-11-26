@@ -829,7 +829,9 @@ namespace poxnora_search_engine
             switch (link.ElemType)
             {
                 case Pox.DataElement.ElementType.CHAMPION:
-                    RuneDescription.SetChampionRune(RuneDescription.database_ref.Champions[elem.ID]);
+                    RuneDescription.SetChampionRune(RuneDescription.database_ref.Champions[elem.ID],
+                        RuneDescription.database_ref.Champions[elem.ID].DefaultUpgrade1Index,
+                        RuneDescription.database_ref.Champions[elem.ID].DefaultUpgrade2Index);
                     break;
                 case Pox.DataElement.ElementType.ABILITY:
                     RuneDescription.SetAbility(RuneDescription.database_ref.Abilities[elem.ID]);
