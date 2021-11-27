@@ -228,6 +228,11 @@ namespace poxnora_search_engine
                 }
 
                 Champion c = db.Champions[bg.Champions[i].ChampionID];
+                if (!c.AllowRanked)
+                {
+                    messages.Add(string.Format("{0} is banned from ranked play", c.Name));
+                }
+
                 ChampionBG cua = bg.Champions[i];
 
                 // upgrade 1
@@ -286,6 +291,10 @@ namespace poxnora_search_engine
                     calculate_cost_stats = false;
                     calculate_distribution_stats = false;
                 }
+                else if (!db.Spells[bg.Spells[i]].AllowRanked)
+                {
+                    messages.Add(string.Format("{0} is banned from ranked play", db.Spells[bg.Spells[i]].Name));
+                }
             }
 
             for (int i = 0; i < bg.Relics.Count; i++)
@@ -296,6 +305,10 @@ namespace poxnora_search_engine
                     calculate_cost_stats = false;
                     calculate_distribution_stats = false;
                 }
+                else if (!db.Relics[bg.Relics[i]].AllowRanked)
+                {
+                    messages.Add(string.Format("{0} is banned from ranked play", db.Relics[bg.Relics[i]].Name));
+                }
             }
 
             for (int i = 0; i < bg.Equipments.Count; i++)
@@ -305,6 +318,10 @@ namespace poxnora_search_engine
                     messages.Add(string.Format("Invalid equipment ID: {0}", bg.Equipments[i]));
                     calculate_cost_stats = false;
                     calculate_distribution_stats = false;
+                }
+                else if (!db.Equipments[bg.Equipments[i]].AllowRanked)
+                {
+                    messages.Add(string.Format("{0} is banned from ranked play", db.Equipments[bg.Equipments[i]].Name));
                 }
             }
 
@@ -614,12 +631,11 @@ namespace poxnora_search_engine
                 bgs.NoraShardCostBuy,
                 bgs.NoraShardCostSell);
 
-            LabelChampionCounts.Text = string.Format("{0}\r\n{1}\r\n{2}\r\n{3}\r\n{4}",
+            LabelChampionCounts.Text = string.Format("{0}\r\n{1}\r\n{2}\r\n{3}",
                 bgs.MeleeChampionCount,
                 bgs.HybridRangeChampionCount,
                 bgs.RangedChampionCount,
-                bgs.BigChampionCount,
-                bgs.NoAttackChampionCount);
+                bgs.BigChampionCount);
         }
 
         void SetChartMode(BGStatsChartType type)

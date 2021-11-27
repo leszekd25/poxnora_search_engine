@@ -406,7 +406,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelRuneInfo.SelectionColor = Color.LightGray;
             RTFLabelRuneInfo.SelectionFont = BoldFont;
-            RTFLabelRuneInfo.AppendText(a.Name + "\r\n");
+            RTFLabelRuneInfo.AppendText(a.ToString() + "\r\n");
 
             RTFLabelDescription.Show();
 
