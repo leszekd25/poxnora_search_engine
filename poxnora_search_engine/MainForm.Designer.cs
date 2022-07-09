@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.MainMenu = new System.Windows.Forms.MenuStrip();
             this.viewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.displayColumnsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -71,6 +73,16 @@
             this.aPCostToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.levelToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cooldownToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.assetIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.prerequisiteIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.revisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.classNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.activationTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.activatedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resettableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rankedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.useCountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.spellsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.iDToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
             this.nameToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
@@ -525,7 +537,17 @@
             this.noraCostToolStripMenuItem1,
             this.aPCostToolStripMenuItem,
             this.levelToolStripMenuItem,
-            this.cooldownToolStripMenuItem});
+            this.cooldownToolStripMenuItem,
+            this.assetIDToolStripMenuItem,
+            this.prerequisiteIDToolStripMenuItem,
+            this.revisionToolStripMenuItem,
+            this.commentsToolStripMenuItem,
+            this.classNameToolStripMenuItem,
+            this.activationTypeToolStripMenuItem,
+            this.activatedToolStripMenuItem,
+            this.resettableToolStripMenuItem,
+            this.rankedToolStripMenuItem,
+            this.useCountToolStripMenuItem});
             this.abilitiesToolStripMenuItem.Name = "abilitiesToolStripMenuItem";
             this.abilitiesToolStripMenuItem.Size = new System.Drawing.Size(137, 22);
             this.abilitiesToolStripMenuItem.Text = "Abilities";
@@ -534,7 +556,7 @@
             // 
             this.iDToolStripMenuItem1.CheckOnClick = true;
             this.iDToolStripMenuItem1.Name = "iDToolStripMenuItem1";
-            this.iDToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.iDToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
             this.iDToolStripMenuItem1.Tag = "ID";
             this.iDToolStripMenuItem1.Text = "ID";
             // 
@@ -544,7 +566,7 @@
             this.nameToolStripMenuItem1.CheckOnClick = true;
             this.nameToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.nameToolStripMenuItem1.Name = "nameToolStripMenuItem1";
-            this.nameToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.nameToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
             this.nameToolStripMenuItem1.Tag = "Name";
             this.nameToolStripMenuItem1.Text = "Name";
             // 
@@ -554,7 +576,7 @@
             this.descriptionToolStripMenuItem1.CheckOnClick = true;
             this.descriptionToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.descriptionToolStripMenuItem1.Name = "descriptionToolStripMenuItem1";
-            this.descriptionToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.descriptionToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
             this.descriptionToolStripMenuItem1.Tag = "Description";
             this.descriptionToolStripMenuItem1.Text = "Description";
             // 
@@ -564,7 +586,7 @@
             this.noraCostToolStripMenuItem1.CheckOnClick = true;
             this.noraCostToolStripMenuItem1.CheckState = System.Windows.Forms.CheckState.Checked;
             this.noraCostToolStripMenuItem1.Name = "noraCostToolStripMenuItem1";
-            this.noraCostToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
+            this.noraCostToolStripMenuItem1.Size = new System.Drawing.Size(154, 22);
             this.noraCostToolStripMenuItem1.Tag = "NoraCost";
             this.noraCostToolStripMenuItem1.Text = "Nora cost";
             // 
@@ -574,7 +596,7 @@
             this.aPCostToolStripMenuItem.CheckOnClick = true;
             this.aPCostToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.aPCostToolStripMenuItem.Name = "aPCostToolStripMenuItem";
-            this.aPCostToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.aPCostToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.aPCostToolStripMenuItem.Tag = "APCost";
             this.aPCostToolStripMenuItem.Text = "AP cost";
             // 
@@ -582,7 +604,7 @@
             // 
             this.levelToolStripMenuItem.CheckOnClick = true;
             this.levelToolStripMenuItem.Name = "levelToolStripMenuItem";
-            this.levelToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.levelToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.levelToolStripMenuItem.Tag = "Level";
             this.levelToolStripMenuItem.Text = "Level";
             // 
@@ -592,9 +614,89 @@
             this.cooldownToolStripMenuItem.CheckOnClick = true;
             this.cooldownToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cooldownToolStripMenuItem.Name = "cooldownToolStripMenuItem";
-            this.cooldownToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.cooldownToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
             this.cooldownToolStripMenuItem.Tag = "Cooldown";
             this.cooldownToolStripMenuItem.Text = "Cooldown";
+            // 
+            // assetIDToolStripMenuItem
+            // 
+            this.assetIDToolStripMenuItem.CheckOnClick = true;
+            this.assetIDToolStripMenuItem.Name = "assetIDToolStripMenuItem";
+            this.assetIDToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.assetIDToolStripMenuItem.Tag = "AssetID";
+            this.assetIDToolStripMenuItem.Text = "Asset ID";
+            // 
+            // prerequisiteIDToolStripMenuItem
+            // 
+            this.prerequisiteIDToolStripMenuItem.CheckOnClick = true;
+            this.prerequisiteIDToolStripMenuItem.Name = "prerequisiteIDToolStripMenuItem";
+            this.prerequisiteIDToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.prerequisiteIDToolStripMenuItem.Tag = "PrerequisiteID";
+            this.prerequisiteIDToolStripMenuItem.Text = "Prerequisite ID";
+            // 
+            // revisionToolStripMenuItem
+            // 
+            this.revisionToolStripMenuItem.CheckOnClick = true;
+            this.revisionToolStripMenuItem.Name = "revisionToolStripMenuItem";
+            this.revisionToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.revisionToolStripMenuItem.Tag = "Revision";
+            this.revisionToolStripMenuItem.Text = "Revision";
+            // 
+            // commentsToolStripMenuItem
+            // 
+            this.commentsToolStripMenuItem.CheckOnClick = true;
+            this.commentsToolStripMenuItem.Name = "commentsToolStripMenuItem";
+            this.commentsToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.commentsToolStripMenuItem.Tag = "Comments";
+            this.commentsToolStripMenuItem.Text = "Comments";
+            // 
+            // classNameToolStripMenuItem
+            // 
+            this.classNameToolStripMenuItem.CheckOnClick = true;
+            this.classNameToolStripMenuItem.Name = "classNameToolStripMenuItem";
+            this.classNameToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.classNameToolStripMenuItem.Tag = "ClassName";
+            this.classNameToolStripMenuItem.Text = "Class name";
+            // 
+            // activationTypeToolStripMenuItem
+            // 
+            this.activationTypeToolStripMenuItem.CheckOnClick = true;
+            this.activationTypeToolStripMenuItem.Name = "activationTypeToolStripMenuItem";
+            this.activationTypeToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.activationTypeToolStripMenuItem.Tag = "ActivationType";
+            this.activationTypeToolStripMenuItem.Text = "Activation type";
+            // 
+            // activatedToolStripMenuItem
+            // 
+            this.activatedToolStripMenuItem.CheckOnClick = true;
+            this.activatedToolStripMenuItem.Name = "activatedToolStripMenuItem";
+            this.activatedToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.activatedToolStripMenuItem.Tag = "Activated";
+            this.activatedToolStripMenuItem.Text = "Activated";
+            // 
+            // resettableToolStripMenuItem
+            // 
+            this.resettableToolStripMenuItem.CheckOnClick = true;
+            this.resettableToolStripMenuItem.Name = "resettableToolStripMenuItem";
+            this.resettableToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.resettableToolStripMenuItem.Tag = "Resettable";
+            this.resettableToolStripMenuItem.Text = "Resettable";
+            // 
+            // rankedToolStripMenuItem
+            // 
+            this.rankedToolStripMenuItem.CheckOnClick = true;
+            this.rankedToolStripMenuItem.Name = "rankedToolStripMenuItem";
+            this.rankedToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.rankedToolStripMenuItem.Tag = "Ranked";
+            this.rankedToolStripMenuItem.Text = "Ranked";
+            // 
+            // useCountToolStripMenuItem
+            // 
+            this.useCountToolStripMenuItem.CheckOnClick = true;
+            this.useCountToolStripMenuItem.Name = "useCountToolStripMenuItem";
+            this.useCountToolStripMenuItem.Size = new System.Drawing.Size(154, 22);
+            this.useCountToolStripMenuItem.Tag = "UseCount";
+            this.useCountToolStripMenuItem.Text = "Use count";
             // 
             // spellsToolStripMenuItem
             // 
@@ -1233,7 +1335,23 @@
             this.GridDataElements.AllowUserToAddRows = false;
             this.GridDataElements.AllowUserToDeleteRows = false;
             this.GridDataElements.AllowUserToOrderColumns = true;
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle1.BackColor = System.Drawing.SystemColors.Control;
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle1.ForeColor = System.Drawing.SystemColors.WindowText;
+            dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle1.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle1.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
+            this.GridDataElements.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle1;
             this.GridDataElements.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            dataGridViewCellStyle2.BackColor = System.Drawing.SystemColors.Window;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            dataGridViewCellStyle2.ForeColor = System.Drawing.SystemColors.ControlText;
+            dataGridViewCellStyle2.SelectionBackColor = System.Drawing.SystemColors.Highlight;
+            dataGridViewCellStyle2.SelectionForeColor = System.Drawing.SystemColors.HighlightText;
+            dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.False;
+            this.GridDataElements.DefaultCellStyle = dataGridViewCellStyle2;
             this.GridDataElements.Location = new System.Drawing.Point(335, 84);
             this.GridDataElements.Name = "GridDataElements";
             this.GridDataElements.ReadOnly = true;
@@ -1582,6 +1700,16 @@
         private System.Windows.Forms.ToolStripMenuItem nameToolStripMenuItem6;
         private System.Windows.Forms.ToolStripMenuItem descriptionToolStripMenuItem6;
         private System.Windows.Forms.Button ButtonQuickFilter;
+        private System.Windows.Forms.ToolStripMenuItem assetIDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem prerequisiteIDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem revisionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem commentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem classNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem activationTypeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem activatedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resettableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rankedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem useCountToolStripMenuItem;
     }
 }
 

@@ -32,6 +32,11 @@ namespace poxnora_search_engine.Pox
         BaseNoraCost = 16,
         PrognosedBaseNoraCost = 17,
         PrognosedBaseNoraCostDifference = 18,
+        AssetID = 19,
+        PrerequisiteID = 20,
+        Revision = 21,
+        ActivationType = 22,
+        UseCount = 23,
 
         // STRING
         Name = 100,
@@ -39,6 +44,8 @@ namespace poxnora_search_engine.Pox
         Artist = 102,
         FlavorText = 103,
         Key = 104,
+        Comments = 105,
+        ClassName = 106,
 
         // ENUMS
         Rarity = 200,
@@ -48,6 +55,9 @@ namespace poxnora_search_engine.Pox
         ForSale = 300,
         Tradeable = 301,
         AllowRanked = 302,
+        Activated = 303,
+        Resettable = 304,
+        Ranked = 305,
 
         // LIST (ENUM)
         Faction = 400,
@@ -68,7 +78,7 @@ namespace poxnora_search_engine.Pox
 
     public class Database
     {
-        public enum DatabaseType { MAIN, CONDITIONS, MECHANICS };
+        public enum DatabaseType { MAIN, CONDITIONS, MECHANICS, ABILITIES };
         public class DatabaseDownloadElement
         {
             public DatabaseType Type;
@@ -85,6 +95,7 @@ namespace poxnora_search_engine.Pox
         public const string POXNORA_JSON_MAIN = "https://www.poxnora.com/api/feed.do?t=json";
         public const string POXNORA_JSON_CONDITIONS_PLUG = "&r=conditions";
         public const string POXNORA_JSON_MECHANICS_PLUG = "&r=mechanics";
+        public const string POXNORA_JSON_ABILITIES = "https://www.poxnora.com/api/abilities";
 
         System.Net.WebClient wc;
         public OnDatabaseReady ready_trigger;
@@ -94,6 +105,7 @@ namespace poxnora_search_engine.Pox
         public Dictionary<int, Champion> Champions { get; } = new Dictionary<int, Champion>();
         public Dictionary<int, Ability> Abilities { get; } = new Dictionary<int, Ability>();
         public Dictionary<string, List<int>> Abilities_similar { get; } = new Dictionary<string, List<int>>();
+        public Dictionary<int, int> AbilityUseCount { get; } = new Dictionary<int, int>();
         public Dictionary<int, Spell> Spells { get; } = new Dictionary<int, Spell>();
         public Dictionary<int, Relic> Relics { get; } = new Dictionary<int, Relic>();
         public Dictionary<int, Equipment> Equipments { get; } = new Dictionary<int, Equipment>();
@@ -118,6 +130,15 @@ namespace poxnora_search_engine.Pox
         // returns if the DB needs to be downloaded
         public DatabaseLoadInfo Load(string local_db, string online_backup, bool main_only)
         {
+            if (!main_only)
+            {
+                DatabaseQueue.Enqueue(new DatabaseDownloadElement()
+                {
+                    FileName = local_db.Replace(".", "_abilities."),
+                    Location = POXNORA_JSON_ABILITIES,
+                    Type = DatabaseType.ABILITIES
+                });
+            }
             DatabaseQueue.Enqueue(new DatabaseDownloadElement() { FileName = local_db, Location = online_backup, Type = DatabaseType.MAIN });
             if (!main_only)
             {
@@ -284,12 +305,22 @@ namespace poxnora_search_engine.Pox
 
             try
             {
+                JToken abilities = json_main.SelectToken("abilities");
+                if(abilities != null)
+                {
+                    foreach (JToken ability in abilities.Children())
+                        AddAbilityFromJSON(ability, true);
+                }
+
+                bool found_abilities = (Abilities.Count != 0);
+
                 JToken champs = json_main.SelectToken("champs");
                 if (champs != null)
                 {
                     foreach (JToken champ in champs.Children())
-                        AddChampionFromJSON(champ);
+                        AddChampionFromJSON(champ, found_abilities);
                 }
+                
 
                 JToken spells = json_main.SelectToken("spells");
                 if (spells != null)
@@ -339,7 +370,7 @@ namespace poxnora_search_engine.Pox
             return true;
         }
 
-        void AddChampionFromJSON(JToken champ)
+        void AddChampionFromJSON(JToken champ, bool parse_abilities)
         {
             Champion c = new Champion();
             c.LoadFromJSON(champ);
@@ -383,18 +414,25 @@ namespace poxnora_search_engine.Pox
                 }
             }
 
-            if(champ.SelectToken("startingAbilities") != null)
+
+            if (champ.SelectToken("startingAbilities") != null)
             {
                 JToken abs = champ.SelectToken("startingAbilities");
                 foreach (JToken ab in abs.Children())
                 {
-                    Ability a = AddAbilityFromJSON(ab);
+                    Ability a = AddAbilityFromJSON(ab, false);
                     if (a != null)
+                    {
                         c.Abilities.Add(a.ID);
+
+                        if (!AbilityUseCount.ContainsKey(a.ID))
+                            AbilityUseCount.Add(a.ID, 0);
+                        AbilityUseCount[a.ID] += 1;
+                    }
                 }
             }
 
-            if(champ.SelectToken("abilitySets") != null)
+            if (champ.SelectToken("abilitySets") != null)
             {
                 JToken absets = champ.SelectToken("abilitySets");
 
@@ -412,9 +450,15 @@ namespace poxnora_search_engine.Pox
                                 if (ab.SelectToken("default").ToObject<bool>())
                                     c.DefaultUpgrade1Index = cur_ab_index;
                             }
-                            Ability a = AddAbilityFromJSON(ab);
+                            Ability a = AddAbilityFromJSON(ab, false);
                             if (a != null)
+                            {
                                 c.Upgrade1.Add(a.ID);
+
+                                if (!AbilityUseCount.ContainsKey(a.ID))
+                                    AbilityUseCount.Add(a.ID, 0);
+                                AbilityUseCount[a.ID] += 1;
+                            }
 
                             cur_ab_index += 1;
                         }
@@ -435,9 +479,15 @@ namespace poxnora_search_engine.Pox
                                 if (ab.SelectToken("default").ToObject<bool>())
                                     c.DefaultUpgrade2Index = cur_ab_index;
                             }
-                            Ability a = AddAbilityFromJSON(ab);
+                            Ability a = AddAbilityFromJSON(ab, false);
                             if (a != null)
+                            {
                                 c.Upgrade2.Add(a.ID);
+
+                                if (!AbilityUseCount.ContainsKey(a.ID))
+                                    AbilityUseCount.Add(a.ID, 0);
+                                AbilityUseCount[a.ID] += 1;
+                            }
 
                             cur_ab_index += 1;
                         }
@@ -479,46 +529,122 @@ namespace poxnora_search_engine.Pox
             Champions.Add(c.ID, c);
         }
 
-        Ability AddAbilityFromJSON(JToken ability)
+        Ability AddAbilityFromJSON(JToken ability, bool full)
         {
-            if (ability.SelectToken("id") == null)
-                return null;
+            Ability a;
+            bool add_new = true;
 
-            if (Abilities.ContainsKey(ability.SelectToken("id").ToObject<int>()))
-                return Abilities[ability.SelectToken("id").ToObject<int>()];
+            if (full)
+            {
+                if (ability.SelectToken("ability_id") == null)
+                    return null;
 
-            Ability a = new Ability();
+                if (Abilities.ContainsKey(ability.SelectToken("ability_id").ToObject<int>()))
+                    return Abilities[ability.SelectToken("ability_id").ToObject<int>()];
 
-            if (ability.SelectToken("id") != null)
-                a.ID = ability.SelectToken("id").ToObject<int>();
+                a = new Ability();
 
-            if (ability.SelectToken("name") != null)
-                a.Name = ability.SelectToken("name").ToObject<string>();
+                if (ability.SelectToken("ability_id") != null)
+                    a.ID = ability.SelectToken("ability_id").ToObject<int>();
 
-            if (ability.SelectToken("shortDescription") != null)
-                a.Description = ability.SelectToken("shortDescription").ToObject<string>();
+                if (ability.SelectToken("name") != null)
+                    a.Name = ability.SelectToken("name").ToObject<string>();
 
-            if (ability.SelectToken("activationType") != null)
-                a.ActivationType = ability.SelectToken("activationType").ToObject<int>();
+                if (ability.SelectToken("short_description") != null)
+                    a.Description = ability.SelectToken("short_description").ToObject<string>();
 
-            if (ability.SelectToken("noraCost") != null)
-                a.NoraCost = ability.SelectToken("noraCost").ToObject<int>();
+                if (ability.SelectToken("activation_type") != null)
+                    a.ActivationType = ability.SelectToken("activation_type").ToObject<int>();
 
-            if (ability.SelectToken("apCost") != null)
-                a.APCost = ability.SelectToken("apCost").ToObject<int>();
+                if (ability.SelectToken("cost") != null)
+                    a.NoraCost = ability.SelectToken("cost").ToObject<int>();
 
-            if (ability.SelectToken("level") != null)
-                a.Level = ability.SelectToken("level").ToObject<int>();
+                if (ability.SelectToken("ap_cost") != null)
+                    a.APCost = ability.SelectToken("ap_cost").ToObject<int>();
 
-            if (ability.SelectToken("cooldown") != null)
-                a.Cooldown = ability.SelectToken("cooldown").ToObject<int>();
+                if (ability.SelectToken("level") != null)
+                    a.Level = ability.SelectToken("level").ToObject<int>();
 
-            if (ability.SelectToken("iconName") != null)
-                a.IconName = ability.SelectToken("iconName").ToObject<string>();
+                if (ability.SelectToken("cooldown") != null)
+                    a.Cooldown = ability.SelectToken("cooldown").ToObject<int>();
+
+                if (ability.SelectToken("icon_name") != null)
+                    a.IconName = ability.SelectToken("icon_name").ToObject<string>();
+
+                if (ability.SelectToken("asset_id") != null)
+                    a.AssetID = ability.SelectToken("asset_id").ToObject<int>();
+
+                if (ability.SelectToken("prerequisite_id") != null)
+                {
+                    if ((int?)(ability.SelectToken("prerequisite_id")) != null)
+                        a.PrerequisiteID = ability.SelectToken("prerequisite_id").ToObject<int>();
+                }
+
+                if (ability.SelectToken("revision") != null)
+                    a.Revision = ability.SelectToken("revision").ToObject<int>();
+
+                if (ability.SelectToken("resettable") != null)
+                    a.Resettable = ability.SelectToken("resettable").ToObject<bool>();
+
+                if (ability.SelectToken("activated") != null)
+                    a.Activated = ability.SelectToken("activated").ToObject<bool>();
+
+                if (ability.SelectToken("ranked") != null)
+                    a.Ranked = ability.SelectToken("ranked").ToObject<bool>();
+
+                if (ability.SelectToken("comments") != null)
+                    a.Comments = ability.SelectToken("comments").ToObject<string>();
+
+                if (ability.SelectToken("class_name") != null)
+                    a.ClassName = ability.SelectToken("class_name").ToObject<string>();
+            }
+            else
+            {
+                if (ability.SelectToken("id") == null)
+                    return null;
+
+                if (Abilities.ContainsKey(ability.SelectToken("id").ToObject<int>()))
+                {
+                    a = Abilities[ability.SelectToken("id").ToObject<int>()];
+                    add_new = false;
+                }
+                else
+                    a = new Ability();
+
+                if (ability.SelectToken("id") != null)
+                    a.ID = ability.SelectToken("id").ToObject<int>();
+
+                if (ability.SelectToken("name") != null)
+                    a.Name = ability.SelectToken("name").ToObject<string>();
+
+                if (ability.SelectToken("shortDescription") != null)
+                    a.Description = ability.SelectToken("shortDescription").ToObject<string>();
+
+                if (ability.SelectToken("activationType") != null)
+                    a.ActivationType = ability.SelectToken("activationType").ToObject<int>();
+
+                if (ability.SelectToken("noraCost") != null)
+                    a.NoraCost = ability.SelectToken("noraCost").ToObject<int>();
+
+                if (ability.SelectToken("apCost") != null)
+                    a.APCost = ability.SelectToken("apCost").ToObject<int>();
+
+                if (ability.SelectToken("level") != null)
+                    a.Level = ability.SelectToken("level").ToObject<int>();
+
+                if (ability.SelectToken("cooldown") != null)
+                    a.Cooldown = ability.SelectToken("cooldown").ToObject<int>();
+
+                if (ability.SelectToken("iconName") != null)
+                    a.IconName = ability.SelectToken("iconName").ToObject<string>();
+            }
 
             a.Description = ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
 
-            Abilities.Add(a.ID, a);
+            if (add_new)
+            {
+                Abilities.Add(a.ID, a);
+            }
             AbilityNames.AllowedStrings.Add(a.ToString());
             return a;
         }
@@ -643,6 +769,49 @@ namespace poxnora_search_engine.Pox
                     Abilities_similar.Add(kv.Value.Name, new List<int>());
 
                 Abilities_similar[kv.Value.Name].Add(kv.Key);
+            }
+        }
+
+        public void RecalculateChampionCosts()
+        {
+            foreach (var c in Champions.Values)
+            {
+                c.NoraCost = c.BaseNoraCost;
+                foreach (var ab in c.BaseAbilities_refs)
+                    c.NoraCost += ab.NoraCost;
+                c.NoraCost += Abilities[c.Upgrade1[c.DefaultUpgrade1Index]].NoraCost;
+                c.NoraCost += Abilities[c.Upgrade2[c.DefaultUpgrade2Index]].NoraCost;
+
+                // set up nora costs
+                c.DefaultNoraCost = c.NoraCost;
+                c.NoraCost -= Abilities[c.Upgrade1[c.DefaultUpgrade1Index]].NoraCost;
+                c.NoraCost -= Abilities[c.Upgrade2[c.DefaultUpgrade2Index]].NoraCost;
+                // find min and max nora cost among upgrade 1 and 2
+                int minupg1 = Abilities[c.Upgrade1[0]].NoraCost;
+                int minupg2 = Abilities[c.Upgrade2[0]].NoraCost;
+                int maxupg1 = Abilities[c.Upgrade1[0]].NoraCost;
+                int maxupg2 = Abilities[c.Upgrade2[0]].NoraCost;
+                for (int i = 1; i < c.Upgrade1.Count; i++)
+                {
+                    if (Abilities[c.Upgrade1[i]].NoraCost < minupg1)
+                        minupg1 = Abilities[c.Upgrade1[i]].NoraCost;
+                    if (Abilities[c.Upgrade1[i]].NoraCost > maxupg1)
+                        maxupg1 = Abilities[c.Upgrade1[i]].NoraCost;
+                }
+                for (int i = 1; i < c.Upgrade2.Count; i++)
+                {
+                    if (Abilities[c.Upgrade2[i]].NoraCost < minupg2)
+                        minupg2 = Abilities[c.Upgrade2[i]].NoraCost;
+                    if (Abilities[c.Upgrade2[i]].NoraCost > maxupg2)
+                        maxupg2 = Abilities[c.Upgrade2[i]].NoraCost;
+                }
+                c.MinNoraCost = c.NoraCost + minupg1 + minupg2;
+                c.MaxNoraCost = c.NoraCost + maxupg1 + maxupg2;
+                // find base cost without ANY abilities
+                int basecost = c.NoraCost;
+                foreach (var ab in c.Abilities)
+                    basecost -= Abilities[ab].NoraCost;
+                c.BaseNoraCost = basecost;
             }
         }
 
@@ -788,6 +957,11 @@ namespace poxnora_search_engine.Pox
             Abilities.Add(0, new Ability() { Name = "<INVALID_ABILITY>" });
 
             ResolveSimilarAbilities();
+
+            foreach(var kv in AbilityUseCount)
+            {
+                Abilities[kv.Key].UseCount = kv.Value;
+            }
 
             Log.Info(Log.LogSource.PoxDB,
                 "Champs loaded: " + Champions.Count + ", Abilities loaded: " + Abilities.Count + ", Spells loaded: " + Spells.Count

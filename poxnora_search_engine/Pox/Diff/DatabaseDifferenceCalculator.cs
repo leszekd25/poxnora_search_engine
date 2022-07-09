@@ -21,14 +21,29 @@ namespace poxnora_search_engine.Pox.Diff
 
         public void LoadDatabases(string previous_database)
         {
-            CurrentDatabase_ref = Program.database;
+            //CurrentDatabase_ref = Program.database;
+            CurrentDatabase_ref = new Database();
+            CurrentDatabase_ref.Load("database.json", "", true);
+
+
+           /* // preliminary db changes
+            CurrentDatabase_ref.Abilities[1].NoraCost = 4;
+            CurrentDatabase_ref.Abilities[1939].NoraCost = 4;
+            CurrentDatabase_ref.Abilities[630].NoraCost = 2;
+            CurrentDatabase_ref.Abilities[1480].NoraCost = 2;
+            CurrentDatabase_ref.RecalculateChampionCosts();
+           */
 
             PreviousDatabase = new Database();
             PreviousDatabase.Load(previous_database, "", true);
 
             ready = (CurrentDatabase_ref.ready && PreviousDatabase.ready);
             if (!ready)
+            {
+                CurrentDatabase_ref = null;
                 PreviousDatabase = null;
+                return;
+            }
         }
 
         public void Calculate()

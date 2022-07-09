@@ -505,6 +505,31 @@ namespace poxnora_search_engine.Pox
             AddFilter("Cooldown", FilterType.INT, DataPath.Cooldown);
         }
 
+        private void assetIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Asset ID", FilterType.INT, DataPath.AssetID);
+        }
+
+        private void prerequisiteIDToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Prerequisite ID", FilterType.INT, DataPath.PrerequisiteID);
+        }
+
+        private void revisionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Revision", FilterType.INT, DataPath.Revision);
+        }
+
+        private void activationTypeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Activation type", FilterType.INT, DataPath.ActivationType);
+        }
+
+        private void useCountToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Use count", FilterType.INT, DataPath.UseCount);
+        }
+
         private void nameToolStripMenuItem5_Click(object sender, EventArgs e)
         {
             AddFilter("Name", FilterType.STRING, DataPath.Name);
@@ -530,6 +555,16 @@ namespace poxnora_search_engine.Pox
             AddFilter("Key", FilterType.STRING, DataPath.Key);
         }
 
+        private void commentsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Comments", FilterType.STRING, DataPath.Comments);
+        }
+
+        private void classNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Class name", FilterType.STRING, DataPath.ClassName);
+        }
+
         private void rarityToolStripMenuItem4_Click(object sender, EventArgs e)
         {
             AddFilter("Rarity", FilterType.RARITY);
@@ -553,6 +588,21 @@ namespace poxnora_search_engine.Pox
         private void allowedInRankedToolStripMenuItem4_Click(object sender, EventArgs e)
         {
             AddFilter("Allowed in ranked", FilterType.BOOLEAN, DataPath.AllowRanked);
+        }
+
+        private void activatedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Activated", FilterType.BOOLEAN, DataPath.Activated);
+        }
+
+        private void resettableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Resettable", FilterType.BOOLEAN, DataPath.Resettable);
+        }
+
+        private void rankedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Ranked", FilterType.BOOLEAN, DataPath.Ranked);
         }
 
         private void factionToolStripMenuItem4_Click(object sender, EventArgs e)

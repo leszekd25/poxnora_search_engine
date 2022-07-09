@@ -1175,7 +1175,7 @@ namespace poxnora_search_engine
             }
 
             // done here as well as in updaterunelist (resizes do not update rune list, but still need to update runepage count
-            if (RuneList.Count == 0)
+            if ((RuneList.Count == 0) || (RunesPerPage == 0))
             {
                 RunePageCount = 0;
             }
@@ -1241,7 +1241,7 @@ namespace poxnora_search_engine
                     break;
             }
 
-            if(RuneList.Count == 0)
+            if((RuneList.Count == 0) || (RunesPerPage == 0))
             {
                 RunePageCount = 0;
             }

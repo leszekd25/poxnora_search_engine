@@ -165,6 +165,7 @@ namespace poxnora_search_engine
         // called when database was loaded
         private void OnDatabaseReady()
         {
+
             Log.Info(Log.LogSource.PoxDB, "MainForm.OnDatabaseReady() called");
 
             RuneDescription.database_ref = Program.database;
@@ -379,9 +380,21 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Description", Name = "Description", ValueType = typeof(string), Visible = descriptionToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Nora cost", Name = "NoraCost", ValueType = typeof(int), Visible = noraCostToolStripMenuItem1.Checked });
 
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "AP cost", Name = "APCost", ValueType = typeof(string), Visible = aPCostToolStripMenuItem.Checked });
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Level", Name = "Level", ValueType = typeof(string), Visible = levelToolStripMenuItem.Checked });
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(string), Visible = cooldownToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "AP cost", Name = "APCost", ValueType = typeof(int), Visible = aPCostToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Level", Name = "Level", ValueType = typeof(int), Visible = levelToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem.Checked });
+
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Activation type", Name = "ActivationType", ValueType = typeof(int), Visible = activationTypeToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Asset ID", Name = "AssetID", ValueType = typeof(int), Visible = assetIDToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prerequisite ID", Name = "PrerequisiteID", ValueType = typeof(string), Visible = prerequisiteIDToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Revision", Name = "Revision", ValueType = typeof(int), Visible = revisionToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Activated", Name = "Activated", ValueType = typeof(bool), Visible = activatedToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Resettable", Name = "Resettable", ValueType = typeof(bool), Visible = resettableToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Ranked", Name = "Ranked", ValueType = typeof(bool), Visible = rankedToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Comments", Name = "Comments", ValueType = typeof(string), Visible = commentsToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Class name", Name = "ClassName", ValueType = typeof(string), Visible = classNameToolStripMenuItem.Checked });
+
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Use count", Name = "UseCount", ValueType = typeof(int), Visible = useCountToolStripMenuItem.Checked });
 
                         break;
                     }
@@ -662,6 +675,18 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["APCost"].Value = a.APCost;
             GridDataElements.Rows[row].Cells["Level"].Value = a.Level;
             GridDataElements.Rows[row].Cells["Cooldown"].Value = a.Cooldown;
+
+            GridDataElements.Rows[row].Cells["ActivationType"].Value = a.ActivationType;
+            GridDataElements.Rows[row].Cells["AssetID"].Value = a.AssetID;
+            GridDataElements.Rows[row].Cells["PrerequisiteID"].Value = (Program.database.Abilities.ContainsKey(a.PrerequisiteID) ? Program.database.Abilities[a.PrerequisiteID].ToString() : "Unknown (ID " + a.PrerequisiteID.ToString() + ")");
+            GridDataElements.Rows[row].Cells["Revision"].Value = a.Revision;
+            GridDataElements.Rows[row].Cells["Activated"].Value = a.Activated;
+            GridDataElements.Rows[row].Cells["Resettable"].Value = a.Resettable;
+            GridDataElements.Rows[row].Cells["Ranked"].Value = a.Ranked;
+            GridDataElements.Rows[row].Cells["Comments"].Value = a.Comments;
+            GridDataElements.Rows[row].Cells["ClassName"].Value = a.ClassName;
+
+            GridDataElements.Rows[row].Cells["UseCount"].Value = a.UseCount;
         }
 
         public void GridAddSpell(Pox.Spell s)

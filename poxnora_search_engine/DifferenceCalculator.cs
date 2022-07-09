@@ -18,6 +18,7 @@ namespace poxnora_search_engine
         TreeNode selected_treenode = null;
         Font ChangeInfoFont = new Font("Arial", 10);
         ChangeListMode changelist_mode = ChangeListMode.CATEGORY;
+        //StringBuilder sb = new StringBuilder();
 
         public DifferenceCalculator()
         {
@@ -443,6 +444,7 @@ namespace poxnora_search_engine
                     diff_link.PreviousElement = diff_calculator.PreviousDatabase.Champions[kv.Key];
                 }
 
+                //sb.AppendLine(diff_link.PreviousElement.ToString());
                 tn.Nodes.Add(new TreeNode() { Text = diff_link.ToString(), Tag = diff_link });
             }
 
@@ -462,6 +464,7 @@ namespace poxnora_search_engine
 
         private void PopulateChangeBrowser()
         {
+            //sb.Clear();
             switch(changelist_mode)
             {
                 case ChangeListMode.CATEGORY:
@@ -474,6 +477,10 @@ namespace poxnora_search_engine
                     PopulateChangeBrowserPerAbility();
                     break;
             }
+            //if (sb.Length == 0)
+            //    return;
+
+           // Clipboard.SetText(sb.ToString());
         }
 
         private void DifferenceCalculatorForm_Load(object sender, EventArgs e)

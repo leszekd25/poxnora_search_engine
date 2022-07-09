@@ -14,6 +14,17 @@ namespace poxnora_search_engine.Pox
         public int Cooldown;
         public string IconName = "";
 
+        public int AssetID;
+        public int PrerequisiteID;
+        public int Revision;
+        public bool Activated;
+        public bool Resettable;
+        public bool Ranked;
+        public string Comments = "";
+        public string ClassName = "";
+
+        public int UseCount;
+
         public List<int> DescriptionAbilities = new List<int>();
         public List<string> DescriptionConditions = new List<string>();
         public List<Ability> DescriptionAbilities_refs = new List<Ability>();
@@ -28,6 +39,48 @@ namespace poxnora_search_engine.Pox
                     result = Level;
                 else if (dp == DataPath.Cooldown)
                     result = Cooldown;
+                else if (dp == DataPath.ActivationType)
+                    result = ActivationType;
+                else if (dp == DataPath.AssetID)
+                    result = AssetID;
+                else if (dp == DataPath.PrerequisiteID)
+                    result = PrerequisiteID;
+                else if (dp == DataPath.Revision)
+                    result = Revision;
+                else if (dp == DataPath.UseCount)
+                    result = UseCount;
+                else
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override bool GetBoolFromDataPath(DataPath dp, out bool result)
+        {
+            if(!base.GetBoolFromDataPath(dp, out result))
+            {
+                if (dp == DataPath.Activated)
+                    result = Activated;
+                else if (dp == DataPath.Resettable)
+                    result = Resettable;
+                else if (dp == DataPath.Ranked)
+                    result = Ranked;
+                else
+                    return false;
+            }
+
+            return true;
+        }
+
+        public override bool GetStringFromDataPath(DataPath dp, out string result)
+        {
+            if (!base.GetStringFromDataPath(dp, out result))
+            {
+                if (dp == DataPath.Comments)
+                    result = Comments;
+                else if (dp == DataPath.ClassName)
+                    result = ClassName;
                 else
                     return false;
             }

@@ -57,11 +57,18 @@
             this.aPCostToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.levelToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.cooldownToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.assetIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.prerequisiteIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.revisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.activationTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nameToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.descriptionToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.artistToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.flavorTextToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.keyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.commentsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.classNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.optionFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rarityToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.expansionToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
@@ -69,6 +76,9 @@
             this.forSaleToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.tradeableToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.allowedInRankedToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
+            this.activatedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resettableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rankedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abilityListFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.factionToolStripMenuItem4 = new System.Windows.Forms.ToolStripMenuItem();
             this.raceToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
@@ -80,7 +90,7 @@
             this.wrapIntoAnySubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wrapIntoAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.popOutOfAnyAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.keyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.useCountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterTreeContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -188,7 +198,12 @@
             this.sizeToolStripMenuItem2,
             this.aPCostToolStripMenuItem1,
             this.levelToolStripMenuItem1,
-            this.cooldownToolStripMenuItem1});
+            this.cooldownToolStripMenuItem1,
+            this.assetIDToolStripMenuItem,
+            this.prerequisiteIDToolStripMenuItem,
+            this.revisionToolStripMenuItem,
+            this.activationTypeToolStripMenuItem,
+            this.useCountToolStripMenuItem});
             this.numberFilterToolStripMenuItem.Name = "numberFilterToolStripMenuItem";
             this.numberFilterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.numberFilterToolStripMenuItem.Text = "Number filter";
@@ -319,6 +334,34 @@
             this.cooldownToolStripMenuItem1.Text = "Cooldown";
             this.cooldownToolStripMenuItem1.Click += new System.EventHandler(this.cooldownToolStripMenuItem1_Click);
             // 
+            // assetIDToolStripMenuItem
+            // 
+            this.assetIDToolStripMenuItem.Name = "assetIDToolStripMenuItem";
+            this.assetIDToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.assetIDToolStripMenuItem.Text = "Asset ID";
+            this.assetIDToolStripMenuItem.Click += new System.EventHandler(this.assetIDToolStripMenuItem_Click);
+            // 
+            // prerequisiteIDToolStripMenuItem
+            // 
+            this.prerequisiteIDToolStripMenuItem.Name = "prerequisiteIDToolStripMenuItem";
+            this.prerequisiteIDToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.prerequisiteIDToolStripMenuItem.Text = "Prerequisite ID";
+            this.prerequisiteIDToolStripMenuItem.Click += new System.EventHandler(this.prerequisiteIDToolStripMenuItem_Click);
+            // 
+            // revisionToolStripMenuItem
+            // 
+            this.revisionToolStripMenuItem.Name = "revisionToolStripMenuItem";
+            this.revisionToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.revisionToolStripMenuItem.Text = "Revision";
+            this.revisionToolStripMenuItem.Click += new System.EventHandler(this.revisionToolStripMenuItem_Click);
+            // 
+            // activationTypeToolStripMenuItem
+            // 
+            this.activationTypeToolStripMenuItem.Name = "activationTypeToolStripMenuItem";
+            this.activationTypeToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.activationTypeToolStripMenuItem.Text = "Activation type";
+            this.activationTypeToolStripMenuItem.Click += new System.EventHandler(this.activationTypeToolStripMenuItem_Click);
+            // 
             // textFilterToolStripMenuItem
             // 
             this.textFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -326,7 +369,9 @@
             this.descriptionToolStripMenuItem5,
             this.artistToolStripMenuItem4,
             this.flavorTextToolStripMenuItem1,
-            this.keyToolStripMenuItem});
+            this.keyToolStripMenuItem,
+            this.commentsToolStripMenuItem,
+            this.classNameToolStripMenuItem});
             this.textFilterToolStripMenuItem.Name = "textFilterToolStripMenuItem";
             this.textFilterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.textFilterToolStripMenuItem.Text = "Text filter";
@@ -334,30 +379,51 @@
             // nameToolStripMenuItem5
             // 
             this.nameToolStripMenuItem5.Name = "nameToolStripMenuItem5";
-            this.nameToolStripMenuItem5.Size = new System.Drawing.Size(180, 22);
+            this.nameToolStripMenuItem5.Size = new System.Drawing.Size(134, 22);
             this.nameToolStripMenuItem5.Text = "Name";
             this.nameToolStripMenuItem5.Click += new System.EventHandler(this.nameToolStripMenuItem5_Click);
             // 
             // descriptionToolStripMenuItem5
             // 
             this.descriptionToolStripMenuItem5.Name = "descriptionToolStripMenuItem5";
-            this.descriptionToolStripMenuItem5.Size = new System.Drawing.Size(180, 22);
+            this.descriptionToolStripMenuItem5.Size = new System.Drawing.Size(134, 22);
             this.descriptionToolStripMenuItem5.Text = "Description";
             this.descriptionToolStripMenuItem5.Click += new System.EventHandler(this.descriptionToolStripMenuItem5_Click);
             // 
             // artistToolStripMenuItem4
             // 
             this.artistToolStripMenuItem4.Name = "artistToolStripMenuItem4";
-            this.artistToolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
+            this.artistToolStripMenuItem4.Size = new System.Drawing.Size(134, 22);
             this.artistToolStripMenuItem4.Text = "Artist";
             this.artistToolStripMenuItem4.Click += new System.EventHandler(this.artistToolStripMenuItem4_Click);
             // 
             // flavorTextToolStripMenuItem1
             // 
             this.flavorTextToolStripMenuItem1.Name = "flavorTextToolStripMenuItem1";
-            this.flavorTextToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.flavorTextToolStripMenuItem1.Size = new System.Drawing.Size(134, 22);
             this.flavorTextToolStripMenuItem1.Text = "Flavor text";
             this.flavorTextToolStripMenuItem1.Click += new System.EventHandler(this.flavorTextToolStripMenuItem1_Click);
+            // 
+            // keyToolStripMenuItem
+            // 
+            this.keyToolStripMenuItem.Name = "keyToolStripMenuItem";
+            this.keyToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.keyToolStripMenuItem.Text = "Key";
+            this.keyToolStripMenuItem.Click += new System.EventHandler(this.keyToolStripMenuItem_Click);
+            // 
+            // commentsToolStripMenuItem
+            // 
+            this.commentsToolStripMenuItem.Name = "commentsToolStripMenuItem";
+            this.commentsToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.commentsToolStripMenuItem.Text = "Comments";
+            this.commentsToolStripMenuItem.Click += new System.EventHandler(this.commentsToolStripMenuItem_Click);
+            // 
+            // classNameToolStripMenuItem
+            // 
+            this.classNameToolStripMenuItem.Name = "classNameToolStripMenuItem";
+            this.classNameToolStripMenuItem.Size = new System.Drawing.Size(134, 22);
+            this.classNameToolStripMenuItem.Text = "Class name";
+            this.classNameToolStripMenuItem.Click += new System.EventHandler(this.classNameToolStripMenuItem_Click);
             // 
             // optionFilterToolStripMenuItem
             // 
@@ -387,7 +453,10 @@
             this.binaryFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.forSaleToolStripMenuItem4,
             this.tradeableToolStripMenuItem4,
-            this.allowedInRankedToolStripMenuItem4});
+            this.allowedInRankedToolStripMenuItem4,
+            this.activatedToolStripMenuItem,
+            this.resettableToolStripMenuItem,
+            this.rankedToolStripMenuItem});
             this.binaryFilterToolStripMenuItem.Name = "binaryFilterToolStripMenuItem";
             this.binaryFilterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.binaryFilterToolStripMenuItem.Text = "Binary filter";
@@ -412,6 +481,27 @@
             this.allowedInRankedToolStripMenuItem4.Size = new System.Drawing.Size(169, 22);
             this.allowedInRankedToolStripMenuItem4.Text = "Allowed in ranked";
             this.allowedInRankedToolStripMenuItem4.Click += new System.EventHandler(this.allowedInRankedToolStripMenuItem4_Click);
+            // 
+            // activatedToolStripMenuItem
+            // 
+            this.activatedToolStripMenuItem.Name = "activatedToolStripMenuItem";
+            this.activatedToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.activatedToolStripMenuItem.Text = "Activated";
+            this.activatedToolStripMenuItem.Click += new System.EventHandler(this.activatedToolStripMenuItem_Click);
+            // 
+            // resettableToolStripMenuItem
+            // 
+            this.resettableToolStripMenuItem.Name = "resettableToolStripMenuItem";
+            this.resettableToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.resettableToolStripMenuItem.Text = "Resettable";
+            this.resettableToolStripMenuItem.Click += new System.EventHandler(this.resettableToolStripMenuItem_Click);
+            // 
+            // rankedToolStripMenuItem
+            // 
+            this.rankedToolStripMenuItem.Name = "rankedToolStripMenuItem";
+            this.rankedToolStripMenuItem.Size = new System.Drawing.Size(169, 22);
+            this.rankedToolStripMenuItem.Text = "Ranked";
+            this.rankedToolStripMenuItem.Click += new System.EventHandler(this.rankedToolStripMenuItem_Click);
             // 
             // abilityListFilterToolStripMenuItem
             // 
@@ -496,12 +586,12 @@
             this.popOutOfAnyAllSubfiltersToolStripMenuItem.Text = "Pop out of Any/All subfilters";
             this.popOutOfAnyAllSubfiltersToolStripMenuItem.Click += new System.EventHandler(this.popOutOfAnyAllSubfiltersToolStripMenuItem_Click);
             // 
-            // keyToolStripMenuItem
+            // useCountToolStripMenuItem
             // 
-            this.keyToolStripMenuItem.Name = "keyToolStripMenuItem";
-            this.keyToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.keyToolStripMenuItem.Text = "Key";
-            this.keyToolStripMenuItem.Click += new System.EventHandler(this.keyToolStripMenuItem_Click);
+            this.useCountToolStripMenuItem.Name = "useCountToolStripMenuItem";
+            this.useCountToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.useCountToolStripMenuItem.Text = "Use count";
+            this.useCountToolStripMenuItem.Click += new System.EventHandler(this.useCountToolStripMenuItem_Click);
             // 
             // DatabaseFilterControl
             // 
@@ -572,5 +662,15 @@
         private System.Windows.Forms.ToolStripMenuItem popOutOfAnyAllSubfiltersToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem quickFilterToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem keyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem assetIDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem prerequisiteIDToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem revisionToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem activationTypeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem commentsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem classNameToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem activatedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resettableToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem rankedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem useCountToolStripMenuItem;
     }
 }
