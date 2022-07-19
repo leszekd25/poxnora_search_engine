@@ -63,6 +63,7 @@ namespace poxnora_search_engine.Pox
         Faction = 400,
         Class = 401,
         Race = 402,
+        Keyword = 403,
 
         // LIST (ABILITY)
         AllAbilities = 500,
@@ -119,6 +120,7 @@ namespace poxnora_search_engine.Pox
         public StringLibrary Rarities { get; } = new StringLibrary();
         public StringLibrary Expansions { get; } = new StringLibrary();
         public StringLibrary AbilityNames { get; } = new StringLibrary();
+        public StringLibrary Keywords { get; } = new StringLibrary();
 
         public DBPlugin_RuneGroups Plugin_RuneGroups { get; } = new DBPlugin_RuneGroups();      // loaded separately by BG builder
 
@@ -606,6 +608,7 @@ namespace poxnora_search_engine.Pox
                 if (Abilities.ContainsKey(ability.SelectToken("id").ToObject<int>()))
                 {
                     a = Abilities[ability.SelectToken("id").ToObject<int>()];
+
                     add_new = false;
                 }
                 else
@@ -618,7 +621,12 @@ namespace poxnora_search_engine.Pox
                     a.Name = ability.SelectToken("name").ToObject<string>();
 
                 if (ability.SelectToken("shortDescription") != null)
+                {
+                    a.DescriptionAbilities.Clear();
+                    a.DescriptionAbilities_refs.Clear();
+                    a.DescriptionConditions.Clear();
                     a.Description = ability.SelectToken("shortDescription").ToObject<string>();
+                }
 
                 if (ability.SelectToken("activationType") != null)
                     a.ActivationType = ability.SelectToken("activationType").ToObject<int>();
@@ -639,7 +647,8 @@ namespace poxnora_search_engine.Pox
                     a.IconName = ability.SelectToken("iconName").ToObject<string>();
             }
 
-            a.Description = ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
+            a.Description = ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions, ref a.DescriptionMechanics);
+            a.DescriptionKeywords = a.DescriptionConditions.Union(a.DescriptionMechanics).ToHashSet().ToList();
 
             if (add_new)
             {
@@ -657,7 +666,8 @@ namespace poxnora_search_engine.Pox
             if (spell.SelectToken("flavorText") != null)
                 s.Flavor = spell.SelectToken("flavorText").ToObject<string>();
 
-            s.Description = ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions);
+            s.Description = ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions, ref s.DescriptionMechanics);
+            s.DescriptionKeywords = s.DescriptionConditions.Union(s.DescriptionMechanics).ToHashSet().ToList();
 
             Spells.Add(s.ID, s);
         }
@@ -679,7 +689,8 @@ namespace poxnora_search_engine.Pox
             if (relic.SelectToken("size") != null)
                 r.Size = ((relic.SelectToken("size").ToObject<string>())[0] == '2' ? 2 : 1);
 
-            r.Description = ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions);
+            r.Description = ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions, ref r.DescriptionMechanics);
+            r.DescriptionKeywords = r.DescriptionConditions.Union(r.DescriptionMechanics).ToHashSet().ToList();
 
             Relics.Add(r.ID, r);
         }
@@ -692,7 +703,8 @@ namespace poxnora_search_engine.Pox
             if (equip.SelectToken("flavorText") != null)
                 e.Flavor = equip.SelectToken("flavorText").ToObject<string>();
 
-            e.Description = ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions);
+            e.Description = ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions, ref e.DescriptionMechanics);
+            e.DescriptionKeywords = e.DescriptionConditions.Union(e.DescriptionMechanics).ToHashSet().ToList();
 
             Equipments.Add(e.ID, e);
         }
@@ -702,7 +714,12 @@ namespace poxnora_search_engine.Pox
             FlavorElement m = new FlavorElement();
             m.LoadFromJSON(mechanic);
 
+            m.Description = ExtractAbilitiesAndConditions(m.Description, ref m.DescriptionAbilities, ref m.DescriptionConditions, ref m.DescriptionMechanics);
+            m.DescriptionKeywords = m.DescriptionConditions.Union(m.DescriptionMechanics).ToHashSet().ToList();
+
             Mechanics.Add(m.Key, m);
+            if (!Keywords.AllowedStrings.Contains(m.Key))
+                Keywords.AllowedStrings.Add(m.Key);
         }
 
         void AddConditionFromJSON(JToken condition)
@@ -710,7 +727,12 @@ namespace poxnora_search_engine.Pox
             FlavorElement m = new FlavorElement();
             m.LoadFromJSON(condition);
 
+            m.Description = ExtractAbilitiesAndConditions(m.Description, ref m.DescriptionAbilities, ref m.DescriptionConditions, ref m.DescriptionMechanics);
+            m.DescriptionKeywords = m.DescriptionConditions.Union(m.DescriptionMechanics).ToHashSet().ToList();
+
             Conditions.Add(m.Key, m);
+            if (!Keywords.AllowedStrings.Contains(m.Key))
+                Keywords.AllowedStrings.Add(m.Key);
         }
 
         void SetupChampionAbilities(Champion c)
@@ -815,7 +837,7 @@ namespace poxnora_search_engine.Pox
             }
         }
 
-        public string ExtractAbilitiesAndConditions(string description, ref List<int> abs, ref List<string> cons)
+        public string ExtractAbilitiesAndConditions(string description, ref List<int> abs, ref List<string> cons, ref List<string> mechs)
         {
             // if it was done before, dont do it again
             if((abs.Count > 0)||(cons.Count > 0))
@@ -847,6 +869,8 @@ namespace poxnora_search_engine.Pox
                         abs.Add(ExtractAbility(description, ranges[ranges.Count - 1]));
                     else if (description[i + 1] == 'c')
                         cons.Add(ExtractCondition(description, ranges[ranges.Count - 1]));
+                    else if (description[i + 1] == 'm')
+                        mechs.Add(ExtractMechanic(description, ranges[ranges.Count - 1]));
 
                     i = ranges[ranges.Count - 1].Item2;
                 }
@@ -907,7 +931,29 @@ namespace poxnora_search_engine.Pox
                 }
             }
 
-            string con_str = desc.Substring(con_start, con_end  - con_start + 1);
+            string con_str = desc.Substring(con_start, con_end - con_start + 1);
+            return con_str;
+        }
+
+        string ExtractMechanic(string desc, Tuple<int, int> range)
+        {
+            int con_start = range.Item1 - 1;
+            int con_end = range.Item2 + 1;
+
+            for (int i = range.Item1; i <= range.Item2; i++)
+            {
+                if (desc[i] == '=')
+                {
+                    con_start = i + 1;
+                }
+                if (desc[i] == '>')
+                {
+                    con_end = i - 1;
+                    break;
+                }
+            }
+
+            string con_str = desc.Substring(con_start, con_end - con_start + 1);
             return con_str;
         }
 
@@ -948,6 +994,20 @@ namespace poxnora_search_engine.Pox
             return 0;
         }
 
+        public void PopulateKeywordLookup()
+        {
+            // add stuff to DescriptionConditions/Mechanics of champion runes
+            foreach(var kv in Champions)
+            {
+                Champion c = kv.Value;
+                foreach(var a in c.AllAbilities_refs)
+                {
+                    c.DescriptionKeywords.AddRange(a.DescriptionKeywords);
+                }
+                c.DescriptionKeywords = c.DescriptionKeywords.ToHashSet().ToList();
+            }
+        }
+
         public void LoadingPostProcess()
         {
             // post-process
@@ -962,6 +1022,8 @@ namespace poxnora_search_engine.Pox
             {
                 Abilities[kv.Key].UseCount = kv.Value;
             }
+
+            PopulateKeywordLookup();
 
             Log.Info(Log.LogSource.PoxDB,
                 "Champs loaded: " + Champions.Count + ", Abilities loaded: " + Abilities.Count + ", Spells loaded: " + Spells.Count

@@ -61,6 +61,7 @@
             this.prerequisiteIDToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.revisionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.activationTypeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.useCountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.textFilterToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.nameToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
             this.descriptionToolStripMenuItem5 = new System.Windows.Forms.ToolStripMenuItem();
@@ -90,7 +91,7 @@
             this.wrapIntoAnySubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.wrapIntoAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.popOutOfAnyAllSubfiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.useCountToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.keywordToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.FilterTreeContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -362,6 +363,13 @@
             this.activationTypeToolStripMenuItem.Text = "Activation type";
             this.activationTypeToolStripMenuItem.Click += new System.EventHandler(this.activationTypeToolStripMenuItem_Click);
             // 
+            // useCountToolStripMenuItem
+            // 
+            this.useCountToolStripMenuItem.Name = "useCountToolStripMenuItem";
+            this.useCountToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
+            this.useCountToolStripMenuItem.Text = "Use count";
+            this.useCountToolStripMenuItem.Click += new System.EventHandler(this.useCountToolStripMenuItem_Click);
+            // 
             // textFilterToolStripMenuItem
             // 
             this.textFilterToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -437,14 +445,14 @@
             // rarityToolStripMenuItem4
             // 
             this.rarityToolStripMenuItem4.Name = "rarityToolStripMenuItem4";
-            this.rarityToolStripMenuItem4.Size = new System.Drawing.Size(128, 22);
+            this.rarityToolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
             this.rarityToolStripMenuItem4.Text = "Rarity";
             this.rarityToolStripMenuItem4.Click += new System.EventHandler(this.rarityToolStripMenuItem4_Click);
             // 
             // expansionToolStripMenuItem4
             // 
             this.expansionToolStripMenuItem4.Name = "expansionToolStripMenuItem4";
-            this.expansionToolStripMenuItem4.Size = new System.Drawing.Size(128, 22);
+            this.expansionToolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
             this.expansionToolStripMenuItem4.Text = "Expansion";
             this.expansionToolStripMenuItem4.Click += new System.EventHandler(this.expansionToolStripMenuItem4_Click);
             // 
@@ -511,7 +519,8 @@
             this.classToolStripMenuItem1,
             this.allAbilitiesToolStripMenuItem,
             this.baseAbilitiesToolStripMenuItem1,
-            this.upgradeAbilitiesToolStripMenuItem});
+            this.upgradeAbilitiesToolStripMenuItem,
+            this.keywordToolStripMenuItem});
             this.abilityListFilterToolStripMenuItem.Name = "abilityListFilterToolStripMenuItem";
             this.abilityListFilterToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.abilityListFilterToolStripMenuItem.Text = "List filter";
@@ -519,42 +528,42 @@
             // factionToolStripMenuItem4
             // 
             this.factionToolStripMenuItem4.Name = "factionToolStripMenuItem4";
-            this.factionToolStripMenuItem4.Size = new System.Drawing.Size(162, 22);
+            this.factionToolStripMenuItem4.Size = new System.Drawing.Size(180, 22);
             this.factionToolStripMenuItem4.Text = "Faction";
             this.factionToolStripMenuItem4.Click += new System.EventHandler(this.factionToolStripMenuItem4_Click);
             // 
             // raceToolStripMenuItem1
             // 
             this.raceToolStripMenuItem1.Name = "raceToolStripMenuItem1";
-            this.raceToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.raceToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.raceToolStripMenuItem1.Text = "Race";
             this.raceToolStripMenuItem1.Click += new System.EventHandler(this.raceToolStripMenuItem1_Click);
             // 
             // classToolStripMenuItem1
             // 
             this.classToolStripMenuItem1.Name = "classToolStripMenuItem1";
-            this.classToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.classToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.classToolStripMenuItem1.Text = "Class";
             this.classToolStripMenuItem1.Click += new System.EventHandler(this.classToolStripMenuItem1_Click);
             // 
             // allAbilitiesToolStripMenuItem
             // 
             this.allAbilitiesToolStripMenuItem.Name = "allAbilitiesToolStripMenuItem";
-            this.allAbilitiesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.allAbilitiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.allAbilitiesToolStripMenuItem.Text = "All abilities";
             this.allAbilitiesToolStripMenuItem.Click += new System.EventHandler(this.allAbilitiesToolStripMenuItem_Click);
             // 
             // baseAbilitiesToolStripMenuItem1
             // 
             this.baseAbilitiesToolStripMenuItem1.Name = "baseAbilitiesToolStripMenuItem1";
-            this.baseAbilitiesToolStripMenuItem1.Size = new System.Drawing.Size(162, 22);
+            this.baseAbilitiesToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.baseAbilitiesToolStripMenuItem1.Text = "Base abilities";
             this.baseAbilitiesToolStripMenuItem1.Click += new System.EventHandler(this.baseAbilitiesToolStripMenuItem1_Click);
             // 
             // upgradeAbilitiesToolStripMenuItem
             // 
             this.upgradeAbilitiesToolStripMenuItem.Name = "upgradeAbilitiesToolStripMenuItem";
-            this.upgradeAbilitiesToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.upgradeAbilitiesToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.upgradeAbilitiesToolStripMenuItem.Text = "Upgrade abilities";
             this.upgradeAbilitiesToolStripMenuItem.Click += new System.EventHandler(this.upgradeAbilitiesToolStripMenuItem_Click);
             // 
@@ -586,12 +595,12 @@
             this.popOutOfAnyAllSubfiltersToolStripMenuItem.Text = "Pop out of Any/All subfilters";
             this.popOutOfAnyAllSubfiltersToolStripMenuItem.Click += new System.EventHandler(this.popOutOfAnyAllSubfiltersToolStripMenuItem_Click);
             // 
-            // useCountToolStripMenuItem
+            // keywordToolStripMenuItem
             // 
-            this.useCountToolStripMenuItem.Name = "useCountToolStripMenuItem";
-            this.useCountToolStripMenuItem.Size = new System.Drawing.Size(210, 22);
-            this.useCountToolStripMenuItem.Text = "Use count";
-            this.useCountToolStripMenuItem.Click += new System.EventHandler(this.useCountToolStripMenuItem_Click);
+            this.keywordToolStripMenuItem.Name = "keywordToolStripMenuItem";
+            this.keywordToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.keywordToolStripMenuItem.Text = "Keyword";
+            this.keywordToolStripMenuItem.Click += new System.EventHandler(this.keywordToolStripMenuItem_Click);
             // 
             // DatabaseFilterControl
             // 
@@ -672,5 +681,6 @@
         private System.Windows.Forms.ToolStripMenuItem resettableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rankedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useCountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem keywordToolStripMenuItem;
     }
 }

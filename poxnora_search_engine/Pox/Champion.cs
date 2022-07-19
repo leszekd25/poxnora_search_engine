@@ -82,6 +82,8 @@ namespace poxnora_search_engine.Pox
                     result = Class;
                 else if (dp == DataPath.Race)
                     result = Race;
+                else if (dp == DataPath.Keyword)
+                    result = DescriptionKeywords;
                 else
                     return false;
             }

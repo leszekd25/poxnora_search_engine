@@ -14,6 +14,7 @@ namespace poxnora_search_engine.Pox
 
         public List<int> DescriptionAbilities = new List<int>();
         public List<string> DescriptionConditions = new List<string>();
+        public List<string> DescriptionMechanics = new List<string>();
         public List<Ability> DescriptionAbilities_refs = new List<Ability>();
 
         public void LoadFromJSON(JToken token)
@@ -38,6 +39,19 @@ namespace poxnora_search_engine.Pox
                 result = "";
                 return false;
             }
+            return true;
+        }
+
+        public override bool GetEnumListFromDataPath(DataPath dp, out List<string> result)
+        {
+            if (!base.GetEnumListFromDataPath(dp, out result))
+            {
+                if (dp == DataPath.Keyword)
+                    result = DescriptionKeywords;
+                else
+                    return false;
+            }
+
             return true;
         }
 

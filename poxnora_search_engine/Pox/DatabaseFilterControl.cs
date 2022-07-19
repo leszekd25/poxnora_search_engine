@@ -76,6 +76,9 @@ namespace poxnora_search_engine.Pox
                 case FilterType.RACE_LIST:
                     bf = new Pox.Filters.EnumListFilter() { dpath = DataPath.Race, Options_ref = Program.database.Races, FilterType = Pox.Filters.EnumListFilterType.CONTAINS, RefValue = "" };
                     break;
+                case FilterType.KEYWORD_LIST:
+                    bf = new Pox.Filters.EnumListFilter() { dpath = DataPath.Keyword, Options_ref = Program.database.Keywords, FilterType = Pox.Filters.EnumListFilterType.CONTAINS, RefValue = "" };
+                    break;
 
                 default:
                     Log.Error(Log.LogSource.UI, "Form1.AddFilter(): Unknown filter type");
@@ -633,6 +636,11 @@ namespace poxnora_search_engine.Pox
         private void upgradeAbilitiesToolStripMenuItem_Click(object sender, EventArgs e)
         {
             AddFilter("Upgrade abilities", FilterType.ABILITY_LIST, DataPath.UpgradeAbilities);
+        }
+
+        private void keywordToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AddFilter("Class", FilterType.KEYWORD_LIST);
         }
 
         private void removeFilterToolStripMenuItem_Click(object sender, EventArgs e)

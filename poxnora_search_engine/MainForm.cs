@@ -16,7 +16,7 @@ using System.Security.Cryptography;
 
 namespace poxnora_search_engine
 {
-    public enum FilterType { AND, OR, BOOLEAN, INT, STRING, RARITY, EXPANSION, ABILITY_LIST, CLASS_LIST, FACTION_LIST, RACE_LIST }
+    public enum FilterType { AND, OR, BOOLEAN, INT, STRING, RARITY, EXPANSION, ABILITY_LIST, CLASS_LIST, FACTION_LIST, RACE_LIST, KEYWORD_LIST }
     public partial class MainForm : Form
     {
         ViewModeEnum ViewMode = ViewModeEnum.NONE;

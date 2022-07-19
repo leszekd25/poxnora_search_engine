@@ -410,7 +410,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Show();
 
-            a.Description = database_ref.ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions);
+            //a.Description = database_ref.ExtractAbilitiesAndConditions(a.Description, ref a.DescriptionAbilities, ref a.DescriptionConditions, ref a.DescriptionMechanics);
 
             RTFLabelDescription.SelectionColor = Color.LightGray;
 
@@ -431,7 +431,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Show();
 
-            s.Description = database_ref.ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions);
+            //s.Description = database_ref.ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions, ref s.DescriptionMechanics);
 
             AddLine(RTFLabelDescription, "Nora cost: ", s.NoraCost.ToString());
             AddLine(RTFLabelDescription, "", "");
@@ -448,7 +448,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Show();
 
-            r.Description = database_ref.ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions);
+            //r.Description = database_ref.ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions, ref r.DescriptionMechanics);
 
             AddLine(RTFLabelDescription, "Nora cost: ", r.NoraCost.ToString());
             AddLine(RTFLabelDescription, "Defense: ", r.Defense.ToString());
@@ -468,7 +468,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Show();
 
-            e.Description = database_ref.ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions);
+            //e.Description = database_ref.ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions, ref e.DescriptionMechanics);
 
             AddLine(RTFLabelDescription, "Nora cost: ", e.NoraCost.ToString());
             AddLine(RTFLabelDescription, "", "");
@@ -485,7 +485,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Show();
 
-            c.Description = database_ref.ExtractAbilitiesAndConditions(c.Description, ref c.DescriptionAbilities, ref c.DescriptionConditions);
+            //c.Description = database_ref.ExtractAbilitiesAndConditions(c.Description, ref c.DescriptionAbilities, ref c.DescriptionConditions, ref c.DescriptionMechanics);
 
             RTFLabelDescription.SelectionColor = Color.White;
             AddLine(RTFLabelDescription, c.ToString(), "");
@@ -500,7 +500,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Show();
 
-            m.Description = database_ref.ExtractAbilitiesAndConditions(m.Description, ref m.DescriptionAbilities, ref m.DescriptionConditions);
+            //m.Description = database_ref.ExtractAbilitiesAndConditions(m.Description, ref m.DescriptionAbilities, ref m.DescriptionConditions, ref m.DescriptionMechanics);
 
             RTFLabelDescription.SelectionColor = Color.White;
             AddLine(RTFLabelDescription, m.ToString(), "");

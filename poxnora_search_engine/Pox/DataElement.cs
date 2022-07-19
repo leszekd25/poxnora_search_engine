@@ -15,6 +15,12 @@ namespace poxnora_search_engine.Pox
         public int ID;
         public int NoraCost;
 
+        public List<int> DescriptionAbilities = new List<int>();
+        public List<string> DescriptionConditions = new List<string>();
+        public List<string> DescriptionMechanics = new List<string>();
+        public List<string> DescriptionKeywords = new List<string>();
+        public List<Ability> DescriptionAbilities_refs = new List<Ability>();
+
         public override string ToString()
         {
             return Name;
