@@ -1,1 +1,1 @@
-Current version: 31.07.2022.1
+Current version: 31.7.2022.1
