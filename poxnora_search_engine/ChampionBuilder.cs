@@ -44,7 +44,7 @@ namespace poxnora_search_engine
 
         private void CalculateChampCost()
         {
-            champion.CalculatePrognosedBaseNoraCost();
+            champion.CalculatePrognosedBaseNoraCostNew();
 
             int ab_cost = 0;
             foreach(var ab in champion.AllAbilities_refs)

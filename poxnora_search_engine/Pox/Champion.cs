@@ -225,6 +225,29 @@ namespace poxnora_search_engine.Pox
             PrognosedBaseNoraCost = (int)result;
         }
 
+        // slugbait was kind enough to share this formula
+        public void CalculatePrognosedBaseNoraCostNew()
+        {
+            double defenseCost = (HitPoints / 18) * Defense;
+            double damageCost = Math.Round(Math.Pow(Math.Atan((Damage-10)/2.0f), 3) * 6);
+            double healthCost = Math.Log(HitPoints + 10) > 0 ? Math.Pow(Math.Log(HitPoints + 10), 2.65) : 0.0;
+            double rangeCost = 0;
+
+            for (int x = MinRNG; x <= MaxRNG; x++)
+            {
+                rangeCost += x * 4;
+            }
+            rangeCost = (rangeCost * 0.35) + (MaxRNG - MinRNG);
+
+            double speedCost = (Speed - 6) * 8;
+
+            double sizeCost = Size == 2 ? (Math.Min(Math.Max((defenseCost + damageCost + healthCost + rangeCost + speedCost) - 30, 0), 60) / 10) : 0;
+
+            int baseCost = (int)Math.Max(0, Math.Round(defenseCost + damageCost + healthCost + rangeCost + speedCost + sizeCost));
+
+            PrognosedBaseNoraCost = baseCost;
+        }
+
         public override bool Equals(object o)
         {
             if (!(o is Champion))

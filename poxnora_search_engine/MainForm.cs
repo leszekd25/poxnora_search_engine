@@ -165,12 +165,12 @@ namespace poxnora_search_engine
         // called when database was loaded
         private void OnDatabaseReady()
         {
-
             Log.Info(Log.LogSource.PoxDB, "MainForm.OnDatabaseReady() called");
 
             RuneDescription.database_ref = Program.database;
 
             DBDownloadProgress.Visible = false;
+            PanelDataMode.Enabled = true;
 
             ViewMode = ViewModeEnum.NONE;
             ViewType = Pox.DataElement.ElementType.NONE;

@@ -95,6 +95,7 @@ namespace poxnora_search_engine
             wc.DownloadDataAsync(VersionArchive);
         }
 
+        // creates a backup of executable files
         void MoveOldAssemblies()
         {
             Log.Info(Log.LogSource.Utility, "Updater.MoveOldAssemblies() called");
@@ -115,6 +116,7 @@ namespace poxnora_search_engine
             }
         }
 
+        // deletes old executable files (if any)
         void DeleteOldAssemblies()
         {
             Log.Info(Log.LogSource.Utility, "Updater.DeleteOldAssemblies() called");

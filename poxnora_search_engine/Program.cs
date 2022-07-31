@@ -31,7 +31,7 @@ namespace poxnora_search_engine
 
                 main_form = null;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Log.Error(Log.LogSource.Main, "Program.Main(): Uncaught exception! Exception info:\r\n" + e.Message);
             }

@@ -11,7 +11,7 @@ namespace poxnora_search_engine
     {
         public const int NO_INDEX = -1;
 
-        public const string APP_VERSION = "27.11.2021.1";
+        public const string APP_VERSION = "31.7.2022.1";
 
         public static Random RNG = new Random();
     }

@@ -130,10 +130,12 @@ namespace poxnora_search_engine.Pox
         public Queue<DatabaseDownloadElement> DatabaseQueue { get; } = new Queue<DatabaseDownloadElement>();
 
         // returns if the DB needs to be downloaded
+        // arguments: local database prefix, online database location for backup, flag whether only to load main database, or auxilliary databases too
         public DatabaseLoadInfo Load(string local_db, string online_backup, bool main_only)
         {
             if (!main_only)
             {
+                // abilities database
                 DatabaseQueue.Enqueue(new DatabaseDownloadElement()
                 {
                     FileName = local_db.Replace(".", "_abilities."),
@@ -141,16 +143,18 @@ namespace poxnora_search_engine.Pox
                     Type = DatabaseType.ABILITIES
                 });
             }
+            // main database
             DatabaseQueue.Enqueue(new DatabaseDownloadElement() { FileName = local_db, Location = online_backup, Type = DatabaseType.MAIN });
             if (!main_only)
             {
+                // mechanics database
                 DatabaseQueue.Enqueue(new DatabaseDownloadElement()
                 {
                     FileName = local_db.Replace(".", "_mechanics."),
                     Location = online_backup + POXNORA_JSON_MECHANICS_PLUG,
                     Type = DatabaseType.MECHANICS
                 });
-
+                // conditions database
                 DatabaseQueue.Enqueue(new DatabaseDownloadElement()
                 {
                     FileName = local_db.Replace(".", "_conditions."),
@@ -162,6 +166,8 @@ namespace poxnora_search_engine.Pox
             return LoadNextDatabase();
         }
 
+        // loads next database from the queue, calls itself as long as there are databases in the queue
+        // after all databases are loaded, fires ready trigger
         private DatabaseLoadInfo LoadNextDatabase()
         {
             loading = true;
@@ -755,7 +761,7 @@ namespace poxnora_search_engine.Pox
                 c.AllAbilities_refs.Add(Abilities[a]);
             }
 
-            c.CalculatePrognosedBaseNoraCost();
+            c.CalculatePrognosedBaseNoraCostNew();
             c.PrognosedBaseNoraCostDifference = c.BaseNoraCost - c.PrognosedBaseNoraCost;
         }
 
@@ -1040,6 +1046,7 @@ namespace poxnora_search_engine.Pox
             Champions.Clear();
             Abilities.Clear();
             Abilities_similar.Clear();
+            AbilityUseCount.Clear();
             Spells.Clear();
             Relics.Clear();
             Equipments.Clear();
@@ -1053,6 +1060,7 @@ namespace poxnora_search_engine.Pox
             Rarities.Clear();
             Expansions.Clear();
             AbilityNames.Clear();
+            Keywords.Clear();
 
             Plugin_RuneGroups.Unload();
 
