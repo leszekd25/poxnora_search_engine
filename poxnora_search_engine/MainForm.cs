@@ -411,7 +411,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Expansion", Name = "Expansion", ValueType = typeof(string), Visible = expansionToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "For sale", Name = "ForSale", ValueType = typeof(bool), Visible = forSaleToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem1.Checked });
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem1.Visible });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem3.Checked });
 
@@ -431,7 +431,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Expansion", Name = "Expansion", ValueType = typeof(string), Visible = expansionToolStripMenuItem2.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "For sale", Name = "ForSale", ValueType = typeof(bool), Visible = forSaleToolStripMenuItem2.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem2.Checked });
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem2.Visible });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem2.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem2.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem4.Checked });
 
@@ -454,7 +454,7 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Expansion", Name = "Expansion", ValueType = typeof(string), Visible = expansionToolStripMenuItem3.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "For sale", Name = "ForSale", ValueType = typeof(bool), Visible = forSaleToolStripMenuItem3.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Tradeable", Name = "Tradeable", ValueType = typeof(bool), Visible = tradeableToolStripMenuItem3.Checked });
-                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem3.Visible });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Allowed in ranked", Name = "AllowRanked", ValueType = typeof(bool), Visible = allowedInRankedToolStripMenuItem3.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Deck limit", Name = "DeckLimit", ValueType = typeof(int), Visible = deckLimitToolStripMenuItem3.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem5.Checked });
 
@@ -1401,6 +1401,11 @@ namespace poxnora_search_engine
 
         private void manualToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!System.IO.File.Exists("manual\\index.html"))
+            {
+                return;
+            }
+
             System.Diagnostics.Process.Start("manual\\index.html");
         }
 

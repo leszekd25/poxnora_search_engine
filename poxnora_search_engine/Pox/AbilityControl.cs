@@ -20,9 +20,29 @@ namespace poxnora_search_engine.Pox
 
         public void SetAbility(Ability a)
         {
-            AbilityID = a.ID;
-            LabelAbilityName.Text = a.ToString();
-            LabelAbilityNoraCost.Text = string.Format("{0} nora", a.NoraCost);
+            if (a == null)
+            {
+                AbilityID = Utility.NO_INDEX;
+                LabelAbilityName.Text = "No ability";
+                LabelAbilityNoraCost.Text = "";
+                PictureBoxAbility.BorderStyle = BorderStyle.None;
+            }
+            else
+            {
+                AbilityID = a.ID;
+                LabelAbilityName.Text = a.ToString();
+                LabelAbilityNoraCost.Text = string.Format("{0} nora", a.NoraCost);
+                if ((a.ActivationType == 3) || (a.Cooldown > 0) || (a.APCost > 0))
+                {
+                    PictureBoxAbility.BorderStyle = BorderStyle.FixedSingle;
+                    LabelAbilityNoraCost.Text = string.Format("{0} nora         {1} AP         CD {2}", a.NoraCost, a.APCost, a.Cooldown);
+                }
+                else
+                {
+                    PictureBoxAbility.BorderStyle = BorderStyle.None;
+                    LabelAbilityNoraCost.Text = string.Format("{0} nora", a.NoraCost);
+                }
+            }
         }
 
         public void SetSelected(bool selected)

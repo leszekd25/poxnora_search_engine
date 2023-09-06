@@ -304,7 +304,7 @@ namespace poxnora_search_engine.Pox
             {
                 json_main = JObject.Parse(json);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 loading = false;
                 Log.Error(Log.LogSource.PoxDB, "Database.ParseFromJSON(): Input JSON is invalid!");
@@ -764,30 +764,6 @@ namespace poxnora_search_engine.Pox
             c.CalculatePrognosedBaseNoraCostNew();
             c.PrognosedBaseNoraCostDifference = c.BaseNoraCost - c.PrognosedBaseNoraCost;
         }
-
-        /*void SetupAbilityAbilities(Ability ab)
-        {
-            foreach (int a in ab.DescriptionAbilities)
-                ab.DescriptionAbilities_refs.Add(Abilities[a]);
-        }
-
-        void SetupSpellAbilities(Spell s)
-        {
-            foreach (int a in s.DescriptionAbilities)
-                s.DescriptionAbilities_refs.Add(Abilities[a]);
-        }
-
-        void SetupRelicAbilities(Relic r)
-        {
-            foreach (int a in r.DescriptionAbilities)
-                r.DescriptionAbilities_refs.Add(Abilities[a]);
-        }
-
-        void SetupEquipmentAbilities(Equipment e)
-        {
-            foreach (int a in e.DescriptionAbilities)
-                e.DescriptionAbilities_refs.Add(Abilities[a]);
-        }*/
 
         void ResolveSimilarAbilities()
         {

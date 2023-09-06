@@ -38,8 +38,14 @@ namespace poxnora_search_engine.Pox
                 abc.SetAbility(abs[i]);
                 abc.SetColor(Color.LightGray);
                 abc.PictureBoxAbility.MouseDown += OnAbilityClicked;
-                Program.image_cache.AddAbilityImageSubscriber(abs[i].IconName, abc);
+                if(abs[i] != null)
+                    Program.image_cache.AddAbilityImageSubscriber(abs[i].IconName, abc);
             }
+        }
+
+        public int GetAbilityID(int index)
+        {
+            return (int)(Controls[index].Tag);
         }
 
         public void SetSelectedAbilitiy(int index)

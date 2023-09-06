@@ -69,9 +69,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(16, 90);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(218, 13);
+            this.label4.Size = new System.Drawing.Size(187, 13);
             this.label4.TabIndex = 3;
-            this.label4.Text = "Contact me on Discord: shovel_knight#7698";
+            this.label4.Text = "Contact me on Discord: shovel_knight";
             // 
             // LinkGithub
             // 

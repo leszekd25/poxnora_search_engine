@@ -165,7 +165,7 @@
             this.Controls.Add(this.RTFLabelRuneInfo);
             this.Controls.Add(this.RuneImage);
             this.Name = "RuneDescriptionControl";
-            this.Size = new System.Drawing.Size(281, 578);
+            this.Size = new System.Drawing.Size(281, 575);
             this.PanelChampionData.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.RuneImage)).EndInit();
             this.ResumeLayout(false);

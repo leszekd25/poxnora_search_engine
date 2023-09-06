@@ -16,7 +16,7 @@ namespace poxnora_search_engine.Pox
 
         struct TracerViewData
         {
-            public Pox.DataElement.ElementType Type;
+            public DataElement.ElementType Type;
             public int ID;
         }
 
@@ -24,12 +24,6 @@ namespace poxnora_search_engine.Pox
         {
             public int AbilityIndex1;
             public int AbilityIndex2;
-        }
-
-        struct AbilityLinkData
-        {
-            public int UpgradeID;    // u1, u2
-            public int UpgradeIndex; // which ability from the list was selected
         }
 
         static Font RegularFont = new Font("Arial", 10, FontStyle.Regular);
@@ -40,7 +34,7 @@ namespace poxnora_search_engine.Pox
         int TracerPosition = -1;
         TracerViewData CurrentTracer;
 
-        Champion SelectedChampion = null;
+        TracerViewData CurrentViewedElement;
         public UpgradeAbilitySelection AbilitySelection = new UpgradeAbilitySelection() { AbilityIndex1 = 0, AbilityIndex2 = 0 };
 
         public Database database_ref = null;
@@ -107,6 +101,7 @@ namespace poxnora_search_engine.Pox
 
         public void ClearDescription()
         {
+            CurrentViewedElement = new TracerViewData() { ID = -1, Type = DataElement.ElementType.NONE };
             RuneImage.Image = null;
             RuneImage.Hide();
 
@@ -119,6 +114,7 @@ namespace poxnora_search_engine.Pox
             }
             PanelAbilities.Controls.Clear();
             PanelAbilities.Hide();
+            PanelAbilities.Location = new Point(6, 286);
             PanelAbilities.Height = this.Height - PanelAbilities.Location.Y - 3;
 
             PanelChampionData.Hide();
@@ -128,7 +124,7 @@ namespace poxnora_search_engine.Pox
 
             RTFLabelDescription.Clear();
             RTFLabelDescription.Hide();
-            RTFLabelDescription.Location = new Point(PanelChampionData.Location.X, PanelChampionData.Location.Y + PanelChampionData.Height + 3);
+            RTFLabelDescription.Location = new Point(PanelChampionData.Location.X, RuneImage.Location.Y + RuneImage.Height + 10);
             RTFLabelDescription.Height = PanelAbilities.Height;
         }
 
@@ -166,8 +162,8 @@ namespace poxnora_search_engine.Pox
         public void SetChampionRune(Champion c, int u1_index, int u2_index)
         {
             SetRune(c);
-            SelectedChampion = c;
             AbilitySelection = new UpgradeAbilitySelection() { AbilityIndex1 = u1_index, AbilityIndex2 = u2_index };
+            CurrentViewedElement = new TracerViewData() { ID = c.ID, Type = DataElement.ElementType.CHAMPION };
 
             PanelChampionData.Show();
 
@@ -241,6 +237,11 @@ namespace poxnora_search_engine.Pox
                 }
             }
 
+            //if (SelectedChampion == null)
+            //    SetCharacterization(CurrentTracer.Type, CurrentTracer.ID, "Default");
+            //else
+            Champion champ = database_ref.Champions[CurrentViewedElement.ID];
+
             PanelAbilities.Height = 35 * ab_index;
 
             LabelData1.Text = string.Format("{0}\r\n{1}\r\n{2}\r\n\r\n{3}",
@@ -272,18 +273,19 @@ namespace poxnora_search_engine.Pox
                 AbilitySelectionControl asc = new AbilitySelectionControl();
                 PanelAbilities.Controls.Add(asc);
 
+                Champion champ = database_ref.Champions[CurrentViewedElement.ID];
                 List<Ability> abis = new List<Ability>();
                 int sel_ab = 0;
                 if ((int)(abc.Tag) == 1)
                 {
-                    foreach (var ab in SelectedChampion.UpgradeAbilities1_refs)
+                    foreach (var ab in champ.UpgradeAbilities1_refs)
                         abis.Add(ab);
                     asc.Tag = 1;
                     sel_ab = AbilitySelection.AbilityIndex1;
                 }
                 else if ((int)(abc.Tag) == 2)
                 {
-                    foreach (var ab in SelectedChampion.UpgradeAbilities2_refs)
+                    foreach (var ab in champ.UpgradeAbilities2_refs)
                         abis.Add(ab);
                     asc.Tag = 2;
                     sel_ab = AbilitySelection.AbilityIndex2;
@@ -337,11 +339,13 @@ namespace poxnora_search_engine.Pox
                     ((AbilitySelectionControl)abc2).ClearAbilities();
             }
             PanelAbilities.Controls.Clear();
-            int NoraCost = SelectedChampion.NoraCost;
+
+            Champion champ = database_ref.Champions[CurrentViewedElement.ID];
+            int NoraCost = champ.NoraCost;
 
             AbilityControl abc;
             int ab_index = 0;
-            foreach (var ab in SelectedChampion.BaseAbilities_refs)
+            foreach (var ab in champ.BaseAbilities_refs)
             {
                 abc = new AbilityControl();
                 PanelAbilities.Controls.Add(abc);
@@ -356,9 +360,9 @@ namespace poxnora_search_engine.Pox
 
             // upgrade 1
             abc = new AbilityControl();
-            foreach (var ab in SelectedChampion.UpgradeAbilities1_refs)
+            foreach (var ab in champ.UpgradeAbilities1_refs)
             {
-                if (SelectedChampion.UpgradeAbilities1_refs.IndexOf(ab) == AbilitySelection.AbilityIndex1)
+                if (champ.UpgradeAbilities1_refs.IndexOf(ab) == AbilitySelection.AbilityIndex1)
                 {
                     PanelAbilities.Controls.Add(abc);
                     abc.Tag = 1;
@@ -375,9 +379,9 @@ namespace poxnora_search_engine.Pox
 
             // upgrade 2
             abc = new AbilityControl();
-            foreach (var ab in SelectedChampion.UpgradeAbilities2_refs)
+            foreach (var ab in champ.UpgradeAbilities2_refs)
             {
-                if (SelectedChampion.UpgradeAbilities2_refs.IndexOf(ab) == AbilitySelection.AbilityIndex2)
+                if (champ.UpgradeAbilities2_refs.IndexOf(ab) == AbilitySelection.AbilityIndex2)
                 {
                     PanelAbilities.Controls.Add(abc);
                     abc.Tag = 2;
@@ -393,9 +397,9 @@ namespace poxnora_search_engine.Pox
             }
 
             LabelData1.Text = string.Format("{0}\r\n{1}\r\n{2}\r\n\r\n{3}",
-                SelectedChampion.Damage, SelectedChampion.MinRNG, SelectedChampion.MaxRNG, SelectedChampion.Size);
+                champ.Damage, champ.MinRNG, champ.MaxRNG, champ.Size);
             LabelData2.Text = string.Format("{0}\r\n{1}\r\n{2}\r\n\r\n{3}",
-                SelectedChampion.Speed, SelectedChampion.Defense, SelectedChampion.HitPoints, NoraCost);
+                champ.Speed, champ.Defense, champ.HitPoints, NoraCost);
 
             UpgradeClicked?.Invoke(up_index, abi_index);
         }
@@ -403,6 +407,7 @@ namespace poxnora_search_engine.Pox
         public void SetAbility(Ability a)
         {
             ClearDescription();
+            CurrentViewedElement = new TracerViewData() { ID = a.ID, Type = DataElement.ElementType.ABILITY };
 
             RTFLabelRuneInfo.SelectionColor = Color.LightGray;
             RTFLabelRuneInfo.SelectionFont = BoldFont;
@@ -428,6 +433,7 @@ namespace poxnora_search_engine.Pox
         public void SetSpellRune(Spell s)
         {
             SetRune(s);
+            CurrentViewedElement = new TracerViewData() { ID = s.ID, Type = DataElement.ElementType.SPELL };
 
             RTFLabelDescription.Show();
 
@@ -445,6 +451,7 @@ namespace poxnora_search_engine.Pox
         public void SetRelicRune(Relic r)
         {
             SetRune(r);
+            CurrentViewedElement = new TracerViewData() { ID = r.ID, Type = DataElement.ElementType.RELIC };
 
             RTFLabelDescription.Show();
 
@@ -465,6 +472,7 @@ namespace poxnora_search_engine.Pox
         public void SetEquipmentRune(Equipment e)
         {
             SetRune(e);
+            CurrentViewedElement = new TracerViewData() { ID = e.ID, Type = DataElement.ElementType.EQUIPMENT };
 
             RTFLabelDescription.Show();
 
@@ -482,6 +490,7 @@ namespace poxnora_search_engine.Pox
         public void SetCondition(FlavorElement c)
         {
             ClearDescription();
+            CurrentViewedElement = new TracerViewData() { ID = c.ID, Type = DataElement.ElementType.CONDITION };
 
             RTFLabelDescription.Show();
 
@@ -497,6 +506,7 @@ namespace poxnora_search_engine.Pox
         public void SetMechanic(FlavorElement m)
         {
             ClearDescription();
+            CurrentViewedElement = new TracerViewData() { ID = m.ID, Type = DataElement.ElementType.MECHANIC };
 
             RTFLabelDescription.Show();
 
