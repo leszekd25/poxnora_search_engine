@@ -34,10 +34,7 @@ namespace poxnora_search_engine.Pox
                 Description = runedata.SelectToken("description").ToObject<string>();
 
             if (runedata.SelectToken("rarity") != null)
-            { 
                 Rarity = runedata.SelectToken("rarity").ToObject<string>();
-                Program.database.Rarities.AllowedStrings.Add(Rarity);
-            }
 
             if (runedata.SelectToken("noraCost") != null)
                 NoraCost = runedata.SelectToken("noraCost").ToObject<int>();
@@ -51,17 +48,11 @@ namespace poxnora_search_engine.Pox
             if (runedata.SelectToken("factions") != null)
             {
                 foreach (JToken f in runedata.SelectToken("factions"))
-                {
                     Faction.Add(f.ToObject<string>());
-                    Program.database.Factions.AllowedStrings.Add(f.ToObject<string>());
-                }
             }
 
             if (runedata.SelectToken("runeSet") != null)
-            {
                 Expansion = runedata.SelectToken("runeSet").ToObject<string>();
-                Program.database.Expansions.AllowedStrings.Add(Expansion);
-            }
 
             if (runedata.SelectToken("forSale") != null)
                 ForSale = runedata.SelectToken("forSale").ToObject<bool>();

@@ -39,12 +39,13 @@
             this.ChangeListModeMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.showChangesPerCategoryToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.showChangesPerFactionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PanelChangeList = new System.Windows.Forms.Panel();
             this.ButtonPrevious = new System.Windows.Forms.Button();
             this.ButtonCurrent = new System.Windows.Forms.Button();
             this.RuneDescription = new poxnora_search_engine.Pox.RuneDescriptionControl();
             this.DatabaseFilter = new poxnora_search_engine.Pox.DatabaseFilterControl();
-            this.showChampionsAffectedByAbilityChangesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ButtonSynergyComparer = new System.Windows.Forms.Button();
             this.ChangeListModeMenu.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -84,7 +85,7 @@
             this.showChangesPerFactionToolStripMenuItem,
             this.showChampionsAffectedByAbilityChangesToolStripMenuItem});
             this.ChangeListModeMenu.Name = "ChangeListModeMenu";
-            this.ChangeListModeMenu.Size = new System.Drawing.Size(310, 92);
+            this.ChangeListModeMenu.Size = new System.Drawing.Size(310, 70);
             // 
             // showChangesPerCategoryToolStripMenuItem
             // 
@@ -99,6 +100,13 @@
             this.showChangesPerFactionToolStripMenuItem.Size = new System.Drawing.Size(309, 22);
             this.showChangesPerFactionToolStripMenuItem.Text = "Show changes per faction";
             this.showChangesPerFactionToolStripMenuItem.Click += new System.EventHandler(this.showChangesPerFactionToolStripMenuItem_Click);
+            // 
+            // showChampionsAffectedByAbilityChangesToolStripMenuItem
+            // 
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Name = "showChampionsAffectedByAbilityChangesToolStripMenuItem";
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Size = new System.Drawing.Size(309, 22);
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Text = "Show champions affected by ability changes";
+            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Click += new System.EventHandler(this.showChampionsAffectedByAbilityChangesToolStripMenuItem_Click);
             // 
             // PanelChangeList
             // 
@@ -131,6 +139,7 @@
             // 
             // RuneDescription
             // 
+            this.RuneDescription.AutoScroll = true;
             this.RuneDescription.BackColor = System.Drawing.Color.Black;
             this.RuneDescription.Location = new System.Drawing.Point(800, 10);
             this.RuneDescription.Name = "RuneDescription";
@@ -144,18 +153,22 @@
             this.DatabaseFilter.Size = new System.Drawing.Size(334, 405);
             this.DatabaseFilter.TabIndex = 5;
             // 
-            // showChampionsAffectedByAbilityChangesToolStripMenuItem
+            // ButtonSynergyComparer
             // 
-            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Name = "showChampionsAffectedByAbilityChangesToolStripMenuItem";
-            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Size = new System.Drawing.Size(309, 22);
-            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Text = "Show champions affected by ability changes";
-            this.showChampionsAffectedByAbilityChangesToolStripMenuItem.Click += new System.EventHandler(this.showChampionsAffectedByAbilityChangesToolStripMenuItem_Click);
+            this.ButtonSynergyComparer.Location = new System.Drawing.Point(12, 533);
+            this.ButtonSynergyComparer.Name = "ButtonSynergyComparer";
+            this.ButtonSynergyComparer.Size = new System.Drawing.Size(329, 55);
+            this.ButtonSynergyComparer.TabIndex = 6;
+            this.ButtonSynergyComparer.Text = "[EXPERIMENTAL] Synergy comparison";
+            this.ButtonSynergyComparer.UseVisualStyleBackColor = true;
+            this.ButtonSynergyComparer.Click += new System.EventHandler(this.ButtonSynergyComparer_Click);
             // 
             // DifferenceCalculator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1092, 600);
+            this.Controls.Add(this.ButtonSynergyComparer);
             this.Controls.Add(this.DatabaseFilter);
             this.Controls.Add(this.ButtonCurrent);
             this.Controls.Add(this.ButtonPrevious);
@@ -187,5 +200,6 @@
         private System.Windows.Forms.ToolStripMenuItem showChangesPerFactionToolStripMenuItem;
         private Pox.DatabaseFilterControl DatabaseFilter;
         private System.Windows.Forms.ToolStripMenuItem showChampionsAffectedByAbilityChangesToolStripMenuItem;
+        private System.Windows.Forms.Button ButtonSynergyComparer;
     }
 }

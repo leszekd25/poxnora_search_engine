@@ -55,9 +55,306 @@ namespace poxnora_search_engine
             TextEstimatedNoraCost.Text = "Total estimated nora cost: " + (champion.PrognosedBaseNoraCost + ab_cost).ToString();
 
             if (loaded_champion_ref != null)
-                TextLoadedChampionNoraCost.Text = "Loaded champion nora cost: " + loaded_champion_ref.DefaultNoraCost.ToString();
+            {
+                TextLoadedChampionNoraCost.Text = "Loaded champion nora cost: " + loaded_champion_ref.DefaultNoraCost.ToString() + ", current nora modifier: " + loaded_champion_ref.PrognosedBaseNoraCostDifference.ToString();
+
+                // calculation of minimum durability index
+                float hp_min = champion.HitPoints;
+                float def_min = champion.Defense;
+                // find abilities that affect these values
+                foreach(Pox.Ability ability in champion.AllAbilities_refs)
+                {
+                    if(ability.ClassName == "Tough")
+                    {
+                        def_min += ability.Level;
+                    }
+                    else if(ability.ClassName == "StatBonusDefense")
+                    {
+                        def_min += ability.Level;
+                    }
+                    else if(ability.ClassName == "StatBonusHealth")
+                    {
+                        hp_min += 2 + 2 * ability.Level;
+                    }
+                    else if(ability.ClassName == "Regeneration")
+                    {
+                        def_min += 1 * ability.Level;   // 2 heal points = 1 def, assuming hit twice
+                    }
+                    else if(ability.ClassName == "Blessed")
+                    {
+                        def_min += 2.5f;                
+                    }
+                    else if(ability.ClassName == "Loyalty")
+                    {
+                        hp_min += 5;
+                    }
+                    else if(ability.ClassName == "FragileDefense")
+                    {
+                        hp_min += 9;
+                    }
+                    else if(ability.ClassName == "LifeSiphon")
+                    {
+                        def_min += (champion.Damage - 2) / 3.2f;
+                    }
+                }
+                
+                LabelMinimumDurIndex.Text = $"Minimum durability index: {champion.CalculateBaseDurabilityIndex(hp_min, def_min, champion.PrognosedBaseNoraCost + ab_cost + loaded_champion_ref.PrognosedBaseNoraCostDifference)}";
+
+                // calculation of maximum durability index
+                // per damage range type: evasive and reflexes is counted exclusively (max of those)
+                float range_dmg_reduction = 0; // 0 - 0%, 100 - 100%
+                int hidden_instances = 0;
+                float blocks_per_turn = 0;
+                bool has_hunter = false;
+                float ignores_per_120turns = 0;
+                bool has_scale_armor = false;
+                float incorporeal_amount = 0;
+                float type_dmg_resistance = 0f; // 0 - 0%, 100 - 100%
+                bool has_majestic = false;
+                bool has_mirrored = false;
+                bool has_absorb = false;
+
+
+                foreach (Pox.Ability ability in champion.AllAbilities_refs)
+                {
+                    if ((ability.ClassName == "Evasive") || (ability.ClassName == "Reflexes"))
+                    {
+                        range_dmg_reduction = Math.Max(range_dmg_reduction, 5 + ability.Level * 15);
+                    }
+                    else if (ability.ClassName == "TreeForm")
+                    {
+                        def_min += 2;
+                        hp_min += 10;
+                    }
+                    else if ((ability.ClassName.StartsWith("Domain"))&&(ability.UseCount != 0))
+                    {
+                        def_min += 1;
+                    }
+                    else if (ability.ClassName.Contains("Camouflage"))
+                    {
+                        hidden_instances += 1;
+                    }
+                    else if (ability.ClassName.Contains("Acolyte"))
+                    {
+                        def_min += 6;       // max 12 hp per round
+                    }
+                    else if ((ability.ClassName == "Dodge") || (ability.ClassName == "Block"))
+                    {
+                        blocks_per_turn += 0.5f * ability.Level;
+                    }
+                    else if(ability.ClassName.Contains("Deflect"))
+                    {
+                        blocks_per_turn += 0.25f;
+                    }
+                    else if(ability.ClassName == "OblivionShield")
+                    {
+                        blocks_per_turn += 1f;
+                    }
+                    else if(ability.ClassName == "NohkanDo")
+                    {
+                        blocks_per_turn += 2f;
+                    }
+                    else if(ability.ClassName == "ScaleArmor")
+                    {
+                        has_scale_armor = true;
+                    }
+                    else if((ability.ClassName.StartsWith("Hunter"))&&(ability.ClassName[6] != 's'))
+                    {
+                        has_hunter = true;
+                    }
+                    else if((ability.ClassName == "Dragonflight"))
+                    {
+                        has_hunter = true;
+                    }
+                    else if((ability.ClassName == "ProvisionDefense"))
+                    {
+                        def_min += 1;
+                    }
+                    else if(ability.ClassName == "Bold")
+                    {
+                        def_min += Math.Min(5, champion.Speed - 1);
+                    }
+                    else if((ability.ClassName == "Turtle")||(ability.ClassName == "TortunShell"))
+                    {
+                        ignores_per_120turns += 40;  // once per 3 turns
+                    }
+                    else if(ability.ClassName == "Charm")
+                    {
+                        ignores_per_120turns += 60;  // once per 2 turns
+                    }
+                    else if(ability.ClassName == "Fear")
+                    {
+                        ignores_per_120turns += 40;
+                    }
+                    else if(ability.ClassName == "HorrificAura")
+                    {
+                        ignores_per_120turns += ability.Level == 1 ? 24 : (ability.Level == 2 ? 30 : 40);
+                    }
+                    else if(ability.ClassName == "Abash")
+                    {
+                        ignores_per_120turns += 80;
+                    }
+                    else if(ability.ClassName == "Blinding")
+                    {
+                        ignores_per_120turns += 60;
+                    }
+                    else if(ability.ClassName == "RighteousShield")
+                    {
+                        ignores_per_120turns += 24;
+                    }
+                    else if(ability.ClassName == "PlantRegeneration")
+                    {
+                        def_min += 1 * ability.Level;   // 2 heal points = 1 def, assuming hit twice
+                    }
+                    else if((ability.ClassName == "CorporealForm")||(ability.ClassName == "Ghost"))
+                    {
+                        incorporeal_amount = 1;
+                    }
+                    else if(ability.ClassName == "Vaporize")
+                    {
+                        incorporeal_amount = Math.Max(incorporeal_amount, 0.75f);
+                    }
+                    else if(ability.ClassName == "Ethereal")
+                    {
+                        incorporeal_amount = Math.Max(incorporeal_amount, 0.5f);
+                    }
+                    else if(ability.ClassName == "PhaseShift")
+                    {
+                        incorporeal_amount = Math.Max(incorporeal_amount, 0.3333f);
+                    }
+                    else if(ability.ClassName == "Intensify")
+                    {
+                        hp_min += 20;
+                    }
+                    else if (ability.ClassName.StartsWith("Resistance"))
+                    {
+                        type_dmg_resistance = Math.Max(type_dmg_resistance, 5 + ability.Level * 15);
+                    }
+                    else if(ability.ClassName == "ChaosShield")
+                    {
+                        type_dmg_resistance = 50;
+                    }
+                    else if (ability.ClassName == "TwistedEssence")
+                    {
+                        def_min += 2.5f;
+                    }
+                    else if(ability.ClassName == "TrailHallowedGround")
+                    {
+                        def_min += 2.5f;
+                    }
+                    else if(ability.ClassName == "MeleeSpecialist")
+                    {
+                        def_min += 1 * ability.Level;
+                    }
+                    else if(ability.ClassName == "Dread")
+                    {
+                        def_min += 2;
+                    }
+                    else if(ability.ClassName == "RelicGuardian")
+                    {
+                        def_min += 2;
+                    }
+                    else if(ability.ClassName == "Calcify")
+                    {
+                        def_min += 3;
+                    }
+                    else if(ability.ClassName == "Majestic")
+                    {
+                        has_majestic = true;
+                    }
+                    else if (ability.ClassName == "Ascendance")
+                    {
+                        hp_min += 30;
+                        def_min += 2;
+                    }
+                    else if(ability.ClassName == "Grow")
+                    {
+                        hp_min += 60;
+                    }
+                    else if(ability.ClassName == "Mirrored")
+                    {
+                        has_mirrored = true;
+                    }
+                    else if(ability.ClassName.StartsWith("Quest"))
+                    {
+                        if (ability.ClassName == "QuestCompleteTraining")
+                        {
+                            hp_min += 10;
+                        }
+                        else if ((ability.ClassName == "QuestVisions") || (ability.ClassName == "QuestKillEnemy"))
+                        {
+                            hp_min += 25;
+                            def_min += 1;
+                        }
+                        else if(ability.ClassName == "QuestRunner")
+                        {
+                            hp_min += 16;
+                        }
+                        else if(ability.ClassName == "QuestSupportAlly")
+                        {
+                            def_min += 4.5f;
+                        }
+                    }
+                    else if(ability.ClassName == "HealingMass")
+                    {
+                        def_min += 1.5f;    // 3 per turn
+                    }
+                    else if((ability.ClassName == "HealSelf")||(ability.ClassName == "HealingSingle"))
+                    {
+                        def_min += 2;       // 4 per turn
+                    }
+                    else if(ability.ClassName == "Absorb")
+                    {
+                        has_absorb = true;
+                    }
+                    else if(ability.ClassName == "Masochist")
+                    {
+                        def_min += 2;
+                    }
+                    else if(ability.ClassName.StartsWith("Ally"))
+                    {
+                        hp_min += 7;
+                    }
+                }
+                ignores_per_120turns = Math.Min(119, ignores_per_120turns);
+                blocks_per_turn = Utility.Sigmoid(2, blocks_per_turn);
+
+                hp_min /= 1 - (range_dmg_reduction / 100);
+                hp_min /= 1 - (type_dmg_resistance / 100);
+                if(has_majestic)
+                {
+                    hp_min *= 2;
+                }
+                if(has_mirrored)
+                {
+                    hp_min *= 2;
+                }
+                if(has_absorb)
+                {
+                    hp_min *= 2;
+                }
+                def_min += hidden_instances * 2;
+                if(has_hunter)
+                {
+                    def_min += 2;
+                }
+                if(has_scale_armor)
+                {
+                    hp_min /= 0.75f;
+                }
+                hp_min /= (1 - (ignores_per_120turns / 120.0f));
+                hp_min *= (2 / (2 - blocks_per_turn));
+                hp_min *= (1 + 3 * incorporeal_amount);
+
+                LabelMaximumDurIndex.Text = $"Maximum durability index: {champion.CalculateBaseDurabilityIndex(hp_min, def_min, champion.PrognosedBaseNoraCost + ab_cost + loaded_champion_ref.PrognosedBaseNoraCostDifference)}";
+            }
             else
+            {
                 TextLoadedChampionNoraCost.Text = "";
+                LabelMinimumDurIndex.Text = "";
+                LabelMaximumDurIndex.Text = "";
+            }
+
         }
 
         private void UpdateControls()
@@ -111,8 +408,8 @@ namespace poxnora_search_engine
 
         private void LoadFromChampions_Click(object sender, EventArgs e)
         {
-            int champ_id = -1;
-            foreach(var ch in Program.database.Champions)
+            int champ_id = Utility.NO_INDEX;
+            foreach (var ch in Program.database.Champions)
             {
                 if(ch.Value.Name == ChampionTemplate.Text)
                 {
@@ -121,7 +418,7 @@ namespace poxnora_search_engine
                 }
             }
 
-            if (champ_id == -1)
+            if (champ_id == Utility.NO_INDEX)
                 return;
 
             Pox.Champion base_champ = Program.database.Champions[champ_id];

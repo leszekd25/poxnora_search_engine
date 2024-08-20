@@ -31,6 +31,10 @@ namespace poxnora_search_engine.Pox
         public int BaseNoraCost;
         public int PrognosedBaseNoraCost;
         public int PrognosedBaseNoraCostDifference;
+        /// TEST
+        public int PrognosedBaseNoraCostTest;
+        public int PrognosedBaseNoraCostDifferenceTest;
+        public int BNCDoubleDifference;
 
         public List<Ability> AllAbilities_refs = new List<Ability>();
         public List<Ability> BaseAbilities_refs = new List<Ability>();
@@ -67,6 +71,12 @@ namespace poxnora_search_engine.Pox
                     result = BaseNoraCost;
                 else if (dp == DataPath.PrognosedBaseNoraCost)
                     result = PrognosedBaseNoraCost;
+                else if (dp == DataPath.PrognosedBaseNoraCostTest)
+                    result = PrognosedBaseNoraCostTest;
+                else if (dp == DataPath.PrognosedBaseNoraCostDifferenceTest)
+                    result = PrognosedBaseNoraCostDifferenceTest;
+                else if (dp == DataPath.BNCDoubleDifference)
+                    result = BNCDoubleDifference;
                 else
                     return false;
             }
@@ -145,6 +155,8 @@ namespace poxnora_search_engine.Pox
 
         private float CalculateRangeNoraCost()
         {
+            //return ((x - y) ^ 2 + 3 * (x - y)) * 0.25 * y + 2 * (x - 1);
+
             float rngdiff_bonus = (RangeDifferenceNoraCostCoefficientTable[MaxRNG - MinRNG] * MinRNG);
 
             return 0                         // min range cost
@@ -243,9 +255,112 @@ namespace poxnora_search_engine.Pox
 
             double sizeCost = Size == 2 ? (Math.Min(Math.Max((defenseCost + damageCost + healthCost + rangeCost + speedCost) - 30, 0), 60) / 10) : 0;
 
-            int baseCost = (int)Math.Max(0, Math.Round(defenseCost + damageCost + healthCost + rangeCost + speedCost + sizeCost));
+            int baseCost = (int)Math.Max(0, Math.Round(defenseCost + damageCost + healthCost + rangeCost + speedCost - sizeCost));
 
             PrognosedBaseNoraCost = baseCost;
+        }
+
+        //////////////////////////// TESTING AREA
+
+        private float CalculateHPDefenseNoraCostTest()
+        {
+            float eff_hp = (HitPoints * (10f / (10 - Defense)));
+            return eff_hp / 2;
+        }
+
+        private int[] SpeedNoraCostTableTest = new int[]
+        {
+            0,           // 0
+            0,
+            0,
+            2,
+            6,
+            10,
+            14,
+            20,
+            28,          // 8
+            42,
+        };
+
+        private float CalculateSpeedNoraCostTest()
+        {
+            return SpeedNoraCostTableTest[Speed];
+        }
+
+        private float CalculateSizeNoraCostTest()
+        {
+            return (Size == 1 ? 0 : -5);
+        }
+
+        private static float[] MaxRangeNoraCostTableTest = new float[]
+        {
+            0, 0, 2, 4, 6, 8, 10, 14, 20, 28, 38, 50, 64
+        };
+
+        private static float[] RangeDifferenceNoraCostCoefficientTableTest = new float[]
+        {
+            0, 0, 1, 2, 4, 6, 8
+        };
+
+        private float CalculateRangeNoraCostTest()
+        {
+            float rngdiff_bonus = (RangeDifferenceNoraCostCoefficientTableTest[MaxRNG - MinRNG] * MinRNG);
+
+            return 0                         // min range cost
+                 + MaxRangeNoraCostTableTest[MaxRNG - 1]                // max range cost
+                                                                    //+ (MaxRNG >= 5 ? (MaxRNG - 5) * 2 : 0)                     // bonus if range exceeds 5
+                 + rngdiff_bonus;     // range difference cost
+                                      //+ (((MaxRNG > 1) && (MinRNG == 1)) ? 2 : 0);               // bonus if both ranged and melee
+        }
+
+        private static int[] DamageNoraCostTableTest = new int[]
+        {
+            0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28
+        };
+
+        private float CalculateDamageNoraCostTest()
+        {
+            float coeff = Speed / 4f;
+            return DamageNoraCostTableTest[Damage] * coeff;
+        }
+
+        private float CalculateAbilityNoraCostModifiersTest()
+        {
+            float result = 0;
+
+            if (Damage == 0)
+                result += 12;
+
+            return result;
+        }
+
+        // for testing purposes
+        public void CalculatePrognosedBaseNoraCostTest()
+        {
+            float result = 0;
+
+            result += CalculateHPDefenseNoraCostTest();
+            result += CalculateSpeedNoraCostTest();
+            result += CalculateSizeNoraCostTest();
+            result += CalculateRangeNoraCostTest();
+            result += CalculateDamageNoraCostTest();
+            result += CalculateAbilityNoraCostModifiersTest();
+
+            PrognosedBaseNoraCostTest = (int)result;
+        }
+
+        ////////////////////////////////////// TESTING AREA OVER
+
+        public float CalculateBaseDurabilityIndex(float hp, float def, float nora)
+        {
+            const float def_adjust = 10f;
+            if (nora == 0)
+            {
+                return -1;
+            }
+
+            float index = hp * (def_adjust / (def_adjust - Utility.Sigmoid(def_adjust, def)));
+            return index / nora;
         }
 
         public override bool Equals(object o)

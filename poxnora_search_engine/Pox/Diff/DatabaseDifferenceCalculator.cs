@@ -21,18 +21,8 @@ namespace poxnora_search_engine.Pox.Diff
 
         public void LoadDatabases(string previous_database)
         {
-            //CurrentDatabase_ref = Program.database;
             CurrentDatabase_ref = new Database();
-            CurrentDatabase_ref.Load("database.json", "", true);
-
-
-           /* // preliminary db changes
-            CurrentDatabase_ref.Abilities[1].NoraCost = 4;
-            CurrentDatabase_ref.Abilities[1939].NoraCost = 4;
-            CurrentDatabase_ref.Abilities[630].NoraCost = 2;
-            CurrentDatabase_ref.Abilities[1480].NoraCost = 2;
-            CurrentDatabase_ref.RecalculateChampionCosts();
-           */
+            CurrentDatabase_ref.Load("database.json", "", false);
 
             PreviousDatabase = new Database();
             PreviousDatabase.Load(previous_database, "", true);
@@ -69,16 +59,21 @@ namespace poxnora_search_engine.Pox.Diff
             // load abilities
             foreach (Ability a in PreviousDatabase.Abilities.Values)
             {
+                if (a.ID == 0)
+                    continue;
+
                 if (CurrentDatabase_ref.Abilities.ContainsKey(a.ID))
                 {
-                    if (!a.Equals(CurrentDatabase_ref.Abilities[a.ID]))
+                    if ((!CurrentDatabase_ref.AbilityUseCount.ContainsKey(a.ID))||(CurrentDatabase_ref.AbilityUseCount[a.ID] == 0))
+                        DifferingAbilities.Add(new DifferenceElement() { type = DifferenceElementType.REMOVED, id = a.ID });
+                    else if (!a.Equals(CurrentDatabase_ref.Abilities[a.ID]))
                         DifferingAbilities.Add(new DifferenceElement() { type = DifferenceElementType.CHANGED, id = a.ID });
                 }
                 else
                     DifferingAbilities.Add(new DifferenceElement() { type = DifferenceElementType.REMOVED, id = a.ID });
             }
             foreach (Ability a in CurrentDatabase_ref.Abilities.Values)
-                if (!PreviousDatabase.Abilities.ContainsKey(a.ID))
+                if (!PreviousDatabase.Abilities.ContainsKey(a.ID) && CurrentDatabase_ref.AbilityUseCount.ContainsKey(a.ID) && (CurrentDatabase_ref.AbilityUseCount[a.ID] != 0))
                     DifferingAbilities.Add(new DifferenceElement() { type = DifferenceElementType.NEW, id = a.ID });
 
             // load spells

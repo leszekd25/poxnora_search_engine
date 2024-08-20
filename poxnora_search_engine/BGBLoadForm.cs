@@ -104,5 +104,10 @@ namespace poxnora_search_engine
             BGEntries.RemoveAt(ListBoxCodeNames.SelectedIndex);
             ListBoxCodeNames.Items.RemoveAt(ListBoxCodeNames.SelectedIndex);
         }
+
+        private void ListBoxCodeNames_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

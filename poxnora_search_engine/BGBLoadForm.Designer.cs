@@ -41,6 +41,7 @@ namespace poxnora_search_engine
             this.ListBoxCodeNames.Name = "ListBoxCodeNames";
             this.ListBoxCodeNames.Size = new System.Drawing.Size(279, 316);
             this.ListBoxCodeNames.TabIndex = 0;
+            this.ListBoxCodeNames.SelectedIndexChanged += new System.EventHandler(this.ListBoxCodeNames_SelectedIndexChanged);
             // 
             // ButtonLoadCode
             // 

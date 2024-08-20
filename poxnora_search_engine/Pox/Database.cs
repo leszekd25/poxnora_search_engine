@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Ports;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.DataVisualization.Charting;
 using Newtonsoft.Json.Linq;
 
 namespace poxnora_search_engine.Pox
@@ -37,6 +39,9 @@ namespace poxnora_search_engine.Pox
         Revision = 21,
         ActivationType = 22,
         UseCount = 23,
+        PrognosedBaseNoraCostTest = 24,
+        PrognosedBaseNoraCostDifferenceTest = 25,
+        BNCDoubleDifference = 26,
 
         // STRING
         Name = 100,
@@ -123,6 +128,7 @@ namespace poxnora_search_engine.Pox
         public StringLibrary Keywords { get; } = new StringLibrary();
 
         public DBPlugin_RuneGroups Plugin_RuneGroups { get; } = new DBPlugin_RuneGroups();      // loaded separately by BG builder
+        public DBPlugin_SynergyComparer Plugin_SynergyComparer { get; } = new DBPlugin_SynergyComparer();   // loaded separately
 
         public bool loading { get; private set; } = false;
         public bool ready { get; private set; } = false;
@@ -320,13 +326,11 @@ namespace poxnora_search_engine.Pox
                         AddAbilityFromJSON(ability, true);
                 }
 
-                bool found_abilities = (Abilities.Count != 0);
-
                 JToken champs = json_main.SelectToken("champs");
                 if (champs != null)
                 {
                     foreach (JToken champ in champs.Children())
-                        AddChampionFromJSON(champ, found_abilities);
+                        AddChampionFromJSON(champ);
                 }
                 
 
@@ -378,7 +382,7 @@ namespace poxnora_search_engine.Pox
             return true;
         }
 
-        void AddChampionFromJSON(JToken champ, bool parse_abilities)
+        void AddChampionFromJSON(JToken champ)
         {
             Champion c = new Champion();
             c.LoadFromJSON(champ);
@@ -421,6 +425,17 @@ namespace poxnora_search_engine.Pox
                     Races.AllowedStrings.Add(r.ToObject<string>());
                 }
             }
+
+            // rune specific
+            if (champ.SelectToken("factions") != null)
+            {
+                foreach (JToken f in champ.SelectToken("factions"))
+                    Factions.AllowedStrings.Add(f.ToObject<string>());
+            }
+            if (champ.SelectToken("runeSet") != null)
+                Expansions.AllowedStrings.Add(champ.SelectToken("runeSet").ToObject<string>());
+            if (champ.SelectToken("rarity") != null)
+                Rarities.AllowedStrings.Add(champ.SelectToken("rarity").ToObject<string>());
 
 
             if (champ.SelectToken("startingAbilities") != null)
@@ -672,6 +687,17 @@ namespace poxnora_search_engine.Pox
             if (spell.SelectToken("flavorText") != null)
                 s.Flavor = spell.SelectToken("flavorText").ToObject<string>();
 
+            // rune specific
+            if (spell.SelectToken("factions") != null)
+            {
+                foreach (JToken f in spell.SelectToken("factions"))
+                    Factions.AllowedStrings.Add(f.ToObject<string>());
+            }
+            if (spell.SelectToken("runeSet") != null)
+                Expansions.AllowedStrings.Add(spell.SelectToken("runeSet").ToObject<string>());
+            if (spell.SelectToken("rarity") != null)
+                Rarities.AllowedStrings.Add(spell.SelectToken("rarity").ToObject<string>());
+
             s.Description = ExtractAbilitiesAndConditions(s.Description, ref s.DescriptionAbilities, ref s.DescriptionConditions, ref s.DescriptionMechanics);
             s.DescriptionKeywords = s.DescriptionConditions.Union(s.DescriptionMechanics).ToHashSet().ToList();
 
@@ -695,6 +721,17 @@ namespace poxnora_search_engine.Pox
             if (relic.SelectToken("size") != null)
                 r.Size = ((relic.SelectToken("size").ToObject<string>())[0] == '2' ? 2 : 1);
 
+            // rune specific
+            if (relic.SelectToken("factions") != null)
+            {
+                foreach (JToken f in relic.SelectToken("factions"))
+                    Factions.AllowedStrings.Add(f.ToObject<string>());
+            }
+            if (relic.SelectToken("runeSet") != null)
+                Expansions.AllowedStrings.Add(relic.SelectToken("runeSet").ToObject<string>());
+            if (relic.SelectToken("rarity") != null)
+                Rarities.AllowedStrings.Add(relic.SelectToken("rarity").ToObject<string>());
+
             r.Description = ExtractAbilitiesAndConditions(r.Description, ref r.DescriptionAbilities, ref r.DescriptionConditions, ref r.DescriptionMechanics);
             r.DescriptionKeywords = r.DescriptionConditions.Union(r.DescriptionMechanics).ToHashSet().ToList();
 
@@ -711,6 +748,17 @@ namespace poxnora_search_engine.Pox
 
             e.Description = ExtractAbilitiesAndConditions(e.Description, ref e.DescriptionAbilities, ref e.DescriptionConditions, ref e.DescriptionMechanics);
             e.DescriptionKeywords = e.DescriptionConditions.Union(e.DescriptionMechanics).ToHashSet().ToList();
+
+            // rune specific
+            if (equip.SelectToken("factions") != null)
+            {
+                foreach (JToken f in equip.SelectToken("factions"))
+                    Factions.AllowedStrings.Add(f.ToObject<string>());
+            }
+            if (equip.SelectToken("runeSet") != null)
+                Expansions.AllowedStrings.Add(equip.SelectToken("runeSet").ToObject<string>());
+            if (equip.SelectToken("rarity") != null)
+                Rarities.AllowedStrings.Add(equip.SelectToken("rarity").ToObject<string>());
 
             Equipments.Add(e.ID, e);
         }
@@ -741,7 +789,7 @@ namespace poxnora_search_engine.Pox
                 Keywords.AllowedStrings.Add(m.Key);
         }
 
-        void SetupChampionAbilities(Champion c)
+        public void SetupChampionAbilities(Champion c)
         {
             foreach(int a in c.Abilities)
             {
@@ -760,9 +808,6 @@ namespace poxnora_search_engine.Pox
                 c.AllUpgradeAbilities_refs.Add(Abilities[a]);
                 c.AllAbilities_refs.Add(Abilities[a]);
             }
-
-            c.CalculatePrognosedBaseNoraCostNew();
-            c.PrognosedBaseNoraCostDifference = c.BaseNoraCost - c.PrognosedBaseNoraCost;
         }
 
         void ResolveSimilarAbilities()
@@ -994,7 +1039,15 @@ namespace poxnora_search_engine.Pox
         {
             // post-process
             foreach (Champion c in Champions.Values)
+            {
                 SetupChampionAbilities(c);
+
+                c.CalculatePrognosedBaseNoraCostNew();
+                c.PrognosedBaseNoraCostDifference = c.BaseNoraCost - c.PrognosedBaseNoraCost;
+                c.CalculatePrognosedBaseNoraCostTest();
+                c.PrognosedBaseNoraCostDifferenceTest = c.BaseNoraCost - c.PrognosedBaseNoraCostTest;
+                c.BNCDoubleDifference = c.PrognosedBaseNoraCostTest - c.PrognosedBaseNoraCost;
+            }
 
             Abilities.Add(0, new Ability() { Name = "<INVALID_ABILITY>" });
 

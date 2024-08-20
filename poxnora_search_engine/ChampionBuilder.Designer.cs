@@ -55,6 +55,8 @@
             this.TextAbilityNoraCost = new System.Windows.Forms.Label();
             this.TextEstimatedNoraCost = new System.Windows.Forms.Label();
             this.TextLoadedChampionNoraCost = new System.Windows.Forms.Label();
+            this.LabelMinimumDurIndex = new System.Windows.Forms.Label();
+            this.LabelMaximumDurIndex = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -294,11 +296,31 @@
             this.TextLoadedChampionNoraCost.TabIndex = 26;
             this.TextLoadedChampionNoraCost.Text = "label12";
             // 
+            // LabelMinimumDurIndex
+            // 
+            this.LabelMinimumDurIndex.AutoSize = true;
+            this.LabelMinimumDurIndex.Location = new System.Drawing.Point(12, 250);
+            this.LabelMinimumDurIndex.Name = "LabelMinimumDurIndex";
+            this.LabelMinimumDurIndex.Size = new System.Drawing.Size(126, 13);
+            this.LabelMinimumDurIndex.TabIndex = 27;
+            this.LabelMinimumDurIndex.Text = "Minimum durability index: ";
+            // 
+            // LabelMaximumDurabilityIndex
+            // 
+            this.LabelMaximumDurIndex.AutoSize = true;
+            this.LabelMaximumDurIndex.Location = new System.Drawing.Point(12, 276);
+            this.LabelMaximumDurIndex.Name = "LabelMaximumDurabilityIndex";
+            this.LabelMaximumDurIndex.Size = new System.Drawing.Size(129, 13);
+            this.LabelMaximumDurIndex.TabIndex = 28;
+            this.LabelMaximumDurIndex.Text = "Maximum durability index: ";
+            // 
             // ChampionBuilder
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(585, 328);
+            this.Controls.Add(this.LabelMaximumDurIndex);
+            this.Controls.Add(this.LabelMinimumDurIndex);
             this.Controls.Add(this.TextLoadedChampionNoraCost);
             this.Controls.Add(this.TextEstimatedNoraCost);
             this.Controls.Add(this.TextAbilityNoraCost);
@@ -367,5 +389,7 @@
         private System.Windows.Forms.Label TextAbilityNoraCost;
         private System.Windows.Forms.Label TextEstimatedNoraCost;
         private System.Windows.Forms.Label TextLoadedChampionNoraCost;
+        private System.Windows.Forms.Label LabelMinimumDurIndex;
+        private System.Windows.Forms.Label LabelMaximumDurIndex;
     }
 }

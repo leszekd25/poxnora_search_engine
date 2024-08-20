@@ -33,12 +33,17 @@ namespace poxnora_search_engine
         ChampionBuilder ChampionBuilder_form = null;
         DifferenceCalculator DifferenceCalculator_form = null;
         BattlegroupBuilder BattlegroupBuilder_form = null;
+        PatchBuilderForm PatchBuilder_form = null;
 
         public MainForm()
         {
             InitializeComponent();
             ButtonAddCard.Tag = -1;
             Log.OnLog = ShowLogMessageOnStatusBar;
+
+#if RELEASE
+            patchBuilderToolStripMenuItem.Visible = false;
+#endif // RELEASE
         }
 
         // when a message is logged, it shows on status bar (unless its a mundane info message)
@@ -353,8 +358,11 @@ namespace poxnora_search_engine
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Cooldown", Name = "Cooldown", ValueType = typeof(int), Visible = cooldownToolStripMenuItem2.Checked });
 
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost", Name = "PrognosedBaseNoraCost", ValueType = typeof(int), Visible = prognosedBaseNoraCostToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost (test)", Name = "PrognosedBaseNoraCostTest", ValueType = typeof(int), Visible = true });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Base nora cost", Name = "BaseNoraCost", ValueType = typeof(int), Visible = baseNoraCostToolStripMenuItem.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost difference", Name = "PrognosedBaseNoraCostDifference", ValueType = typeof(int), Visible = prognosedBaseNoraCostDifferenceToolStripMenuItem.Checked });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Prognosed base nora cost difference (test)", Name = "PrognosedBaseNoraCostDifferenceTest", ValueType = typeof(int), Visible = true });
+                        GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Base nora cost difference difference (test)", Name = "BNCDoubleDifference", ValueType = typeof(int), Visible = true });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Default nora cost", Name = "DefaultNoraCost", ValueType = typeof(int), Visible = defaultNoraCostToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Minimum nora cost", Name = "MinNoraCost", ValueType = typeof(int), Visible = minimumNoraCostToolStripMenuItem1.Checked });
                         GridDataElements.Columns.Add(new DataGridViewColumn() { HeaderText = "Maximum nora cost", Name = "MaxNoraCost", ValueType = typeof(int), Visible = maximumNoraCostToolStripMenuItem1.Checked });
@@ -612,8 +620,11 @@ namespace poxnora_search_engine
             GridDataElements.Rows[row].Cells["Cooldown"].Value = c.Cooldown;
 
             GridDataElements.Rows[row].Cells["PrognosedBaseNoraCost"].Value = c.PrognosedBaseNoraCost;
-            GridDataElements.Rows[row].Cells["BaseNoraCost"].Value = c.BaseNoraCost; 
+            GridDataElements.Rows[row].Cells["PrognosedBaseNoraCostTest"].Value = c.PrognosedBaseNoraCostTest;
+            GridDataElements.Rows[row].Cells["BaseNoraCost"].Value = c.BaseNoraCost;
             GridDataElements.Rows[row].Cells["PrognosedBaseNoraCostDifference"].Value = c.PrognosedBaseNoraCostDifference;
+            GridDataElements.Rows[row].Cells["PrognosedBaseNoraCostDifferenceTest"].Value = c.PrognosedBaseNoraCostDifferenceTest;
+            GridDataElements.Rows[row].Cells["BNCDoubleDifference"].Value = c.BNCDoubleDifference;
             GridDataElements.Rows[row].Cells["DefaultNoraCost"].Value = c.DefaultNoraCost;
             GridDataElements.Rows[row].Cells["MinNoraCost"].Value = c.MinNoraCost;
             GridDataElements.Rows[row].Cells["MaxNoraCost"].Value = c.MaxNoraCost;
@@ -1388,6 +1399,33 @@ namespace poxnora_search_engine
 
             Log.Info(Log.LogSource.UI, "MainForm.BattlegroupBuilder_form_FormClosed(): Form closed");
         }
+
+        private void patchBuilderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (!Program.database.ready)
+                return;
+
+            if (PatchBuilder_form != null)
+            {
+                PatchBuilder_form.BringToFront();
+                return;
+            }
+
+            Log.Info(Log.LogSource.UI, "MainForm.patchBuilderToolStripMenuItem_Click(): Creating new form");
+            PatchBuilder_form = new PatchBuilderForm();
+            PatchBuilder_form.FormClosed += new FormClosedEventHandler(PatchBuilder_form_FormClosed);
+
+            PatchBuilder_form.Show();
+        }
+
+        private void PatchBuilder_form_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            PatchBuilder_form.FormClosed -= new FormClosedEventHandler(PatchBuilder_form_FormClosed);
+            PatchBuilder_form = null;
+
+            Log.Info(Log.LogSource.UI, "MainForm.PatchBuilder_form_FormClosed(): Form closed");
+        }
+
 
         private void MainForm_Activated(object sender, EventArgs e)
         {

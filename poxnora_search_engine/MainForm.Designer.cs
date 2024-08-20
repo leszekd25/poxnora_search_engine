@@ -148,6 +148,7 @@
             this.differenceCalculatorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadOlderDatabaseToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.battlegroundBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.patchBuilderToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.Status = new System.Windows.Forms.StatusStrip();
             this.LastLogMessage = new System.Windows.Forms.ToolStripStatusLabel();
             this.DBDownloadProgress = new System.Windows.Forms.ToolStripProgressBar();
@@ -1248,7 +1249,8 @@
             this.championBuilderToolStripMenuItem,
             this.differenceCalculatorToolStripMenuItem,
             this.loadOlderDatabaseToolStripMenuItem,
-            this.battlegroundBuilderToolStripMenuItem});
+            this.battlegroundBuilderToolStripMenuItem,
+            this.patchBuilderToolStripMenuItem});
             this.otherToolStripMenuItem.Name = "otherToolStripMenuItem";
             this.otherToolStripMenuItem.Size = new System.Drawing.Size(49, 20);
             this.otherToolStripMenuItem.Text = "Other";
@@ -1287,6 +1289,13 @@
             this.battlegroundBuilderToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
             this.battlegroundBuilderToolStripMenuItem.Text = "Battleground Builder";
             this.battlegroundBuilderToolStripMenuItem.Click += new System.EventHandler(this.battlegroundBuilderToolStripMenuItem_Click);
+            // 
+            // patchBuilderToolStripMenuItem
+            // 
+            this.patchBuilderToolStripMenuItem.Name = "patchBuilderToolStripMenuItem";
+            this.patchBuilderToolStripMenuItem.Size = new System.Drawing.Size(183, 22);
+            this.patchBuilderToolStripMenuItem.Text = "Patch builder";
+            this.patchBuilderToolStripMenuItem.Click += new System.EventHandler(this.patchBuilderToolStripMenuItem_Click);
             // 
             // Status
             // 
@@ -1711,6 +1720,7 @@
         private System.Windows.Forms.ToolStripMenuItem resettableToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rankedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem useCountToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem patchBuilderToolStripMenuItem;
     }
 }
 
